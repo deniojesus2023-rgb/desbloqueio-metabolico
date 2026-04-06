@@ -66,3 +66,12 @@
 - [x] Conectar link Kiwify Upsell 2 ($27) na página de upsell 2
 - [x] Implementar exit-intent popup com copy persuasiva na página de vendas
 - [x] Configurar backredirect na Kiwify
+
+## Versão Brasileira (PT-BR)
+
+- [x] Pesquisa de mercado: maiores ofertas de emagrecimento no Brasil
+- [x] Pesquisa de público: dores, frustrações e desejos do público BR
+- [x] Criar MUP e MUS adaptados à cultura brasileira
+- [x] Adaptar quiz para português com cultura BR (10 perguntas PT, referências BR: feijoada, churrasco, pão de queijo)
+- [x] Adaptar página de vendas para português com copy BR (rota /vendas-br, upsell-br, obrigado-br)
+- [x] Sistema de idioma único (PT-BR / ES) com detecção automática via navigator.language + param ?lang=pt|es
