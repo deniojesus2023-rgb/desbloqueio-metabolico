@@ -39,3 +39,19 @@
 ## Testes
 - [x] Testes unitários das rotas da API
 - [x] Verificar responsividade mobile
+
+## Melhorias de CRO
+
+- [x] Quiz: Micro-feedback emocional após cada resposta
+- [x] Quiz: Texto motivacional na barra de progresso por etapa
+- [x] Quiz: Mover pergunta de país para posição 2
+- [x] Quiz: Sistema de score e 3 tipos de resultado (Tipo 1, 2, 3)
+- [x] Quiz: Loading personalizado com referência às respostas
+- [x] Vendas: Headline personalizada com nome do usuário
+- [x] Vendas: Contador de urgência regressivo de 15 minutos
+- [x] Vendas: Depoimentos com fotos reais (geradas por IA)
+- [x] Vendas: Seção de FAQ com 5 objeções principais
+- [x] Vendas: Âncora de preço com comparação contextual
+- [x] Admin: Filtro por data e país
+- [x] Admin: Drop-off por pergunta do quiz
+- [x] Admin: Receita separada por tipo (oferta, bump, upsell)

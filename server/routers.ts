@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { getDb } from "./db";
 import { quizSessions, quizAnswers, conversions } from "../drizzle/schema";
-import { eq, desc, count, sql } from "drizzle-orm";
+import { eq, desc, count, sql, and, gte, lte } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 export const appRouter = router({
@@ -196,6 +196,111 @@ export const appRouter = router({
           .from(quizAnswers)
           .where(eq(quizAnswers.questionIndex, input.questionIndex))
           .groupBy(quizAnswers.answerText);
+      }),
+
+    getDropoffStats: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        // Count how many sessions reached each question (currentQuestion = last answered + 1)
+        const rows = await db.select({
+          currentQuestion: quizSessions.currentQuestion,
+          count: count(),
+        })
+          .from(quizSessions)
+          .groupBy(quizSessions.currentQuestion);
+        // Build cumulative drop-off: sessions that reached question N = sum of sessions where currentQuestion >= N
+        const totalByQuestion: Record<number, number> = {};
+        rows.forEach(r => {
+          const q = r.currentQuestion ?? 0;
+          for (let i = 0; i <= q; i++) {
+            totalByQuestion[i] = (totalByQuestion[i] || 0) + r.count;
+          }
+        });
+        const QUESTION_LABELS = [
+          "P1: Resultado desejado",
+          "P2: País",
+          "P3: Frustração principal",
+          "P4: Força de vontade",
+          "P5: Nível de estresse",
+          "P6: O que não abandonaria",
+          "P7: Enfoque diferente",
+          "P8: Truque de 3 min",
+          "P9: Prazo para resultados",
+          "P10: Gasto anterior",
+        ];
+        return QUESTION_LABELS.map((label, idx) => ({
+          question: label,
+          reached: totalByQuestion[idx] || 0,
+        }));
+      }),
+
+    getRevenueByType: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        const rows = await db.select({
+          type: conversions.type,
+          total: sql<number>`sum(amount)`,
+          count: count(),
+        })
+          .from(conversions)
+          .groupBy(conversions.type);
+        const LABELS: Record<string, string> = {
+          main_offer: "Oferta Principal ($27)",
+          order_bump: "Order Bump ($9.90)",
+          upsell_1: "Upsell 1 ($47)",
+          downsell_1: "Downsell ($17)",
+          upsell_2: "Upsell 2 ($27)",
+        };
+        return rows.map(r => ({
+          type: r.type,
+          label: LABELS[r.type] || r.type,
+          total: (r.total || 0) / 100,
+          count: r.count,
+        }));
+      }),
+
+    getStatsByCountry: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        const rows = await db.select({
+          country: quizSessions.country,
+          count: count(),
+        })
+          .from(quizSessions)
+          .groupBy(quizSessions.country);
+        return rows.filter(r => r.country).sort((a, b) => b.count - a.count);
+      }),
+
+    getLeadsFiltered: protectedProcedure
+      .input(z.object({
+        limit: z.number().default(50),
+        offset: z.number().default(0),
+        country: z.string().optional(),
+        dateFrom: z.string().optional(),
+        dateTo: z.string().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        if (ctx.user?.role !== "admin") throw new Error("Unauthorized");
+        const db = await getDb();
+        if (!db) throw new Error("Database unavailable");
+        const conditions = [];
+        if (input.country) conditions.push(eq(quizSessions.country, input.country));
+        if (input.dateFrom) conditions.push(gte(quizSessions.createdAt, new Date(input.dateFrom)));
+        if (input.dateTo) conditions.push(lte(quizSessions.createdAt, new Date(input.dateTo)));
+        const query = db.select().from(quizSessions)
+          .orderBy(desc(quizSessions.createdAt))
+          .limit(input.limit)
+          .offset(input.offset);
+        if (conditions.length > 0) {
+          return query.where(and(...conditions));
+        }
+        return query;
       }),
   }),
 });

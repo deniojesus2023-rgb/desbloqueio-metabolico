@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { QUIZ_QUESTIONS } from "@/quizData";
+import { QUIZ_QUESTIONS, calculateBlockType, PROGRESS_LABELS } from "@/quizData";
 
 type Phase = "landing" | "questions" | "optin" | "loading" | "done";
 
@@ -11,6 +11,7 @@ export default function Quiz() {
   const [answers, setAnswers] = useState<{ questionIndex: number; questionText: string; answerIndex: number; answerText: string }[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [feedbackText, setFeedbackText] = useState<string | null>(null);
   const [animating, setAnimating] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,25 +22,45 @@ export default function Quiz() {
   const saveAnswer = trpc.quiz.saveAnswer.useMutation();
   const completeQuiz = trpc.quiz.completeQuiz.useMutation();
 
-  const loadingSteps = [
-    "Analizando tus respuestas...",
-    "Cruzando datos con 45.000 perfiles metabólicos...",
-    "Identificando tu Bloqueo Metabólico principal...",
-    "Ajustando el Protocolo de Desbloqueo para tu perfil...",
-    "¡LISTO!",
-  ];
+  // Dynamic loading steps — personalized based on answers
+  const getLoadingSteps = () => {
+    const stressAnswer = answers.find(a => a.questionIndex === 4);
+    const frustrationAnswer = answers.find(a => a.questionIndex === 2);
+    const countryAnswer = answers.find(a => a.questionIndex === 1);
+
+    const steps = [
+      "Analizando tus respuestas...",
+      stressAnswer && stressAnswer.answerIndex <= 1
+        ? "Detectando niveles elevados de cortisol..."
+        : "Evaluando tu perfil hormonal...",
+      frustrationAnswer
+        ? `Identificando tu patrón: "${frustrationAnswer.answerText.slice(0, 35)}..."`
+        : "Identificando tu patrón metabólico...",
+      countryAnswer
+        ? `Cruzando con 45.000 perfiles de ${countryAnswer.answerText.replace(/[^\w\s]/g, "").trim()}...`
+        : "Cruzando con 45.000 perfiles metabólicos...",
+      "Determinando tu Bloqueo Metabólico principal...",
+      "Ajustando el Protocolo de Desbloqueo para tu perfil...",
+      "¡Tu diagnóstico está listo! 🎯",
+    ];
+    return steps;
+  };
 
   useEffect(() => {
     if (phase === "loading") {
+      const steps = getLoadingSteps();
       let step = 0;
       const interval = setInterval(() => {
         step++;
         setLoadingStep(step);
-        if (step >= loadingSteps.length - 1) {
+        if (step >= steps.length - 1) {
           clearInterval(interval);
-          setTimeout(() => navigate("/vendas"), 1200);
+          // Pass block type and name to sales page
+          const blockType = calculateBlockType(answers);
+          const nameParam = encodeURIComponent(name);
+          setTimeout(() => navigate(`/vendas?block=${blockType}&n=${nameParam}${sessionId ? `&s=${sessionId}` : ""}`), 1200);
         }
-      }, 900);
+      }, 950);
       return () => clearInterval(interval);
     }
   }, [phase]);
@@ -55,16 +76,20 @@ export default function Quiz() {
     setPhase("questions");
   };
 
-  const handleSelectOption = async (optionIndex: number, optionText: string) => {
+  const handleSelectOption = async (optionIndex: number) => {
     if (animating) return;
+    const option = QUIZ_QUESTIONS[currentQ].options[optionIndex];
+    if (!option) return;
+
     setSelectedOption(optionIndex);
+    setFeedbackText(option.feedback);
     setAnimating(true);
 
     const answer = {
       questionIndex: currentQ,
       questionText: QUIZ_QUESTIONS[currentQ].question,
       answerIndex: optionIndex,
-      answerText: optionText,
+      answerText: option.text,
     };
 
     if (sessionId) {
@@ -73,7 +98,9 @@ export default function Quiz() {
 
     setAnswers(prev => [...prev, answer]);
 
+    // Show feedback for 1.2s then advance
     setTimeout(() => {
+      setFeedbackText(null);
       setSelectedOption(null);
       setAnimating(false);
       if (currentQ < QUIZ_QUESTIONS.length - 1) {
@@ -81,7 +108,7 @@ export default function Quiz() {
       } else {
         setPhase("optin");
       }
-    }, 500);
+    }, 1200);
   };
 
   const handleOptIn = async (e: React.FormEvent) => {
@@ -96,6 +123,16 @@ export default function Quiz() {
   const progress = phase === "questions"
     ? Math.round(((currentQ) / QUIZ_QUESTIONS.length) * 100)
     : phase === "optin" ? 95 : phase === "loading" ? 100 : 0;
+
+  // Get motivational label for current progress
+  const getProgressLabel = () => {
+    if (phase === "questions") {
+      return QUIZ_QUESTIONS[currentQ].progressLabel || "Vas por buen camino...";
+    }
+    return "";
+  };
+
+  const loadingSteps = getLoadingSteps();
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -114,11 +151,18 @@ export default function Quiz() {
           )}
         </div>
         {(phase === "questions" || phase === "optin") && (
-          <div className="h-1 bg-gray-100">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
+          <div>
+            <div className="h-1.5 bg-gray-100">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            {phase === "questions" && (
+              <div className="max-w-2xl mx-auto px-4 py-1">
+                <p className="text-xs text-emerald-600 font-medium">{getProgressLabel()}</p>
+              </div>
+            )}
           </div>
         )}
       </header>
@@ -139,7 +183,7 @@ export default function Quiz() {
               Incluso si comes poco y haces ejercicio.
             </p>
             <p className="text-gray-500 text-sm">
-              Responde 10 preguntas rápidas · Resultado personalizado · 100% gratis · Menos de 1 minuto
+              Responde 10 preguntas rápidas · Resultado personalizado · 100% gratis · Menos de 2 minutos
             </p>
           </div>
 
@@ -169,7 +213,7 @@ export default function Quiz() {
             {[
               { num: "45.000+", label: "Perfiles analizados" },
               { num: "87%", label: "Identifican su bloqueo" },
-              { num: "< 1 min", label: "Para completar" },
+              { num: "< 2 min", label: "Para completar" },
             ].map((stat) => (
               <div key={stat.num} className="bg-gray-50 rounded-xl p-3 text-center">
                 <div className="text-xl font-bold text-emerald-600">{stat.num}</div>
@@ -209,11 +253,20 @@ export default function Quiz() {
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 leading-snug">
               {QUIZ_QUESTIONS[currentQ].question}
             </h2>
+
+            {/* Micro-feedback banner */}
+            {feedbackText && (
+              <div className="mb-4 animate-in fade-in duration-200 bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-start gap-2">
+                <span className="text-emerald-600 text-base flex-shrink-0">✓</span>
+                <p className="text-emerald-800 text-sm font-medium">{feedbackText}</p>
+              </div>
+            )}
+
             <div className="space-y-3">
               {QUIZ_QUESTIONS[currentQ].options.map((option, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSelectOption(idx, option)}
+                  onClick={() => handleSelectOption(idx)}
                   disabled={animating}
                   className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 font-medium text-gray-800
                     ${selectedOption === idx
@@ -225,7 +278,7 @@ export default function Quiz() {
                     ${selectedOption === idx ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-500"}`}>
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  {option}
+                  {option.text}
                 </button>
               ))}
             </div>
@@ -278,12 +331,12 @@ export default function Quiz() {
             <button
               type="submit"
               disabled={completeQuiz.isPending || !name || !email}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-emerald-200 disabled:opacity-60 active:scale-95"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-emerald-200 disabled:opacity-70"
             >
-              {completeQuiz.isPending ? "Procesando..." : "Ver Mi Resultado Ahora →"}
+              {completeQuiz.isPending ? "Procesando..." : "Ver mi diagnóstico personalizado →"}
             </button>
             <p className="text-center text-xs text-gray-400">
-              🔒 Tus datos están 100% seguros. No compartimos tu información.
+              🔒 Tus datos están seguros. No spam, nunca.
             </p>
           </form>
         </div>
@@ -292,30 +345,30 @@ export default function Quiz() {
       {/* LOADING */}
       {phase === "loading" && (
         <div className="max-w-2xl mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="relative w-24 h-24 mb-8">
-            <div className="absolute inset-0 rounded-full border-4 border-emerald-100" />
-            <div className="absolute inset-0 rounded-full border-4 border-emerald-600 border-t-transparent animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo_icon_only-Y4uyihxrkUSeNSRPEhwmSV.webp"
-                alt="Logo"
-                className="w-10 h-10 object-contain"
-              />
-            </div>
+          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-8 relative">
+            <span className="text-4xl">🧬</span>
+            <div className="absolute inset-0 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin" />
           </div>
-          <div className="space-y-3 w-full max-w-sm">
+          <div className="w-full max-w-sm space-y-3">
             {loadingSteps.map((step, idx) => (
               <div
                 key={idx}
-                className={`flex items-center gap-3 transition-all duration-500 ${idx <= loadingStep ? "opacity-100" : "opacity-20"}`}
+                className={`flex items-center gap-3 transition-all duration-500 ${
+                  idx <= loadingStep ? "opacity-100" : "opacity-20"
+                }`}
               >
-                <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center transition-colors duration-300
-                  ${idx < loadingStep ? "bg-emerald-600" : idx === loadingStep ? "bg-emerald-400 animate-pulse" : "bg-gray-200"}`}>
-                  {idx < loadingStep && <span className="text-white text-xs">✓</span>}
+                <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold transition-colors duration-300 ${
+                  idx < loadingStep
+                    ? "bg-emerald-600 text-white"
+                    : idx === loadingStep
+                    ? "bg-emerald-100 border-2 border-emerald-500 text-emerald-600"
+                    : "bg-gray-100 text-gray-400"
+                }`}>
+                  {idx < loadingStep ? "✓" : idx + 1}
                 </div>
-                <span className={`text-sm font-medium ${idx <= loadingStep ? "text-gray-800" : "text-gray-400"}`}>
+                <p className={`text-sm font-medium ${idx <= loadingStep ? "text-gray-800" : "text-gray-400"}`}>
                   {step}
-                </span>
+                </p>
               </div>
             ))}
           </div>
