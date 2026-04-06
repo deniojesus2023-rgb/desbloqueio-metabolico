@@ -55,3 +55,6 @@
 - [x] Admin: Filtro por data e país
 - [x] Admin: Drop-off por pergunta do quiz
 - [x] Admin: Receita separada por tipo (oferta, bump, upsell)
+
+## Redesign Admin
+- [x] Admin: Redesign minimalista preto e branco
