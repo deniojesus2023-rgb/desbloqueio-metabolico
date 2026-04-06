@@ -2,6 +2,9 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 
+const KIWIFY_UPSELL1 = "https://pay.kiwify.com/sodA6jl";
+const KIWIFY_DOWNSELL = "https://pay.kiwify.com/rB4iy3r";
+
 export default function Upsell() {
   const [, navigate] = useLocation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
@@ -13,7 +16,9 @@ export default function Upsell() {
 
   const handleAccept = async () => {
     await trackConversion.mutateAsync({ sessionId, type: "upsell_1", amount: 4700 });
-    navigate("/obrigado?upsell=1");
+    // Redirecionar para Kiwify Upsell 1 com retorno para página de obrigado
+    const obrigadoUrl = encodeURIComponent(`${window.location.origin}/obrigado?upsell=1`);
+    window.location.href = `${KIWIFY_UPSELL1}?redirect_to=${obrigadoUrl}`;
   };
 
   const handleDecline = () => {
@@ -22,7 +27,9 @@ export default function Upsell() {
 
   const handleDownsellAccept = async () => {
     await trackConversion.mutateAsync({ sessionId, type: "downsell_1", amount: 1700 });
-    navigate("/obrigado?downsell=1");
+    // Redirecionar para Kiwify Downsell com retorno para página de obrigado
+    const obrigadoUrl = encodeURIComponent(`${window.location.origin}/obrigado?downsell=1`);
+    window.location.href = `${KIWIFY_DOWNSELL}?redirect_to=${obrigadoUrl}`;
   };
 
   const handleDownsellDecline = () => {

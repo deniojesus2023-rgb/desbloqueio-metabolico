@@ -58,3 +58,11 @@
 
 ## Redesign Admin
 - [x] Admin: Redesign minimalista preto e branco
+
+## Integração Kiwify + Exit-Intent
+- [x] Conectar link Kiwify Principal ($27) na página de vendas
+- [x] Conectar link Kiwify Upsell 1 ($47) na página de upsell
+- [x] Conectar link Kiwify Downsell ($17) na página de downsell
+- [x] Conectar link Kiwify Upsell 2 ($27) na página de upsell 2
+- [x] Implementar exit-intent popup com copy persuasiva na página de vendas
+- [x] Configurar backredirect na Kiwify

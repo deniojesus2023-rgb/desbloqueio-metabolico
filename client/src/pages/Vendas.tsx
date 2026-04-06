@@ -120,9 +120,13 @@ const FAQ = [
   },
 ];
 
+const KIWIFY_MAIN = "https://pay.kiwify.com/JTSj9Qi";
+
 export default function Vendas() {
   const [orderBump, setOrderBump] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showExitIntent, setShowExitIntent] = useState(false);
+  const [exitDismissed, setExitDismissed] = useState(false);
   const [, navigate] = useLocation();
   const ctaRef = useRef<HTMLDivElement>(null);
   const { minutes, seconds } = useCountdown();
@@ -140,6 +144,17 @@ export default function Vendas() {
 
   const totalPrice = PRODUCT_PRICE + (orderBump ? ORDER_BUMP_PRICE : 0);
 
+  // Exit-intent: detecta quando o mouse sai pelo topo da página
+  useEffect(() => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 5 && !exitDismissed) {
+        setShowExitIntent(true);
+      }
+    };
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave);
+  }, [exitDismissed]);
+
   const handleBuy = async () => {
     await trackConversion.mutateAsync({
       sessionId,
@@ -153,7 +168,9 @@ export default function Vendas() {
         amount: Math.round(ORDER_BUMP_PRICE * 100),
       });
     }
-    navigate("/upsell");
+    // Redirecionar para Kiwify com parâmetro de upsell na URL de retorno
+    const upsellUrl = encodeURIComponent(`${window.location.origin}/upsell?s=${sessionId || ""}`);
+    window.location.href = `${KIWIFY_MAIN}?redirect_to=${upsellUrl}`;
   };
 
   const scrollToCta = () => {
@@ -162,6 +179,70 @@ export default function Vendas() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
+
+      {/* EXIT-INTENT POPUP */}
+      {showExitIntent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative animate-in fade-in zoom-in duration-300">
+            <button
+              onClick={() => { setShowExitIntent(false); setExitDismissed(true); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold"
+            >
+              ✕
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="text-5xl mb-3">⏳</div>
+              <h2 className="text-2xl font-extrabold text-gray-900 mb-2 leading-tight">
+                {name}, ¿vas a dejar que tu metabolismo siga bloqueado?
+              </h2>
+              <p className="text-gray-500 text-sm">
+                Llevas años intentando. Esta puede ser la última vez que veas esta oferta.
+              </p>
+            </div>
+
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-5">
+              <p className="text-red-700 text-sm font-semibold text-center">
+                🚨 Si cierras esta página, el precio de $27 desaparece.
+              </p>
+              <p className="text-red-600 text-xs text-center mt-1">
+                La próxima vez que veas esto, el precio será $97.
+              </p>
+            </div>
+
+            <div className="space-y-3 mb-6">
+              {[
+                "Tu bloqueo metabólico NO se resuelve solo con el tiempo",
+                "Cada dieta restrictiva que hagas lo empeora más",
+                "El Protocolo de 3 Minutos es la única solución que ataca la raíz",
+              ].map((point) => (
+                <div key={point} className="flex items-start gap-2">
+                  <span className="text-emerald-600 font-bold flex-shrink-0 mt-0.5">✓</span>
+                  <span className="text-gray-700 text-sm">{point}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => {
+                setShowExitIntent(false);
+                setExitDismissed(true);
+                handleBuy();
+              }}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-200 mb-3"
+            >
+              Sí, quiero desbloquear mi metabolismo por $27 →
+            </button>
+            <button
+              onClick={() => { setShowExitIntent(false); setExitDismissed(true); }}
+              className="w-full text-gray-400 text-xs py-2 hover:text-gray-500 transition-colors"
+            >
+              No gracias, prefiero seguir sin resultados y perder esta oferta.
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Countdown urgency bar */}
       <div className="bg-red-600 text-white text-center py-2.5 px-4">
         <p className="text-sm font-bold">
