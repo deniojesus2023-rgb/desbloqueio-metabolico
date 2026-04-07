@@ -382,9 +382,11 @@ export default function VendasBR() {
           </div>
           <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-start gap-5 mb-5">
-              <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-[#00BFA5] to-[#26C6DA] flex items-center justify-center text-white font-extrabold text-2xl shadow-md">
-                AP
-              </div>
+              <img
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/ana_paula_ferreira-mjHRev2Yaie3xqQuHV2EXb.webp"
+                alt="Ana Paula Ferreira"
+                className="flex-shrink-0 w-20 h-20 rounded-full object-cover border-3 border-[#00BFA5] shadow-md"
+              />
               <div>
                 <h3 className="font-extrabold text-gray-900 text-lg">Ana Paula Ferreira</h3>
                 <p className="text-gray-500 text-sm">Professora · 47 anos · Belo Horizonte, MG</p>
@@ -455,6 +457,78 @@ export default function VendasBR() {
                       ))}
                     </div>
                     <p className="text-gray-600 text-sm leading-relaxed">"{t.text}"</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ANTES E DEPOIS */}
+        <div className="mb-10">
+          <div className="text-center mb-6">
+            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
+              Resultados reais
+            </span>
+            <h2 className="text-2xl font-bold text-gray-900">
+              O que acontece quando o bloqueio é desbloqueado
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">Resultados de mulheres com cada tipo de bloqueio metabólico</p>
+          </div>
+          <div className="space-y-4">
+            {[
+              {
+                tipo: "Bloqueio Tipo 1 — Cortisol",
+                nome: "Fernanda O., 44 anos · SP",
+                antes: ["Acordava cansada todo dia", "Barriga que não saía com nenhuma dieta", "Ansiedade e compulsão noturna"],
+                depois: ["Dorme profundo e acorda disposta", "Perdeu 7 kg em 5 semanas", "Compulsão noturna desapareceu na semana 2"],
+                cor: "from-orange-50 to-orange-100",
+                badge: "bg-orange-100 text-orange-700",
+              },
+              {
+                tipo: "Bloqueio Tipo 2 — Insulina",
+                nome: "Camila S., 51 anos · BH",
+                antes: ["Engordava mesmo comendo pouco", "Vontade de doce incontrolável", "Energia baixa após as refeições"],
+                depois: ["Metabolismo acelerou visivelmente", "Perdeu 9 kg em 7 semanas", "Vontade de doce reduziu 80%"],
+                cor: "from-blue-50 to-blue-100",
+                badge: "bg-blue-100 text-blue-700",
+              },
+              {
+                tipo: "Bloqueio Tipo 3 — Hormonal",
+                nome: "Juliana P., 48 anos · Curitiba",
+                antes: ["Peso que oscilava sem razão", "Retenção de líquido constante", "Sensação de inchaço permanente"],
+                depois: ["Estabilizou o peso pela primeira vez", "Perdeu 5 kg em 3 semanas", "Inchaço desapareceu na semana 1"],
+                cor: "from-purple-50 to-purple-100",
+                badge: "bg-purple-100 text-purple-700",
+              },
+            ].map((card) => (
+              <div key={card.tipo} className={`bg-gradient-to-br ${card.cor} rounded-2xl p-5 border border-gray-100`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`text-xs font-bold px-2 py-1 rounded-full ${card.badge}`}>{card.tipo}</span>
+                </div>
+                <p className="text-gray-500 text-xs mb-3 font-medium">{card.nome}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs font-bold text-red-600 mb-2 uppercase tracking-wide">Antes</p>
+                    <ul className="space-y-1">
+                      {card.antes.map((item) => (
+                        <li key={item} className="flex items-start gap-1.5 text-xs text-gray-600">
+                          <span className="text-red-400 mt-0.5 flex-shrink-0">✗</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#00897B] mb-2 uppercase tracking-wide">Depois</p>
+                    <ul className="space-y-1">
+                      {card.depois.map((item) => (
+                        <li key={item} className="flex items-start gap-1.5 text-xs text-gray-600">
+                          <span className="text-[#00BFA5] mt-0.5 flex-shrink-0">✓</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>

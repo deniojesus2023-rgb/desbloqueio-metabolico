@@ -135,3 +135,12 @@
 - [ ] Modelar copy PT-BR com nova estrutura validada
 - [ ] Reescrever VendasBR.tsx com estrutura modelada
 - [ ] Reescrever Vendas.tsx ES-LATAM com mesma estrutura
+
+## Melhorias Página de Vendas + Fonte Inter
+- [x] Gerar foto da Ana Paula com IA (mulher brasileira, 47 anos, professora, BH)
+- [x] Aplicar fonte Inter em todo o funil (index.html + index.css)
+- [x] Adicionar foto da Ana Paula na seção de autoridade da VendasBR.tsx
+- [x] Criar seção "Antes e Depois" com 3 cards na VendasBR.tsx
+- [x] Replicar metáfora do termostato na Vendas.tsx (ES-LATAM)
+- [x] Replicar evento gatilho da Ana Paula na Vendas.tsx (ES-LATAM)
+- [x] Adicionar seção "Antes e Depois" na Vendas.tsx (ES-LATAM)
