@@ -106,3 +106,11 @@
 - [ ] Corrigir logo no header do quiz (wordmark branco visível sobre fundo teal)
 - [ ] Aplicar design system teal na página de vendas BR (/vendas-br)
 - [ ] Aplicar design system teal na página de vendas ES (/vendas)
+
+## Otimização Alfred Quiz — Alta Conversão
+- [ ] Reduzir para 4 perguntas com arco emocional (identidade → comportamento → problema → urgência)
+- [ ] Resultado imediato na tela (sem e-mail antes do resultado)
+- [ ] Opt-in pós-resultado com nome do perfil personalizado
+- [ ] 3 perfis de resultado com copy de absolvição específica
+- [ ] Tela de loading com "analisando seu perfil" + barra de progresso
+- [ ] Tela de resultado com diagnóstico + timer de escassez + CTA
