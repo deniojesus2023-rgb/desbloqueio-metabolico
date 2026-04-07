@@ -101,3 +101,8 @@
 - [x] Otimização mobile-first: padding, touch targets mínimos 48px
 - [x] Inputs com borda teal no focus e label flutuante
 - [x] Animação de seleção com checkmark teal
+
+## Correções e Melhorias Visuais (pós-mobile test)
+- [ ] Corrigir logo no header do quiz (wordmark branco visível sobre fundo teal)
+- [ ] Aplicar design system teal na página de vendas BR (/vendas-br)
+- [ ] Aplicar design system teal na página de vendas ES (/vendas)

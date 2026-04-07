@@ -219,7 +219,7 @@ export default function VendasBR() {
             </div>
             <button
               onClick={() => { setShowExitIntent(false); setExitDismissed(true); handleBuy(); }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 rounded-2xl transition-all active:scale-95 shadow-lg shadow-emerald-200 mb-3"
+              className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-lg py-4 rounded-full transition-all active:scale-95 shadow-lg shadow-teal-200 mb-3"
             >
               Sim, quero desbloquear meu metabolismo por R$47 →
             </button>
@@ -245,13 +245,13 @@ export default function VendasBR() {
       </div>
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-center">
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo_desbloqueio_metabolico-XXWBHTmoyhnmkSeSUASCTv.webp"
-            alt="Desbloqueio Metabólico"
-            className="h-8 object-contain"
-          />
+      <header className="bg-[#00BFA5] sticky top-0 z-10 shadow-md">
+        <div className="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-center gap-2">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="11" r="11" fill="white" fillOpacity="0.2"/>
+            <path d="M7 11l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span className="text-white font-extrabold text-base tracking-tight">Desbloqueio Metabólico</span>
         </div>
       </header>
 
@@ -274,7 +274,7 @@ export default function VendasBR() {
           </p>
           <button
             onClick={scrollToCta}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-xl text-base transition-all duration-200 shadow-lg shadow-emerald-200"
+            className="bg-[#00BFA5] hover:bg-[#00A896] text-white font-bold px-8 py-3 rounded-full text-base transition-all duration-200 shadow-lg shadow-teal-200"
           >
             Ver minha solução personalizada ↓
           </button>
@@ -300,7 +300,7 @@ export default function VendasBR() {
               { icon: "🔒", title: "Células bloqueadas", desc: "As células de gordura se recusam a liberar energia" },
               { icon: "📉", title: "Metabolismo lento", desc: "O corpo queima até 40% menos calorias em repouso" },
             ].map((item) => (
-              <div key={item.title} className="bg-white rounded-xl p-4 border border-gray-200">
+              <div key={item.title} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                 <div className="text-2xl mb-2">{item.icon}</div>
                 <div className="font-bold text-gray-900 text-sm mb-1">{item.title}</div>
                 <div className="text-gray-500 text-xs">{item.desc}</div>
@@ -343,14 +343,14 @@ export default function VendasBR() {
                 time: "1 minuto",
               },
             ].map((item) => (
-              <div key={item.step} className="flex gap-4 p-5 bg-emerald-50 rounded-xl border border-emerald-100">
-                <div className="flex-shrink-0 w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+              <div key={item.step} className="flex gap-4 p-5 bg-[#E0F7F4] rounded-xl border border-[#B2DFDB]">
+                <div className="flex-shrink-0 w-10 h-10 bg-[#00BFA5] text-white rounded-full flex items-center justify-center font-bold text-sm">
                   {item.step}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <h3 className="font-bold text-gray-900">{item.title}</h3>
-                    <span className="text-xs text-emerald-600 font-semibold bg-emerald-100 px-2 py-0.5 rounded-full">{item.time}</span>
+                    <span className="text-xs text-[#00897B] font-semibold bg-[#E0F7F4] px-2 py-0.5 rounded-full">{item.time}</span>
                   </div>
                   <p className="text-gray-600 text-sm">{item.desc}</p>
                 </div>
@@ -371,7 +371,7 @@ export default function VendasBR() {
                   <img
                     src={t.avatar}
                     alt={t.name}
-                    className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-emerald-100"
+                    className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-[#B2DFDB]"
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
@@ -379,7 +379,7 @@ export default function VendasBR() {
                         <span className="font-bold text-gray-900 text-sm">{t.name}</span>
                         <span className="text-gray-400 text-xs ml-2">{t.location}</span>
                       </div>
-                      <span className="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <span className="text-[#00897B] font-bold text-sm bg-[#E0F7F4] px-2 py-0.5 rounded-full">
                         {t.result}
                       </span>
                     </div>
@@ -461,7 +461,7 @@ export default function VendasBR() {
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-extrabold text-xl py-5 rounded-2xl transition-all duration-200 shadow-xl shadow-emerald-200 disabled:opacity-70"
+            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] active:scale-[0.99] text-white font-extrabold text-xl py-5 rounded-full transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
           >
             {trackConversion.isPending
               ? "Processando..."
@@ -473,7 +473,7 @@ export default function VendasBR() {
         </div>
 
         {/* GARANTIA */}
-        <div className="border-2 border-emerald-200 rounded-2xl p-6 mb-10 flex gap-4 items-start">
+        <div className="border-2 border-[#B2DFDB] rounded-2xl p-6 mb-10 flex gap-4 items-start bg-[#F0FDFB]">
           <div className="text-4xl flex-shrink-0">🛡️</div>
           <div>
             <h3 className="font-bold text-gray-900 mb-1">Garantia Incondicional de 30 Dias</h3>
@@ -509,7 +509,7 @@ export default function VendasBR() {
         </div>
 
         {/* CTA FINAL */}
-        <div className="text-center bg-emerald-50 rounded-2xl p-8">
+        <div className="text-center bg-[#E0F7F4] rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Ainda aqui, {name}?
           </h2>
@@ -519,7 +519,7 @@ export default function VendasBR() {
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xl py-5 rounded-2xl transition-all duration-200 shadow-xl shadow-emerald-200 disabled:opacity-70"
+            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-xl py-5 rounded-full transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
           >
             Sim, quero desbloquear meu metabolismo →
           </button>

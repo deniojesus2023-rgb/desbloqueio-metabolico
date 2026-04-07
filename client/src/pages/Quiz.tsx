@@ -225,11 +225,15 @@ export default function Quiz() {
       {/* ===== HEADER ===== */}
       <header className="qz-header">
         <div className="qz-header-inner">
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo_desbloqueio_metabolico-XXWBHTmoyhnmkSeSUASCTv.webp"
-            alt="Desbloqueio Metabólico"
-            className="h-7 object-contain brightness-0 invert"
-          />
+          <div className="qz-logo">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" style={{flexShrink:0}}>
+              <circle cx="11" cy="11" r="11" fill="white" fillOpacity="0.2"/>
+              <path d="M7 11l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="qz-logo-text">
+              {lang === "pt" ? "Desbloqueio Metabólico" : "Desbloqueo Metabólico"}
+            </span>
+          </div>
           {phase === "questions" && (
             <span className="qz-step-pill">
               {t.question} {currentQ + 1}/{questions.length}

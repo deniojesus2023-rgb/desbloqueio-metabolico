@@ -750,3 +750,18 @@
   color: #1A1A2E;
   line-height: 1.35;
 }
+
+/* Logo wordmark */
+.qz-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qz-logo-text {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
