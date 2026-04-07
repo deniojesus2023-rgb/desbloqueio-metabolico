@@ -122,6 +122,9 @@ const FAQ = [
 
 const KIWIFY_MAIN = "https://pay.kiwify.com/JTSj9Qi";
 
+// Cupos restantes en el grupo de soporte (urgencia real)
+const CUPOS_GRUPO = 37;
+
 export default function Vendas() {
   const [orderBump, setOrderBump] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -354,6 +357,52 @@ export default function Vendas() {
           </div>
         </div>
 
+        {/* PERSONA — Ana Paula Ferreira */}
+        <div className="mb-10">
+          <div className="text-center mb-6">
+            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
+              Quién creó este protocolo
+            </span>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-start gap-5 mb-5">
+              <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-[#00BFA5] to-[#26C6DA] flex items-center justify-center text-white font-extrabold text-2xl shadow-md">
+                AP
+              </div>
+              <div>
+                <h3 className="font-extrabold text-gray-900 text-lg">Ana Paula Ferreira</h3>
+                <p className="text-gray-500 text-sm">Profesora · 47 años · Belo Horizonte, Brasil</p>
+                <p className="text-gray-400 text-xs mt-0.5">Madre de José (19) y Laura (16)</p>
+              </div>
+            </div>
+            <div className="space-y-3 text-gray-700 text-sm leading-relaxed">
+              <p>
+                Durante 11 años, Ana Paula probó todo para adelgazar. Keto, ayuno intermitente, dieta de puntos, detox de 21 días, batidos sustitutos. Perdía 4 kilos, recuperaba 6. Perdía 3, recuperaba 5. El ciclo nunca terminaba.
+              </p>
+              <p>
+                <strong className="text-gray-900">"Creía que era mi falta de voluntad"</strong>, cuenta ella. <em>"Que yo no tenía la disciplina suficiente. Que todo el mundo podía adelgazar menos yo. Lloré mucho culpándome por eso."</em>
+              </p>
+              <p>
+                El cambio llegó por accidente. En 2022, durante una crisis de ansiedad intensa en el trabajo, Ana Paula empezó a investigar sobre el cortisol y el estrés crónico. Fue ahí donde encontró estudios sobre cómo el estrés prolongado literalmente bloquea la quema de grasa a nivel celular, independientemente de la dieta o el ejercicio.
+              </p>
+              <p>
+                <em>"Cuando leí eso, me puse a llorar. No era falta de fuerza de voluntad. Era biología. Mi cuerpo llevaba años en modo supervivencia y yo intentaba forzarlo a adelgazar con más restricción, que era exactamente lo que empeoraba el bloqueo."</em>
+              </p>
+              <p>
+                Pasó los siguientes 8 meses probando combinaciones de técnicas de regulación del cortisol, activación enzimática y calibración de insulina, todas basadas en estudios científicos pero adaptadas a la rutina real de una profesora con dos hijos, esposo y casa que atender.
+              </p>
+              <p>
+                El resultado: <strong className="text-[#00897B]">14 kg en 5 meses</strong>, sin renunciar a sus comidas favoritas. Hoy comparte el protocolo con otras mujeres que pasaron por lo mismo.
+              </p>
+            </div>
+            <div className="mt-5 bg-[#F0FDFB] rounded-xl p-4 border border-[#B2DFDB]">
+              <p className="text-[#00897B] text-sm font-semibold text-center">
+                ✦ "Si funcionó para mí después de 11 años intentándolo, va a funcionar para ti."
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* DEPOIMENTOS com fotos */}
         <div className="mb-10">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
@@ -388,6 +437,27 @@ export default function Vendas() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* URGENCIA — 37 cupos en el grupo */}
+        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 mb-8">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl flex-shrink-0">🔴</div>
+            <div>
+              <h3 className="font-extrabold text-red-700 text-base mb-1">
+                Solo {CUPOS_GRUPO} cupos disponibles en el Grupo de Soporte Privado
+              </h3>
+              <p className="text-red-600 text-sm leading-relaxed">
+                Cada compra incluye acceso al grupo privado donde Ana Paula acompaña personalmente a las participantes. El grupo tiene capacidad limitada para garantizar atención individual. Cuando se agoten los {CUPOS_GRUPO} cupos, el acceso al grupo será eliminado de la oferta.
+              </p>
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex-1 bg-red-200 rounded-full h-2">
+                  <div className="bg-red-500 h-2 rounded-full" style={{ width: `${Math.round((CUPOS_GRUPO / 100) * 100)}%` }}></div>
+                </div>
+                <span className="text-red-700 font-bold text-xs whitespace-nowrap">{CUPOS_GRUPO} de 100 cupos</span>
+              </div>
+            </div>
           </div>
         </div>
 

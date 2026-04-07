@@ -114,3 +114,10 @@
 - [ ] 3 perfis de resultado com copy de absolvição específica
 - [ ] Tela de loading com "analisando seu perfil" + barra de progresso
 - [ ] Tela de resultado com diagnóstico + timer de escassez + CTA
+
+## Persona de Autoridade + Urgência Real
+- [x] Criar persona: Ana Paula Ferreira, 47 anos, professora de BH, mãe de José e Laura
+- [x] História de origem: anos tentando de tudo, descoberta do protocolo por acidente
+- [x] Implementar seção "Quem criou isso" na VendasBR.tsx com história e avatar AP
+- [x] Implementar urgência real: barra de 37/100 vagas no grupo de suporte (BR e ES)
+- [x] Implementar mesma persona adaptada na Vendas.tsx (ES-LATAM)

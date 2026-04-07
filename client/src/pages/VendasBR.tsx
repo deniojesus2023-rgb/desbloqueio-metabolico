@@ -122,6 +122,9 @@ const FAQ_BR = [
 // Link Kiwify para o produto BR (R$47)
 const KIWIFY_BR_MAIN = "https://pay.kiwify.com/JTSj9Qi";
 
+// Vagas restantes no grupo de suporte (urgência real)
+const VAGAS_GRUPO = 37;
+
 export default function VendasBR() {
   const [orderBump, setOrderBump] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -359,6 +362,52 @@ export default function VendasBR() {
           </div>
         </div>
 
+        {/* PERSONA — Ana Paula Ferreira */}
+        <div className="mb-10">
+          <div className="text-center mb-6">
+            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
+              Quem criou este protocolo
+            </span>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-start gap-5 mb-5">
+              <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-[#00BFA5] to-[#26C6DA] flex items-center justify-center text-white font-extrabold text-2xl shadow-md">
+                AP
+              </div>
+              <div>
+                <h3 className="font-extrabold text-gray-900 text-lg">Ana Paula Ferreira</h3>
+                <p className="text-gray-500 text-sm">Professora · 47 anos · Belo Horizonte, MG</p>
+                <p className="text-gray-400 text-xs mt-0.5">Mãe de José (19) e Laura (16)</p>
+              </div>
+            </div>
+            <div className="space-y-3 text-gray-700 text-sm leading-relaxed">
+              <p>
+                Durante 11 anos, Ana Paula tentou de tudo para emagrecer. Low carb, jejum intermitente, dieta dos pontos, detox de 21 dias, shake substituto de refeição. Perdia 4 quilos, recuperava 6. Perdia 3, recuperava 5. O ciclo nunca parava.
+              </p>
+              <p>
+                <strong className="text-gray-900">"Eu achava que era fraqueza minha"</strong>, ela conta. <em>"Que eu não tinha disciplina suficiente. Que todo mundo conseguia emagrecer menos eu. Chorei muito me culpando por isso."</em>
+              </p>
+              <p>
+                A virada aconteceu por acidente. Em 2022, durante uma crise de ansiedade intensa no trabalho, Ana Paula começou a pesquisar sobre cortisol e estresse crônico. Foi aí que encontrou estudos sobre como o estresse de longo prazo literalmente bloqueia a queima de gordura em nível celular — independente de dieta ou exercício.
+              </p>
+              <p>
+                <em>"Quando li aquilo, caí em prantos. Não era falta de força de vontade. Era biologia. Meu corpo estava em modo de sobrevivência há anos e eu ficava tentando forçar ele a emagrecer com mais restrição — que era exatamente o que piorava o bloqueio."</em>
+              </p>
+              <p>
+                Ela passou os 8 meses seguintes testando combinações de técnicas de regulação do cortisol, ativação enzimática e calibração de insulina — todas baseadas em estudos científicos, mas adaptadas para a rotina real de uma professora com dois filhos, marido e casa para cuidar.
+              </p>
+              <p>
+                O resultado: <strong className="text-[#00897B]">14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café da manhã. Hoje ela compartilha o protocolo com outras mulheres que passaram pelo mesmo que ela.
+              </p>
+            </div>
+            <div className="mt-5 bg-[#F0FDFB] rounded-xl p-4 border border-[#B2DFDB]">
+              <p className="text-[#00897B] text-sm font-semibold text-center">
+                ✦ "Se funcionou para mim depois de 11 anos tentando, vai funcionar para você."
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* DEPOIMENTOS BR */}
         <div className="mb-10">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
@@ -393,6 +442,27 @@ export default function VendasBR() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* URGÊNCIA — 37 vagas no grupo */}
+        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 mb-8">
+          <div className="flex items-start gap-3">
+            <div className="text-2xl flex-shrink-0">🔴</div>
+            <div>
+              <h3 className="font-extrabold text-red-700 text-base mb-1">
+                Apenas {VAGAS_GRUPO} vagas restantes no Grupo de Suporte Privado
+              </h3>
+              <p className="text-red-600 text-sm leading-relaxed">
+                Cada compra inclui acesso ao grupo privado onde Ana Paula acompanha pessoalmente as participantes. O grupo tem capacidade limitada para garantir atenção individual — quando as {VAGAS_GRUPO} vagas acabarem, o acesso ao grupo será removido da oferta.
+              </p>
+              <div className="mt-3 flex items-center gap-2">
+                <div className="flex-1 bg-red-200 rounded-full h-2">
+                  <div className="bg-red-500 h-2 rounded-full" style={{ width: `${Math.round((VAGAS_GRUPO / 100) * 100)}%` }}></div>
+                </div>
+                <span className="text-red-700 font-bold text-xs whitespace-nowrap">{VAGAS_GRUPO} de 100 vagas</span>
+              </div>
+            </div>
           </div>
         </div>
 
