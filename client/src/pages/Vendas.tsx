@@ -270,7 +270,7 @@ export default function Vendas() {
 
       <div className="max-w-3xl mx-auto px-4 py-10">
 
-        {/* HERO — Personalizado por nome e tipo de bloqueo */}
+        {/* HERO - Personalizado por nome e tipo de bloqueo */}
         <div className="text-center mb-10">
           <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wide ${block.badgeColor}`}>
             🔬 {block.badge}
@@ -293,7 +293,7 @@ export default function Vendas() {
           </button>
         </div>
 
-        {/* PROBLEMA — MUP */}
+        {/* PROBLEMA - MUP */}
         <div className="bg-gray-50 rounded-2xl p-6 md:p-8 mb-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Por qué las dietas convencionales hacen que tu cuerpo acumule <span className="text-red-500">más grasa</span>
@@ -322,7 +322,7 @@ export default function Vendas() {
           </div>
         </div>
 
-        {/* SOLUÇÃO — MUS */}
+        {/* SOLUCAO - MUS */}
         <div className="mb-10">
           <div className="text-center mb-6">
             <span className="inline-block bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
@@ -357,7 +357,7 @@ export default function Vendas() {
           </div>
         </div>
 
-        {/* PERSONA — Ana Paula Ferreira */}
+        {/* PERSONA - Ana Paula Ferreira */}
         <div className="mb-10">
           <div className="text-center mb-6">
             <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
@@ -440,7 +440,7 @@ export default function Vendas() {
           </div>
         </div>
 
-        {/* URGENCIA — 37 cupos en el grupo */}
+        {/* URGENCIA - 37 cupos en el grupo */}
         <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 mb-8">
           <div className="flex items-start gap-3">
             <div className="text-2xl flex-shrink-0">🔴</div>

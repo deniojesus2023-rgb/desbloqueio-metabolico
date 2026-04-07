@@ -121,3 +121,10 @@
 - [x] Implementar seção "Quem criou isso" na VendasBR.tsx com história e avatar AP
 - [x] Implementar urgência real: barra de 37/100 vagas no grupo de suporte (BR e ES)
 - [x] Implementar mesma persona adaptada na Vendas.tsx (ES-LATAM)
+
+## Quiz 2.0 — Qualificação Profunda Mercado Americano
+- [ ] Varredura: BetterMe, Noom, ColonBroom, Ryan Levesque Ask Method
+- [ ] Estrutura: perguntas encadeadas com arco emocional de qualificação
+- [ ] Personalização: fluxo diferente por tipo de resposta (não só resultado)
+- [ ] Implementar novo Quiz.tsx com 6-8 perguntas encadeadas
+- [ ] Tela de resultado ultra-personalizada por perfil

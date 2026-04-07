@@ -1,347 +1,470 @@
-export type QuizOption = {
+// Quiz Data v3.0 — Arco Emocional de Qualificação Profunda
+// Framework: BetterMe + ColonBroom + Noom + Ryan Levesque Ask Method
+// Estrutura: Positivo → Neutro → Negativo → Alívio (7 perguntas)
+
+export type Language = 'pt' | 'es';
+
+export interface QuizOption {
+  id: string;
+  emoji: string;
   text: string;
-  feedback: string;
-  score?: number;
-};
-
-export type QuizQuestion = {
-  id: number;
-  question: string;
-  options: QuizOption[];
-  highlight?: boolean;
-  progressLabel?: string;
-};
-
-export type BlockType = 1 | 2 | 3;
-
-// ─── VERSÃO PT-BR ───────────────────────────────────────────────────────────
-
-export const QUIZ_QUESTIONS_PT: QuizQuestion[] = [
-  {
-    id: 0,
-    question: "Se você pudesse acordar amanhã com apenas UM desses resultados, qual escolheria?",
-    progressLabel: "Vamos começar!",
-    options: [
-      { text: "Barriga chapada e desinchada", feedback: "Esse é exatamente o sintoma da Trava Metabólica. Vamos identificá-la.", score: 2 },
-      { text: "Energia de sobra e roupa mais folgada", feedback: "Perfeito. Energia baixa é um sinal claro de que o metabolismo está travado.", score: 1 },
-      { text: "O peso que eu tinha há 5 anos", feedback: "Entendido. Recuperar esse peso é possível quando desbloqueamos o metabolismo.", score: 3 },
-      { text: "Todos os anteriores", feedback: "Isso nos diz que a trava afeta múltiplos sistemas. Vamos continuar analisando.", score: 2 },
-    ],
-  },
-  {
-    id: 1,
-    question: "Você mora em qual região do Brasil?",
-    progressLabel: "Personalizando sua avaliação...",
-    options: [
-      { text: "Sul 🏔️", feedback: "Perfeito. Vamos adaptar o protocolo à sua cultura alimentar.", score: 0 },
-      { text: "Sudeste 🏙️", feedback: "Perfeito. Vamos adaptar o protocolo à sua cultura alimentar.", score: 0 },
-      { text: "Nordeste ☀️", feedback: "Perfeito. Vamos adaptar o protocolo à sua cultura alimentar.", score: 0 },
-      { text: "Centro-Oeste 🌾", feedback: "Perfeito. Vamos adaptar o protocolo à sua cultura alimentar.", score: 0 },
-      { text: "Norte 🌿", feedback: "Perfeito. Vamos adaptar o protocolo à sua cultura alimentar.", score: 0 },
-    ],
-  },
-  {
-    id: 2,
-    question: "Qual dessas situações frustrantes acontece mais com você?",
-    progressLabel: "Você está no caminho certo...",
-    options: [
-      { text: "Faço dieta a semana toda, mas 'estrago tudo' no fim de semana", feedback: "Isso é o ciclo restrição-compulsão. Um sinal claro da Trava Tipo 2.", score: 2 },
-      { text: "Perco alguns quilos, mas o peso estagna e recupero tudo", feedback: "O efeito sanfona é a resposta do corpo ao 'modo sobrevivência'. Vamos reverter isso.", score: 2 },
-      { text: "Parece que, mesmo comendo pouco, meu corpo 'segura' a gordura na barriga", feedback: "Exatamente. Isso é a Trava Metabólica do Estresse Crônico agindo em tempo real.", score: 3 },
-      { text: "Tenho ataques incontroláveis de vontade de comer doce à noite", feedback: "A vontade de doce à noite é um sinal hormonal, não falta de força de vontade. Trava Tipo 3.", score: 3 },
-    ],
-  },
-  {
-    id: 3,
-    question: "Você sente que o seu problema NÃO é falta de força de vontade, mas que o seu corpo simplesmente parou de responder às dietas tradicionais?",
-    highlight: true,
-    progressLabel: "Essa é a pergunta-chave...",
-    options: [
-      { text: "Sim, é exatamente isso que eu sinto!", feedback: "Isso confirma o diagnóstico. Seu corpo tem uma trava real, não um problema de atitude.", score: 3 },
-      { text: "Às vezes acho que a culpa é minha", feedback: "Não é sua culpa. A ciência confirma que o corpo bloqueia ativamente a queima de gordura.", score: 2 },
-      { text: "Não, simplesmente não consigo seguir dietas", feedback: "Isso também é um sinal. O corpo sabota as dietas quando está em modo sobrevivência.", score: 1 },
-    ],
-  },
-  {
-    id: 4,
-    question: "A ciência comprova que o estresse bloqueia a queima de gordura. Como está seu nível de estresse e ansiedade nos últimos meses?",
-    progressLabel: "Analisando seu perfil hormonal...",
-    options: [
-      { text: "Muito alto (sempre no limite)", feedback: "O cortisol elevado é o principal ativador da Trava Tipo 1. Dado importante.", score: 3 },
-      { text: "Alto (muitas preocupações diárias)", feedback: "O estresse crônico mantém o cortisol elevado e bloqueia a queima de gordura abdominal.", score: 2 },
-      { text: "Médio (consigo controlar na maior parte do tempo)", feedback: "Bom. O estresse moderado pode ser manejado com o protocolo de desbloqueio.", score: 1 },
-      { text: "Baixo (estou tranquila)", feedback: "Perfeito. Isso descarta a Trava Tipo 1 e nos foca nos outros fatores.", score: 0 },
-    ],
-  },
-  {
-    id: 5,
-    question: "Qual dessas opções seria um pesadelo abandonar para sempre?",
-    progressLabel: "Quase na metade...",
-    options: [
-      { text: "Arroz com feijão, pão e carboidratos em geral", feedback: "Você não vai precisar abandoná-los. O protocolo permite comê-los sem acumular gordura.", score: 2 },
-      { text: "Meus pratos favoritos (churrasco, feijoada, pão de queijo, etc.)", feedback: "Esses pratos fazem parte da sua identidade. O protocolo foi feito para que você os aproveite.", score: 2 },
-      { text: "Aquele docinho depois do almoço ou à noite", feedback: "A vontade de doce é um sinal hormonal da Trava Tipo 3. Vamos resolver isso.", score: 3 },
-      { text: "Não conseguiria abandonar nenhum deles", feedback: "Perfeito. Você não vai precisar. O protocolo trabalha com o seu estilo de vida, não contra ele.", score: 2 },
-    ],
-  },
-  {
-    id: 6,
-    question: "Se a ciência comprovasse que tentar 'comer menos' é exatamente o que faz o seu corpo estocar gordura, você estaria disposta a tentar uma abordagem completamente diferente?",
-    progressLabel: "Mais da metade! Continue assim...",
-    options: [
-      { text: "Com certeza, estou cansada de passar fome", feedback: "Essa disposição é tudo que você precisa. O protocolo faz o resto.", score: 3 },
-      { text: "Depende do que eu teria que fazer", feedback: "Justo. São apenas 3 minutos antes das refeições. Só isso.", score: 2 },
-      { text: "Não, acho que só comendo menos se perde peso", feedback: "Entendemos. Os próximos resultados podem mudar essa perspectiva.", score: 1 },
-    ],
-  },
-  {
-    id: 7,
-    question: "Se você descobrisse um truque simples de 3 minutos para fazer ANTES das refeições, que te permite comer seus pratos favoritos sem acumular gordura, você conseguiria fazer isso todo dia?",
-    highlight: true,
-    progressLabel: "Excelente! Quase terminando...",
-    options: [
-      { text: "Sim, 3 minutos é muito fácil!", feedback: "Perfeito. A consistência é o único requisito do protocolo.", score: 3 },
-      { text: "Talvez, se eu me lembrar", feedback: "Vamos te dar um lembrete visual simples para que nunca esqueça.", score: 2 },
-      { text: "Não, não tenho tempo nem para isso", feedback: "Entendemos. Mas 3 minutos é menos que preparar um café. Vale a pena tentar.", score: 1 },
-    ],
-  },
-  {
-    id: 8,
-    question: "Se esse truque funcionasse para você, em quanto tempo gostaria de ver a balança baixar?",
-    progressLabel: "Quase pronto...",
-    options: [
-      { text: "Nos primeiros 7 dias (quero ver rápido para me motivar)", feedback: "Muitas pessoas sentem a barriga mais desinchada já na primeira semana.", score: 3 },
-      { text: "Nas primeiras 2 semanas", feedback: "Esse é um prazo muito realista com o protocolo de desbloqueio.", score: 2 },
-      { text: "No primeiro mês", feedback: "Perfeito. Com consistência, os resultados no primeiro mês são notáveis.", score: 2 },
-      { text: "Não me importo com o tempo, desde que o resultado seja definitivo", feedback: "Essa mentalidade é a mais poderosa. Os resultados definitivos vêm com o desbloqueio real.", score: 3 },
-    ],
-  },
-  {
-    id: 9,
-    question: "Quanto você já gastou em dietas, nutricionistas, suplementos ou chás que não deram resultado permanente?",
-    progressLabel: "Último passo!",
-    options: [
-      { text: "Mais de R$ 1.000", feedback: "Isso confirma que o problema não era o esforço, mas a abordagem. Vamos mudar isso.", score: 3 },
-      { text: "Entre R$ 300 e R$ 1.000", feedback: "Esse dinheiro não foi em vão — te ensinou o que não funciona. Agora veremos o que funciona.", score: 2 },
-      { text: "Menos de R$ 300", feedback: "Bom. Isso significa que ainda não encontrou a abordagem certa. Hoje isso muda.", score: 1 },
-      { text: "Nunca gastei, só tentei sozinha", feedback: "Isso exige ainda mais coragem. E o protocolo foi feito para funcionar sem ajuda externa.", score: 1 },
-    ],
-  },
-];
-
-export const PROGRESS_LABELS_PT: Record<number, string> = {
-  0: "Vamos começar!",
-  10: "Você está no caminho certo...",
-  20: "Personalizando sua avaliação...",
-  30: "Analisando seu perfil hormonal...",
-  40: "Quase na metade...",
-  50: "Mais da metade! Continue assim...",
-  60: "Identificando sua trava principal...",
-  70: "Excelente! Quase terminando...",
-  80: "Quase pronto...",
-  90: "Último passo!",
-  100: "Análise concluída!",
-};
-
-// ─── VERSÃO ES (LATAM) ───────────────────────────────────────────────────────
-
-export const QUIZ_QUESTIONS: QuizQuestion[] = [
-  {
-    id: 0,
-    question: "Si pudieras despertar mañana con solo UNO de estos resultados, ¿cuál elegirías?",
-    progressLabel: "¡Empecemos!",
-    options: [
-      { text: "Un vientre plano y desinflado", feedback: "Ese es exactamente el síntoma del Bloqueo Metabólico. Vamos a identificarlo.", score: 2 },
-      { text: "Energía de sobra y ropa más holgada", feedback: "Perfecto. La energía baja es una señal clara de que el metabolismo está bloqueado.", score: 1 },
-      { text: "El peso que tenía hace 5 años", feedback: "Entendido. Recuperar ese peso es posible cuando desbloqueamos el metabolismo.", score: 3 },
-      { text: "Todos los anteriores", feedback: "Eso nos dice que el bloqueo afecta múltiples sistemas. Sigamos analizando.", score: 2 },
-    ],
-  },
-  {
-    id: 1,
-    question: "¿A qué país perteneces?",
-    progressLabel: "Personalizando tu evaluación...",
-    options: [
-      { text: "México 🇲🇽", feedback: "Perfecto. Adaptaremos el protocolo a tu cultura alimentaria.", score: 0 },
-      { text: "Colombia 🇨🇴", feedback: "Perfecto. Adaptaremos el protocolo a tu cultura alimentaria.", score: 0 },
-      { text: "Argentina 🇦🇷", feedback: "Perfecto. Adaptaremos el protocolo a tu cultura alimentaria.", score: 0 },
-      { text: "Chile 🇨🇱", feedback: "Perfecto. Adaptaremos el protocolo a tu cultura alimentaria.", score: 0 },
-      { text: "Perú 🇵🇪", feedback: "Perfecto. Adaptaremos el protocolo a tu cultura alimentaria.", score: 0 },
-      { text: "Otro país de Latinoamérica 🌎", feedback: "Perfecto. Adaptaremos el protocolo a tu cultura alimentaria.", score: 0 },
-    ],
-  },
-  {
-    id: 2,
-    question: "¿Cuál de estas situaciones frustrantes te pasa más seguido?",
-    progressLabel: "Vas por buen camino...",
-    options: [
-      { text: "Hago dieta toda la semana, pero lo 'arruino' todo el fin de semana", feedback: "Eso es el ciclo de restricción-atracón. Una señal clara del Bloqueo Tipo 2.", score: 2 },
-      { text: "Pierdo algunos kilos, pero el peso se estanca y recupero todo", feedback: "El efecto rebote es la respuesta del cuerpo al 'modo supervivencia'. Lo vamos a revertir.", score: 2 },
-      { text: "Parece que, aunque coma poco, mi cuerpo 'retiene' la grasa en el abdomen", feedback: "Exactamente. Eso es el Síndrome de Supervivencia Celular actuando en tiempo real.", score: 3 },
-      { text: "Tengo ataques incontrolables de ganas de comer dulce por las noches", feedback: "Los antojos nocturnos son una señal hormonal, no de falta de voluntad. Bloqueo Tipo 3.", score: 3 },
-    ],
-  },
-  {
-    id: 3,
-    question: "¿Sientes que tu problema NO es falta de fuerza de voluntad, sino que tu cuerpo simplemente dejó de responder a las dietas tradicionales?",
-    highlight: true,
-    progressLabel: "Esta es la pregunta clave...",
-    options: [
-      { text: "¡Sí, eso es exactamente lo que siento!", feedback: "Eso confirma el diagnóstico. Tu cuerpo tiene un bloqueo real, no un problema de actitud.", score: 3 },
-      { text: "A veces creo que la culpa es mía", feedback: "No es tu culpa. La ciencia confirma que el cuerpo bloquea la quema de grasa activamente.", score: 2 },
-      { text: "No, simplemente no puedo seguir dietas", feedback: "Eso también es una señal. El cuerpo sabotea las dietas cuando está en modo supervivencia.", score: 1 },
-    ],
-  },
-  {
-    id: 4,
-    question: "La ciencia demuestra que el estrés bloquea la quema de grasa. ¿Cómo está tu nivel de estrés y ansiedad en los últimos meses?",
-    progressLabel: "Analizando tu perfil hormonal...",
-    options: [
-      { text: "Muy alto (siempre al límite)", feedback: "El cortisol elevado es el principal activador del Bloqueo Tipo 1. Dato importante.", score: 3 },
-      { text: "Alto (muchas preocupaciones diarias)", feedback: "El estrés crónico mantiene el cortisol elevado y bloquea la quema de grasa abdominal.", score: 2 },
-      { text: "Medio (puedo controlar la mayor parte del tiempo)", feedback: "Bien. El estrés moderado puede ser manejado con el protocolo de desbloqueo.", score: 1 },
-      { text: "Bajo (estoy tranquila)", feedback: "Perfecto. Eso descarta el Bloqueo Tipo 1 y nos enfoca en los otros factores.", score: 0 },
-    ],
-  },
-  {
-    id: 5,
-    question: "¿Cuál de estas opciones sería una pesadilla abandonar para siempre?",
-    progressLabel: "Casi a la mitad...",
-    options: [
-      { text: "Pastas, panes y carbohidratos en general", feedback: "No tendrás que abandonarlos. El protocolo te permite comerlos sin acumular grasa.", score: 2 },
-      { text: "Mis platos típicos favoritos (tacos, empanadas, arepas, etc.)", feedback: "Esos platos son parte de tu identidad. El protocolo fue diseñado para que los disfrutes.", score: 2 },
-      { text: "Ese dulcecito después del almuerzo o por las noches", feedback: "El antojo de dulce es una señal hormonal del Bloqueo Tipo 3. Lo vamos a resolver.", score: 3 },
-      { text: "No podría abandonar ninguno de ellos", feedback: "Perfecto. No tendrás que hacerlo. El protocolo trabaja con tu estilo de vida, no contra él.", score: 2 },
-    ],
-  },
-  {
-    id: 6,
-    question: "Si la ciencia comprobara que intentar 'comer menos' es exactamente lo que hace que tu cuerpo almacene grasa, ¿estarías dispuesta a probar un enfoque totalmente diferente?",
-    progressLabel: "¡Más de la mitad! Sigue así...",
-    options: [
-      { text: "Por supuesto, estoy cansada de pasar hambre", feedback: "Esa disposición es todo lo que necesitas. El protocolo hace el resto.", score: 3 },
-      { text: "Depende de lo que tenga que hacer", feedback: "Justo. Son solo 3 minutos antes de las comidas. Eso es todo.", score: 2 },
-      { text: "No, creo que solo comiendo menos se pierde peso", feedback: "Entendemos. Los próximos resultados pueden cambiar esa perspectiva.", score: 1 },
-    ],
-  },
-  {
-    id: 7,
-    question: "Si descubrieras un truco simple de 3 minutos para hacer ANTES de las comidas, que te permite comer tus platos favoritos sin acumular grasa, ¿podrías hacerlo todos los días?",
-    highlight: true,
-    progressLabel: "¡Excelente! Ya casi terminamos...",
-    options: [
-      { text: "¡Sí, 3 minutos es muy fácil!", feedback: "Perfecto. La consistencia es el único requisito del protocolo.", score: 3 },
-      { text: "Tal vez, si me acuerdo", feedback: "Te daremos un recordatorio visual simple para que nunca lo olvides.", score: 2 },
-      { text: "No, no tengo tiempo ni para eso", feedback: "Entendemos. Pero 3 minutos es menos que preparar un café. Vale la pena intentarlo.", score: 1 },
-    ],
-  },
-  {
-    id: 8,
-    question: "Si este truco funcionara para ti, ¿en cuánto tiempo te gustaría ver la balanza bajar?",
-    progressLabel: "Casi listo...",
-    options: [
-      { text: "En los primeros 7 días (quiero ver rápido para motivarme)", feedback: "Muchas personas sienten el abdomen más desinflado ya en la primera semana.", score: 3 },
-      { text: "En las primeras 2 semanas", feedback: "Ese es un plazo muy realista con el protocolo de desbloqueo.", score: 2 },
-      { text: "En el primer mes", feedback: "Perfecto. Con consistencia, los resultados en el primer mes son notables.", score: 2 },
-      { text: "No me importa el tiempo, mientras el resultado sea definitivo", feedback: "Esa mentalidad es la más poderosa. Los resultados definitivos vienen con el desbloqueo real.", score: 3 },
-    ],
-  },
-  {
-    id: 9,
-    question: "¿Cuánto has gastado en dietas, nutricionistas, suplementos o tés que no dieron resultados permanentes?",
-    progressLabel: "¡Último paso!",
-    options: [
-      { text: "Más de $500 dólares", feedback: "Eso confirma que el problema no era el esfuerzo, sino el enfoque. Vamos a cambiarlo.", score: 3 },
-      { text: "Entre $100 y $500 dólares", feedback: "Ese dinero no fue en vano — te enseñó lo que no funciona. Ahora veremos lo que sí.", score: 2 },
-      { text: "Menos de $100 dólares", feedback: "Bien. Eso significa que aún no encontraste el enfoque correcto. Hoy cambia eso.", score: 1 },
-      { text: "Nunca gasté, solo lo intento sola", feedback: "Eso requiere aún más valentía. Y el protocolo fue diseñado para funcionar sin ayuda externa.", score: 1 },
-    ],
-  },
-];
-
-export const PROGRESS_LABELS: Record<number, string> = {
-  0: "¡Empecemos!",
-  10: "Vas por buen camino...",
-  20: "Personalizando tu evaluación...",
-  30: "Analizando tu perfil hormonal...",
-  40: "Casi a la mitad...",
-  50: "¡Más de la mitad! Sigue así...",
-  60: "Identificando tu bloqueo principal...",
-  70: "¡Excelente! Ya casi terminamos...",
-  80: "Casi listo...",
-  90: "¡Último paso!",
-  100: "¡Análisis completado!",
-};
-
-// ─── FUNÇÃO DE CÁLCULO DO TIPO DE BLOQUEIO ───────────────────────────────────
-
-export function calculateBlockType(answers: { questionIndex: number; answerIndex: number }[]): BlockType {
-  let stressScore = 0;
-  let restrictScore = 0;
-  let emotionalScore = 0;
-
-  answers.forEach(({ questionIndex, answerIndex }) => {
-    const questions = answers.length > 0 ? QUIZ_QUESTIONS : QUIZ_QUESTIONS_PT;
-    const q = questions[questionIndex];
-    if (!q) return;
-    const opt = q.options[answerIndex];
-    if (!opt) return;
-
-    if (questionIndex === 4) {
-      stressScore += (opt.score ?? 0) * 2;
-    } else if (questionIndex === 2) {
-      if (answerIndex === 0 || answerIndex === 1) restrictScore += 3;
-      if (answerIndex === 2) restrictScore += 2;
-      if (answerIndex === 3) emotionalScore += 3;
-    } else if (questionIndex === 5) {
-      if (answerIndex === 2) emotionalScore += 3;
-      else restrictScore += (opt.score ?? 0);
-    } else {
-      const score = opt.score ?? 0;
-      stressScore += score * 0.3;
-      restrictScore += score * 0.4;
-      emotionalScore += score * 0.3;
-    }
-  });
-
-  if (stressScore >= restrictScore && stressScore >= emotionalScore) return 1;
-  if (emotionalScore >= restrictScore) return 3;
-  return 2;
+  blockType?: 'cortisol' | 'insulina' | 'hormonal';
 }
 
-export function calculateBlockTypeForLang(
-  answers: { questionIndex: number; answerIndex: number }[],
-  lang: "pt" | "es"
-): BlockType {
-  const questions = lang === "pt" ? QUIZ_QUESTIONS_PT : QUIZ_QUESTIONS;
-  let stressScore = 0;
-  let restrictScore = 0;
-  let emotionalScore = 0;
+export interface QuizQuestion {
+  id: string;
+  phase: 'positive' | 'neutral' | 'negative' | 'relief';
+  multiple?: boolean;
+  question: string;
+  subtitle?: string;
+  options: QuizOption[];
+  dynamicByAnswer?: {
+    questionId: string;
+    variants: Record<string, QuizOption[]>;
+    defaultOptions: QuizOption[];
+  };
+}
 
-  answers.forEach(({ questionIndex, answerIndex }) => {
-    const q = questions[questionIndex];
-    if (!q) return;
-    const opt = q.options[answerIndex];
-    if (!opt) return;
+export interface BlockProfile {
+  type: 'cortisol' | 'insulina' | 'hormonal';
+  name: string;
+  badge: string;
+  color: string;
+  blockPercentage: number;
+  mechanism: string;
+  absolution: string;
+  insights: string[];
+}
 
-    if (questionIndex === 4) {
-      stressScore += (opt.score ?? 0) * 2;
-    } else if (questionIndex === 2) {
-      if (answerIndex === 0 || answerIndex === 1) restrictScore += 3;
-      if (answerIndex === 2) restrictScore += 2;
-      if (answerIndex === 3) emotionalScore += 3;
-    } else if (questionIndex === 5) {
-      if (answerIndex === 2) emotionalScore += 3;
-      else restrictScore += (opt.score ?? 0);
-    } else {
-      const score = opt.score ?? 0;
-      stressScore += score * 0.3;
-      restrictScore += score * 0.4;
-      emotionalScore += score * 0.3;
-    }
-  });
+// ─── PERGUNTAS PT-BR ──────────────────────────────────────────────────────────
 
-  if (stressScore >= restrictScore && stressScore >= emotionalScore) return 1;
-  if (emotionalScore >= restrictScore) return 3;
-  return 2;
+export const quizQuestionsPT: QuizQuestion[] = [
+  {
+    id: 'q1_identity',
+    phase: 'positive',
+    question: 'Esse ano, eu sou alguém que...',
+    subtitle: 'Escolha a opção que mais combina com você',
+    options: [
+      { id: 'a', emoji: '🌟', text: 'Finalmente vai descobrir o que está impedindo meu corpo de emagrecer' },
+      { id: 'b', emoji: '💪', text: 'Está pronta para entender meu metabolismo de verdade' },
+      { id: 'c', emoji: '🔥', text: 'Merece acordar com energia e se sentir bem no próprio corpo' },
+      { id: 'd', emoji: '🎯', text: 'Vai encontrar uma solução que funcione para o MEU corpo, não para qualquer um' },
+    ],
+  },
+  {
+    id: 'q2_commitment',
+    phase: 'positive',
+    question: 'Quando penso em emagrecer, eu me sinto...',
+    subtitle: 'Seja honesta — todas as respostas são válidas',
+    options: [
+      { id: 'a', emoji: '🌱', text: 'Determinada a encontrar o que realmente funciona para mim' },
+      { id: 'b', emoji: '🔍', text: 'Curiosa para entender por que meu corpo reage diferente do que esperava' },
+      { id: 'c', emoji: '💡', text: 'Pronta para tentar uma abordagem diferente de tudo que já tentei' },
+      { id: 'd', emoji: '⚡', text: 'Motivada, mas preciso de direção — não quero errar de novo' },
+    ],
+  },
+  {
+    id: 'q3_situation',
+    phase: 'neutral',
+    question: 'Nos últimos 6 meses, meu peso...',
+    subtitle: 'Isso nos ajuda a identificar seu tipo de bloqueio',
+    options: [
+      { id: 'a', emoji: '📈', text: 'Aumentou mesmo sem comer mais do que antes', blockType: 'cortisol' },
+      { id: 'b', emoji: '🔄', text: 'Fica subindo e descendo — perco e recupero sempre', blockType: 'hormonal' },
+      { id: 'c', emoji: '🧱', text: 'Travou completamente — não sobe, mas também não desce', blockType: 'insulina' },
+      { id: 'd', emoji: '😔', text: 'Continua igual mesmo quando faço dieta e exercício', blockType: 'insulina' },
+    ],
+  },
+  {
+    id: 'q4_attempts',
+    phase: 'neutral',
+    question: 'Já tentei emagrecer com...',
+    subtitle: 'Pode marcar mais de uma opção',
+    multiple: true,
+    options: [
+      { id: 'a', emoji: '🥗', text: 'Dietas restritivas (low carb, cetogênica, etc.)' },
+      { id: 'b', emoji: '🏃', text: 'Academia e exercícios intensos' },
+      { id: 'c', emoji: '💊', text: 'Remédios ou suplementos para emagrecer' },
+      { id: 'd', emoji: '🍵', text: 'Chás, detox e produtos naturais' },
+      { id: 'e', emoji: '📱', text: 'Apps de contagem de calorias' },
+      { id: 'f', emoji: '🩺', text: 'Acompanhamento médico ou nutricional' },
+    ],
+  },
+  {
+    id: 'q5_frustration',
+    phase: 'negative',
+    question: 'O que mais me frustra é...',
+    subtitle: 'Escolha o que mais ressoa com você',
+    options: [],
+    dynamicByAnswer: {
+      questionId: 'q3_situation',
+      variants: {
+        a: [
+          { id: 'a', emoji: '😤', text: 'Fazer tudo certo e não ver resultado nenhum' },
+          { id: 'b', emoji: '😞', text: 'Sentir que meu corpo está trabalhando contra mim' },
+          { id: 'c', emoji: '😢', text: 'Olhar no espelho e não me reconhecer mais' },
+          { id: 'd', emoji: '🤯', text: 'Não entender o que está acontecendo com meu metabolismo' },
+        ],
+        b: [
+          { id: 'a', emoji: '😤', text: 'Perder peso e recuperar tudo de volta em semanas' },
+          { id: 'b', emoji: '😞', text: 'Não conseguir manter o resultado que conquistei com tanto esforço' },
+          { id: 'c', emoji: '😢', text: 'Sentir que nunca vou conseguir estabilizar meu peso de vez' },
+          { id: 'd', emoji: '🤯', text: 'Ficar presa nesse ciclo de perder e ganhar sem fim' },
+        ],
+        c: [
+          { id: 'a', emoji: '😤', text: 'Meu corpo parou de responder — parece que nada funciona mais' },
+          { id: 'b', emoji: '😞', text: 'Fazer dieta, malhar e a balança não mover um grama' },
+          { id: 'c', emoji: '😢', text: 'Sentir que meu metabolismo está quebrado e não tem conserto' },
+          { id: 'd', emoji: '🤯', text: 'Cada vez precisar de mais esforço para manter o mesmo resultado' },
+        ],
+        d: [
+          { id: 'a', emoji: '😤', text: 'Comer menos que todo mundo e engordar mais' },
+          { id: 'b', emoji: '😞', text: 'Ver outras pessoas emagrecerem fazendo menos do que eu' },
+          { id: 'c', emoji: '😢', text: 'Sentir que meu corpo é diferente e as soluções normais não são para mim' },
+          { id: 'd', emoji: '🤯', text: 'Seguir todas as regras e não ver nenhuma diferença' },
+        ],
+      },
+      defaultOptions: [
+        { id: 'a', emoji: '😤', text: 'Fazer tudo certo e não ver resultado nenhum' },
+        { id: 'b', emoji: '😞', text: 'Sentir que meu corpo está trabalhando contra mim' },
+        { id: 'c', emoji: '😢', text: 'Olhar no espelho e não me reconhecer mais' },
+        { id: 'd', emoji: '🤯', text: 'Não entender o que está acontecendo com meu metabolismo' },
+      ],
+    },
+  },
+  {
+    id: 'q6_impact',
+    phase: 'negative',
+    question: 'Isso está afetando minha vida porque...',
+    subtitle: 'Pode marcar mais de uma opção',
+    multiple: true,
+    options: [
+      { id: 'a', emoji: '👗', text: 'Evito sair, usar certas roupas ou aparecer em fotos' },
+      { id: 'b', emoji: '😴', text: 'Me sinto cansada o tempo todo, sem energia para o que importa' },
+      { id: 'c', emoji: '💔', text: 'Afeta minha autoestima e como me sinto nas relações' },
+      { id: 'd', emoji: '🏥', text: 'Estou preocupada com minha saúde a longo prazo' },
+      { id: 'e', emoji: '😔', text: 'Sinto que perdi o controle do meu próprio corpo' },
+    ],
+  },
+  {
+    id: 'q7_desire',
+    phase: 'relief',
+    question: 'O que eu realmente quero é...',
+    subtitle: 'Escolha o que mais representa seu desejo',
+    options: [
+      { id: 'a', emoji: '✨', text: 'Entender por que meu corpo não responde e ter uma solução personalizada' },
+      { id: 'b', emoji: '🎯', text: 'Uma abordagem que funcione para o MEU tipo de metabolismo, não uma dieta genérica' },
+      { id: 'c', emoji: '🌅', text: 'Me sentir leve, com energia e bem no meu corpo — sem passar fome' },
+      { id: 'd', emoji: '🔓', text: 'Destravar o que está bloqueando meu metabolismo de uma vez por todas' },
+    ],
+  },
+];
+
+// ─── PERGUNTAS ES-LATAM ───────────────────────────────────────────────────────
+
+export const quizQuestionsES: QuizQuestion[] = [
+  {
+    id: 'q1_identity',
+    phase: 'positive',
+    question: 'Este año, soy alguien que...',
+    subtitle: 'Elige la opción que más te representa',
+    options: [
+      { id: 'a', emoji: '🌟', text: 'Por fin va a descubrir qué está impidiendo que mi cuerpo adelgace' },
+      { id: 'b', emoji: '💪', text: 'Está lista para entender mi metabolismo de verdad' },
+      { id: 'c', emoji: '🔥', text: 'Merece despertar con energía y sentirse bien en su propio cuerpo' },
+      { id: 'd', emoji: '🎯', text: 'Va a encontrar una solución que funcione para MI cuerpo, no para cualquiera' },
+    ],
+  },
+  {
+    id: 'q2_commitment',
+    phase: 'positive',
+    question: 'Cuando pienso en adelgazar, me siento...',
+    subtitle: 'Sé honesta — todas las respuestas son válidas',
+    options: [
+      { id: 'a', emoji: '🌱', text: 'Decidida a encontrar lo que realmente funciona para mí' },
+      { id: 'b', emoji: '🔍', text: 'Curiosa por entender por qué mi cuerpo reacciona diferente a lo esperado' },
+      { id: 'c', emoji: '💡', text: 'Lista para probar un enfoque diferente a todo lo que ya intenté' },
+      { id: 'd', emoji: '⚡', text: 'Motivada, pero necesito dirección — no quiero equivocarme otra vez' },
+    ],
+  },
+  {
+    id: 'q3_situation',
+    phase: 'neutral',
+    question: 'En los últimos 6 meses, mi peso...',
+    subtitle: 'Esto nos ayuda a identificar tu tipo de bloqueo',
+    options: [
+      { id: 'a', emoji: '📈', text: 'Aumentó aunque no como más que antes', blockType: 'cortisol' },
+      { id: 'b', emoji: '🔄', text: 'Sube y baja — pierdo y recupero siempre', blockType: 'hormonal' },
+      { id: 'c', emoji: '🧱', text: 'Se bloqueó completamente — no sube, pero tampoco baja', blockType: 'insulina' },
+      { id: 'd', emoji: '😔', text: 'Sigue igual aunque haga dieta y ejercicio', blockType: 'insulina' },
+    ],
+  },
+  {
+    id: 'q4_attempts',
+    phase: 'neutral',
+    question: 'Ya intenté adelgazar con...',
+    subtitle: 'Puedes marcar más de una opción',
+    multiple: true,
+    options: [
+      { id: 'a', emoji: '🥗', text: 'Dietas restrictivas (low carb, cetogénica, etc.)' },
+      { id: 'b', emoji: '🏃', text: 'Gimnasio y ejercicios intensos' },
+      { id: 'c', emoji: '💊', text: 'Medicamentos o suplementos para adelgazar' },
+      { id: 'd', emoji: '🍵', text: 'Tés, detox y productos naturales' },
+      { id: 'e', emoji: '📱', text: 'Apps de conteo de calorías' },
+      { id: 'f', emoji: '🩺', text: 'Seguimiento médico o nutricional' },
+    ],
+  },
+  {
+    id: 'q5_frustration',
+    phase: 'negative',
+    question: 'Lo que más me frustra es...',
+    subtitle: 'Elige lo que más resuena contigo',
+    options: [],
+    dynamicByAnswer: {
+      questionId: 'q3_situation',
+      variants: {
+        a: [
+          { id: 'a', emoji: '😤', text: 'Hacer todo bien y no ver ningún resultado' },
+          { id: 'b', emoji: '😞', text: 'Sentir que mi cuerpo trabaja en mi contra' },
+          { id: 'c', emoji: '😢', text: 'Mirarme al espejo y no reconocerme más' },
+          { id: 'd', emoji: '🤯', text: 'No entender qué está pasando con mi metabolismo' },
+        ],
+        b: [
+          { id: 'a', emoji: '😤', text: 'Perder peso y recuperarlo todo en semanas' },
+          { id: 'b', emoji: '😞', text: 'No poder mantener el resultado que logré con tanto esfuerzo' },
+          { id: 'c', emoji: '😢', text: 'Sentir que nunca voy a estabilizar mi peso definitivamente' },
+          { id: 'd', emoji: '🤯', text: 'Quedarme atrapada en este ciclo de perder y ganar sin fin' },
+        ],
+        c: [
+          { id: 'a', emoji: '😤', text: 'Mi cuerpo dejó de responder — parece que nada funciona más' },
+          { id: 'b', emoji: '😞', text: 'Hacer dieta, entrenar y la balanza no moverse ni un gramo' },
+          { id: 'c', emoji: '😢', text: 'Sentir que mi metabolismo está roto y no tiene arreglo' },
+          { id: 'd', emoji: '🤯', text: 'Cada vez necesitar más esfuerzo para mantener el mismo resultado' },
+        ],
+        d: [
+          { id: 'a', emoji: '😤', text: 'Comer menos que todos y engordar más' },
+          { id: 'b', emoji: '😞', text: 'Ver a otras personas adelgazar haciendo menos que yo' },
+          { id: 'c', emoji: '😢', text: 'Sentir que mi cuerpo es diferente y las soluciones normales no son para mí' },
+          { id: 'd', emoji: '🤯', text: 'Seguir todas las reglas y no ver ninguna diferencia' },
+        ],
+      },
+      defaultOptions: [
+        { id: 'a', emoji: '😤', text: 'Hacer todo bien y no ver ningún resultado' },
+        { id: 'b', emoji: '😞', text: 'Sentir que mi cuerpo trabaja en mi contra' },
+        { id: 'c', emoji: '😢', text: 'Mirarme al espejo y no reconocerme más' },
+        { id: 'd', emoji: '🤯', text: 'No entender qué está pasando con mi metabolismo' },
+      ],
+    },
+  },
+  {
+    id: 'q6_impact',
+    phase: 'negative',
+    question: 'Esto está afectando mi vida porque...',
+    subtitle: 'Puedes marcar más de una opción',
+    multiple: true,
+    options: [
+      { id: 'a', emoji: '👗', text: 'Evito salir, usar ciertas ropas o aparecer en fotos' },
+      { id: 'b', emoji: '😴', text: 'Me siento cansada todo el tiempo, sin energía para lo que importa' },
+      { id: 'c', emoji: '💔', text: 'Afecta mi autoestima y cómo me siento en mis relaciones' },
+      { id: 'd', emoji: '🏥', text: 'Estoy preocupada por mi salud a largo plazo' },
+      { id: 'e', emoji: '😔', text: 'Siento que perdí el control de mi propio cuerpo' },
+    ],
+  },
+  {
+    id: 'q7_desire',
+    phase: 'relief',
+    question: 'Lo que realmente quiero es...',
+    subtitle: 'Elige lo que más representa tu deseo',
+    options: [
+      { id: 'a', emoji: '✨', text: 'Entender por qué mi cuerpo no responde y tener una solución personalizada' },
+      { id: 'b', emoji: '🎯', text: 'Un enfoque que funcione para MI tipo de metabolismo, no una dieta genérica' },
+      { id: 'c', emoji: '🌅', text: 'Sentirme liviana, con energía y bien en mi cuerpo — sin pasar hambre' },
+      { id: 'd', emoji: '🔓', text: 'Desbloquear lo que está bloqueando mi metabolismo de una vez por todas' },
+    ],
+  },
+];
+
+// ─── PERFIS DE RESULTADO PT-BR ────────────────────────────────────────────────
+
+export const blockProfilesPT: Record<string, BlockProfile> = {
+  cortisol: {
+    type: 'cortisol',
+    name: 'Bloqueio de Cortisol',
+    badge: 'Tipo 1 — Trava do Estresse',
+    color: '#E53E3E',
+    blockPercentage: 73,
+    mechanism: 'Cortisol Elevado',
+    absolution: 'Seus padrões indicam que o estresse crônico está elevando seu cortisol — o hormônio que literalmente ordena ao seu corpo para guardar gordura na barriga. Não é falta de força de vontade. É bioquímica. E tem solução.',
+    insights: [
+      'Seu corpo está em modo de sobrevivência — não de emagrecimento',
+      'As dietas restritivas que você tentou provavelmente aumentaram seu cortisol',
+      'O protocolo correto para o SEU tipo age em 3 minutos por dia',
+    ],
+  },
+  insulina: {
+    type: 'insulina',
+    name: 'Bloqueio de Insulina',
+    badge: 'Tipo 2 — Trava Metabólica',
+    color: '#2B6CB0',
+    blockPercentage: 68,
+    mechanism: 'Resistência à Insulina',
+    absolution: 'Seus padrões mostram resistência à insulina — seu corpo está produzindo insulina em excesso, o que bloqueia a queima de gordura mesmo quando você come pouco. Não é sua culpa. É uma resposta metabólica. E tem solução.',
+    insights: [
+      'Contar calorias não funciona para o seu tipo de bloqueio',
+      'Seu metabolismo está travado em modo de armazenamento',
+      'O protocolo correto para o SEU tipo reativa a queima em dias',
+    ],
+  },
+  hormonal: {
+    type: 'hormonal',
+    name: 'Bloqueio Hormonal',
+    badge: 'Tipo 3 — Trava Hormonal',
+    color: '#6B46C1',
+    blockPercentage: 71,
+    mechanism: 'Desequilíbrio Hormonal',
+    absolution: 'Seus padrões indicam desequilíbrio hormonal — estrogênio, progesterona e cortisol fora de sincronia, o que faz seu corpo reter gordura como mecanismo de proteção. Não é sua idade. É hormônio. E tem solução.',
+    insights: [
+      'O efeito sanfona é uma resposta hormonal, não falta de disciplina',
+      'Exercícios intensos podem estar piorando seu desequilíbrio',
+      'O protocolo correto para o SEU tipo reequilibra em semanas',
+    ],
+  },
+};
+
+// ─── PERFIS DE RESULTADO ES-LATAM ─────────────────────────────────────────────
+
+export const blockProfilesES: Record<string, BlockProfile> = {
+  cortisol: {
+    type: 'cortisol',
+    name: 'Bloqueo de Cortisol',
+    badge: 'Tipo 1 — Bloqueo del Estrés',
+    color: '#E53E3E',
+    blockPercentage: 73,
+    mechanism: 'Cortisol Elevado',
+    absolution: 'Tus patrones indican que el estrés crónico está elevando tu cortisol — la hormona que literalmente le ordena a tu cuerpo guardar grasa en el abdomen. No es falta de fuerza de voluntad. Es bioquímica. Y tiene solución.',
+    insights: [
+      'Tu cuerpo está en modo supervivencia — no en modo adelgazamiento',
+      'Las dietas restrictivas que intentaste probablemente aumentaron tu cortisol',
+      'El protocolo correcto para TU tipo actúa en 3 minutos al día',
+    ],
+  },
+  insulina: {
+    type: 'insulina',
+    name: 'Bloqueo de Insulina',
+    badge: 'Tipo 2 — Bloqueo Metabólico',
+    color: '#2B6CB0',
+    blockPercentage: 68,
+    mechanism: 'Resistencia a la Insulina',
+    absolution: 'Tus patrones muestran resistencia a la insulina — tu cuerpo está produciendo insulina en exceso, lo que bloquea la quema de grasa incluso cuando comes poco. No es tu culpa. Es una respuesta metabólica. Y tiene solución.',
+    insights: [
+      'Contar calorías no funciona para tu tipo de bloqueo',
+      'Tu metabolismo está bloqueado en modo almacenamiento',
+      'El protocolo correcto para TU tipo reactiva la quema en días',
+    ],
+  },
+  hormonal: {
+    type: 'hormonal',
+    name: 'Bloqueo Hormonal',
+    badge: 'Tipo 3 — Bloqueo Hormonal',
+    color: '#6B46C1',
+    blockPercentage: 71,
+    mechanism: 'Desequilibrio Hormonal',
+    absolution: 'Tus patrones indican desequilibrio hormonal — estrógeno, progesterona y cortisol fuera de sincronía, lo que hace que tu cuerpo retenga grasa como mecanismo de protección. No es tu edad. Son las hormonas. Y tiene solución.',
+    insights: [
+      'El efecto rebote es una respuesta hormonal, no falta de disciplina',
+      'Los ejercicios intensos pueden estar empeorando tu desequilibrio',
+      'El protocolo correcto para TU tipo reequilibra en semanas',
+    ],
+  },
+};
+
+// ─── TEXTOS DE INTERFACE PT-BR ────────────────────────────────────────────────
+
+export const uiTextsPT = {
+  startBadge: 'AVALIAÇÃO METABÓLICA GRATUITA',
+  startTitle: 'Descubra qual Bloqueio Metabólico está impedindo você de emagrecer',
+  startSubtitle: 'Mesmo comendo pouco e fazendo exercício.',
+  startBenefits: ['Sem dietas restritivas', 'Sem passar fome', 'Só 3 minutos por dia'],
+  startStats: [
+    { value: '47.000+', label: 'Perfis analisados' },
+    { value: '89%', label: 'Identificam o bloqueio' },
+    { value: '< 3 min', label: 'Para completar' },
+  ],
+  startCta: 'Iniciar Avaliação Gratuita',
+  startTrust: '🔒 Seus dados estão seguros. Sem spam.',
+  progressLabel: (current: number, total: number) => `Pergunta ${current} de ${total}`,
+  multipleHint: 'Pode selecionar mais de uma opção',
+  nextButton: 'Próxima →',
+  continueButton: 'Continuar →',
+  phaseLabels: {
+    positive: 'Sobre você',
+    neutral: 'Seu histórico',
+    negative: 'Sua situação',
+    relief: 'Seu objetivo',
+  },
+  loadingTexts: [
+    'Analisando seu perfil metabólico...',
+    'Identificando padrões de bloqueio...',
+    'Cruzando com 47.000+ perfis similares...',
+    'Seu diagnóstico está pronto.',
+  ],
+  resultTitle: 'Seu Diagnóstico:',
+  resultBlockLabel: 'Nível de Bloqueio Metabólico',
+  resultInsightsTitle: 'O que isso significa para você:',
+  optinTitle: 'Receba seu protocolo personalizado de desbloqueio',
+  optinSubtitle: 'Baseado no seu diagnóstico, vamos enviar o protocolo exato para o seu tipo de bloqueio.',
+  optinNamePlaceholder: 'Seu nome',
+  optinEmailPlaceholder: 'Seu melhor e-mail',
+  optinCta: 'Quero meu protocolo gratuito →',
+  optinTrust: '🔒 Seus dados estão 100% seguros. Sem spam.',
+};
+
+// ─── TEXTOS DE INTERFACE ES-LATAM ─────────────────────────────────────────────
+
+export const uiTextsES = {
+  startBadge: 'EVALUACIÓN METABÓLICA GRATUITA',
+  startTitle: 'Descubre qué Bloqueo Metabólico te está impidiendo adelgazar',
+  startSubtitle: 'Aunque comas poco y hagas ejercicio.',
+  startBenefits: ['Sin dietas restrictivas', 'Sin pasar hambre', 'Solo 3 minutos al día'],
+  startStats: [
+    { value: '47.000+', label: 'Perfiles analizados' },
+    { value: '89%', label: 'Identifican el bloqueo' },
+    { value: '< 3 min', label: 'Para completar' },
+  ],
+  startCta: 'Iniciar Evaluación Gratuita',
+  startTrust: '🔒 Tus datos están seguros. Sin spam.',
+  progressLabel: (current: number, total: number) => `Pregunta ${current} de ${total}`,
+  multipleHint: 'Puedes seleccionar más de una opción',
+  nextButton: 'Siguiente →',
+  continueButton: 'Continuar →',
+  phaseLabels: {
+    positive: 'Sobre ti',
+    neutral: 'Tu historial',
+    negative: 'Tu situación',
+    relief: 'Tu objetivo',
+  },
+  loadingTexts: [
+    'Analizando tu perfil metabólico...',
+    'Identificando patrones de bloqueo...',
+    'Cruzando con 47.000+ perfiles similares...',
+    'Tu diagnóstico está listo.',
+  ],
+  resultTitle: 'Tu Diagnóstico:',
+  resultBlockLabel: 'Nivel de Bloqueo Metabólico',
+  resultInsightsTitle: 'Lo que esto significa para ti:',
+  optinTitle: 'Recibe tu protocolo personalizado de desbloqueo',
+  optinSubtitle: 'Basado en tu diagnóstico, te enviaremos el protocolo exacto para tu tipo de bloqueo.',
+  optinNamePlaceholder: 'Tu nombre',
+  optinEmailPlaceholder: 'Tu mejor email',
+  optinCta: 'Quiero mi protocolo gratuito →',
+  optinTrust: '🔒 Tus datos están 100% seguros. Sin spam.',
+};
+
+// ─── FUNÇÃO DE CÁLCULO DO TIPO DE BLOQUEIO ────────────────────────────────────
+
+export function calculateBlockType(answers: Record<string, string | string[]>): 'cortisol' | 'insulina' | 'hormonal' {
+  const q3 = answers['q3_situation'];
+  if (q3 === 'a') return 'cortisol';
+  if (q3 === 'b') return 'hormonal';
+  return 'insulina';
 }
