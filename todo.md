@@ -89,3 +89,15 @@
 - [x] Spinner de loading com duplo anel animado
 - [x] Inputs do opt-in com glassmorphism e focus verde
 - [x] Card do opt-in com backdrop-filter blur
+
+## Redesign Teal Mobile-First (referência app médico)
+- [x] Fundo branco/cinza claro (#F8FAFB) com cards brancos elevados
+- [x] Cor de destaque teal (#00BFA5 / #26C6DA) substituindo verde escuro
+- [x] Header teal sólido com logo branca e contador de progresso
+- [x] Barra de progresso teal com cantos arredondados
+- [x] Cards de opção com sombra suave, hover teal e ícone circular
+- [x] Tipografia escura (#1A1A2E) limpa e hierárquica
+- [x] Botão CTA teal arredondado (border-radius: 50px)
+- [x] Otimização mobile-first: padding, touch targets mínimos 48px
+- [x] Inputs com borda teal no focus e label flutuante
+- [x] Animação de seleção com checkmark teal

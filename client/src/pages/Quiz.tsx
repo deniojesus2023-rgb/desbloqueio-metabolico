@@ -5,8 +5,6 @@ import {
   QUIZ_QUESTIONS,
   QUIZ_QUESTIONS_PT,
   calculateBlockTypeForLang,
-  PROGRESS_LABELS,
-  PROGRESS_LABELS_PT,
 } from "@/quizData";
 
 type Phase = "landing" | "questions" | "optin" | "loading" | "done";
@@ -21,14 +19,16 @@ function detectLang(): Lang {
   return "es";
 }
 
-// Ícones por letra de opção
-const OPTION_ICONS = ["🎯", "⚡", "✨", "💪", "🌿", "🔥"];
-
 export default function Quiz() {
   const [lang] = useState<Lang>(() => detectLang());
   const [phase, setPhase] = useState<Phase>("landing");
   const [currentQ, setCurrentQ] = useState(0);
-  const [answers, setAnswers] = useState<{ questionIndex: number; questionText: string; answerIndex: number; answerText: string }[]>([]);
+  const [answers, setAnswers] = useState<{
+    questionIndex: number;
+    questionText: string;
+    answerIndex: number;
+    answerText: string;
+  }[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [feedbackText, setFeedbackText] = useState<string | null>(null);
@@ -36,11 +36,9 @@ export default function Quiz() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
-  const [slideDir, setSlideDir] = useState<"right" | "left">("right");
   const [, navigate] = useLocation();
 
   const questions = lang === "pt" ? QUIZ_QUESTIONS_PT : QUIZ_QUESTIONS;
-  const progressLabels = lang === "pt" ? PROGRESS_LABELS_PT : PROGRESS_LABELS;
 
   const startSession = trpc.quiz.startSession.useMutation();
   const saveAnswer = trpc.quiz.saveAnswer.useMutation();
@@ -50,60 +48,62 @@ export default function Quiz() {
     if (lang === "pt") {
       return {
         badge: "Avaliação Metabólica Gratuita",
-        headline: <>Descubra qual dos 3{" "}<span className="text-amber-400">"Bloqueios Metabólicos Silenciosos"</span>{" "}está impedindo você de perder a gordura abdominal</>,
-        sub: "Mesmo que você coma pouco e faça exercício.",
-        meta: "10 perguntas rápidas · Resultado personalizado · 100% grátis · Menos de 2 minutos",
-        stat1: "Perfis analisados",
-        stat2: "Identificam seu bloqueio",
-        stat3: "Para completar",
+        headline: "Descubra qual Bloqueio Metabólico está impedindo você de emagrecer",
+        headlineHighlight: "Bloqueio Metabólico",
+        sub: "Mesmo comendo pouco e fazendo exercício.",
+        meta: ["10 perguntas rápidas", "Resultado personalizado", "100% grátis"],
         bullet1: "Sem dietas restritivas",
         bullet2: "Sem passar fome",
         bullet3: "Só 3 minutos por dia",
-        startBtn: "Iniciar Avaliação Gratuita →",
+        startBtn: "Iniciar Avaliação Gratuita",
         starting: "Iniciando...",
-        privacy: "🔒 Seus dados estão seguros. Sem spam, nunca.",
-        keyQuestion: "Essa é a pergunta mais importante da avaliação.",
-        optinTitle: "Análise concluída!",
-        optinSub: "Identificamos seu Bloqueio Metabólico principal. Insira seus dados para receber seu diagnóstico personalizado e a solução exata para o seu perfil.",
+        privacy: "Seus dados estão seguros. Sem spam.",
+        keyQuestion: "Pergunta mais importante da avaliação",
+        optinTitle: "Análise Concluída!",
+        optinSub: "Identificamos seu Bloqueio Metabólico. Insira seus dados para receber o diagnóstico personalizado.",
         nameLabel: "Seu nome",
         namePlaceholder: "Como você se chama?",
         emailLabel: "Seu e-mail",
         emailPlaceholder: "email@exemplo.com",
-        submitBtn: "Ver meu diagnóstico personalizado →",
+        submitBtn: "Ver meu diagnóstico →",
         submitting: "Processando...",
         salesPath: "/vendas-br",
-        confidential: "Suas respostas são 100% confidenciais",
+        confidential: "Respostas 100% confidenciais",
         question: "Pergunta",
         of: "de",
+        stat1: { num: "45.000+", label: "Perfis analisados" },
+        stat2: { num: "87%", label: "Identificam o bloqueio" },
+        stat3: { num: "< 2 min", label: "Para completar" },
       };
     }
     return {
       badge: "Evaluación Metabólica Gratuita",
-      headline: <>Descubre cuál de los 3{" "}<span className="text-amber-400">"Bloqueos Metabólicos Silenciosos"</span>{" "}está impidiendo que pierdas la grasa abdominal</>,
-      sub: "Incluso si comes poco y haces ejercicio.",
-      meta: "10 preguntas rápidas · Resultado personalizado · 100% gratis · Menos de 2 minutos",
-      stat1: "Perfiles analizados",
-      stat2: "Identifican su bloqueo",
-      stat3: "Para completar",
+      headline: "Descubre cuál Bloqueo Metabólico te impide bajar de peso",
+      headlineHighlight: "Bloqueo Metabólico",
+      sub: "Incluso comiendo poco y haciendo ejercicio.",
+      meta: ["10 preguntas rápidas", "Resultado personalizado", "100% gratis"],
       bullet1: "Sin dietas restrictivas",
       bullet2: "Sin pasar hambre",
       bullet3: "Solo 3 minutos al día",
-      startBtn: "Iniciar Evaluación Gratuita →",
+      startBtn: "Iniciar Evaluación Gratuita",
       starting: "Iniciando...",
-      privacy: "🔒 Tus datos están seguros. No spam, nunca.",
-      keyQuestion: "Esta es la pregunta más importante de la evaluación.",
-      optinTitle: "¡Análisis completado!",
-      optinSub: "Identificamos tu Bloqueo Metabólico principal. Ingresa tus datos para recibir tu diagnóstico personalizado y la solución exacta para tu perfil.",
+      privacy: "Tus datos están seguros. Sin spam.",
+      keyQuestion: "Pregunta más importante de la evaluación",
+      optinTitle: "¡Análisis Completado!",
+      optinSub: "Identificamos tu Bloqueo Metabólico. Ingresa tus datos para recibir tu diagnóstico personalizado.",
       nameLabel: "Tu nombre",
       namePlaceholder: "¿Cómo te llamas?",
-      emailLabel: "Tu correo electrónico",
+      emailLabel: "Tu correo",
       emailPlaceholder: "correo@ejemplo.com",
-      submitBtn: "Ver mi diagnóstico personalizado →",
+      submitBtn: "Ver mi diagnóstico →",
       submitting: "Procesando...",
       salesPath: "/vendas",
-      confidential: "Tus respuestas son 100% confidenciales",
+      confidential: "Respuestas 100% confidenciales",
       question: "Pregunta",
       of: "de",
+      stat1: { num: "45.000+", label: "Perfiles analizados" },
+      stat2: { num: "87%", label: "Identifican el bloqueo" },
+      stat3: { num: "< 2 min", label: "Para completar" },
     };
   }, [lang]);
 
@@ -111,7 +111,6 @@ export default function Quiz() {
     const stressAnswer = answers.find(a => a.questionIndex === 4);
     const frustrationAnswer = answers.find(a => a.questionIndex === 2);
     const regionAnswer = answers.find(a => a.questionIndex === 1);
-
     if (lang === "pt") {
       return [
         "Analisando suas respostas...",
@@ -119,14 +118,14 @@ export default function Quiz() {
           ? "Detectando níveis elevados de cortisol..."
           : "Avaliando seu perfil hormonal...",
         frustrationAnswer
-          ? `Identificando seu padrão: "${frustrationAnswer.answerText.slice(0, 35)}..."`
+          ? `Identificando seu padrão metabólico...`
           : "Identificando seu padrão metabólico...",
         regionAnswer
-          ? `Cruzando com 45.000 perfis de mulheres ${regionAnswer.answerText.replace(/[^\w\s]/g, "").trim()}...`
+          ? `Cruzando com 45.000 perfis de mulheres...`
           : "Cruzando com 45.000 perfis metabólicos...",
         "Determinando seu Bloqueio Metabólico principal...",
-        "Ajustando o Protocolo de Desbloqueio para o seu perfil...",
-        "Seu diagnóstico está pronto! 🎯",
+        "Ajustando o Protocolo para o seu perfil...",
+        "Seu diagnóstico está pronto! ✓",
       ];
     }
     return [
@@ -134,15 +133,11 @@ export default function Quiz() {
       stressAnswer && stressAnswer.answerIndex <= 1
         ? "Detectando niveles elevados de cortisol..."
         : "Evaluando tu perfil hormonal...",
-      frustrationAnswer
-        ? `Identificando tu patrón: "${frustrationAnswer.answerText.slice(0, 35)}..."`
-        : "Identificando tu patrón metabólico...",
-      regionAnswer
-        ? `Cruzando con 45.000 perfiles de ${regionAnswer.answerText.replace(/[^\w\s]/g, "").trim()}...`
-        : "Cruzando con 45.000 perfiles metabólicos...",
+      "Identificando tu patrón metabólico...",
+      "Cruzando con 45.000 perfiles metabólicos...",
       "Determinando tu Bloqueo Metabólico principal...",
-      "Ajustando el Protocolo de Desbloqueo para tu perfil...",
-      "¡Tu diagnóstico está listo! 🎯",
+      "Ajustando el Protocolo para tu perfil...",
+      "¡Tu diagnóstico está listo! ✓",
     ];
   };
 
@@ -195,20 +190,18 @@ export default function Quiz() {
     if (sessionId) {
       await saveAnswer.mutateAsync({ sessionId, ...answer });
     }
-
     setAnswers(prev => [...prev, answer]);
 
     setTimeout(() => {
       setFeedbackText(null);
       setSelectedOption(null);
       setAnimating(false);
-      setSlideDir("right");
       if (currentQ < questions.length - 1) {
         setCurrentQ(prev => prev + 1);
       } else {
         setPhase("optin");
       }
-    }, 1200);
+    }, 1100);
   };
 
   const handleOptIn = async (e: React.FormEvent) => {
@@ -220,116 +213,103 @@ export default function Quiz() {
     setPhase("loading");
   };
 
-  const progress = phase === "questions"
-    ? Math.round(((currentQ) / questions.length) * 100)
-    : phase === "optin" ? 95 : phase === "loading" ? 100 : 0;
-
   const progressPercent = phase === "questions"
     ? Math.round(((currentQ + 1) / questions.length) * 100)
-    : phase === "optin" ? 95 : 0;
+    : phase === "optin" ? 95 : phase === "loading" ? 100 : 0;
 
   const loadingSteps = getLoadingSteps();
 
   return (
-    <div className="min-h-screen quiz-bg font-sans">
+    <div className="qz-root">
 
       {/* ===== HEADER ===== */}
-      <header className="quiz-header sticky top-0 z-20">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+      <header className="qz-header">
+        <div className="qz-header-inner">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo_desbloqueio_metabolico-XXWBHTmoyhnmkSeSUASCTv.webp"
             alt="Desbloqueio Metabólico"
-            className="h-8 object-contain brightness-0 invert"
+            className="h-7 object-contain brightness-0 invert"
           />
           {phase === "questions" && (
-            <div className="flex items-center gap-2">
-              <span className="quiz-step-badge">
-                {t.question} {currentQ + 1} {t.of} {questions.length}
-              </span>
-            </div>
+            <span className="qz-step-pill">
+              {t.question} {currentQ + 1}/{questions.length}
+            </span>
           )}
         </div>
 
-        {/* Barra de progresso */}
-        {(phase === "questions" || phase === "optin") && (
-          <div className="px-4 pb-3 max-w-2xl mx-auto w-full">
-            <div className="flex items-center justify-between mb-1.5">
-              <p className="text-xs text-emerald-300 font-medium">
-                {phase === "questions"
-                  ? (questions[currentQ].progressLabel || (lang === "pt" ? "Você está no caminho certo..." : "Vas por buen camino..."))
-                  : (lang === "pt" ? "Quase lá! Só mais um passo..." : "¡Casi listo! Solo un paso más...")
-                }
-              </p>
-              <span className="text-xs font-bold text-amber-400">{progressPercent}%</span>
-            </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+        {/* Progress bar */}
+        {(phase === "questions" || phase === "optin" || phase === "loading") && (
+          <div className="qz-progress-wrap">
+            <div className="qz-progress-track">
               <div
-                className="h-full quiz-progress-bar rounded-full transition-all duration-700 ease-out"
+                className="qz-progress-fill"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
+            <span className="qz-progress-pct">{progressPercent}%</span>
           </div>
         )}
       </header>
 
       {/* ===== LANDING ===== */}
       {phase === "landing" && (
-        <div className="max-w-2xl mx-auto px-4 py-10">
-
+        <div className="qz-page">
           {/* Badge */}
-          <div className="text-center mb-6">
-            <span className="quiz-badge">
-              <span className="quiz-badge-dot" />
+          <div className="qz-badge-wrap">
+            <span className="qz-badge">
+              <span className="qz-badge-dot" />
               {t.badge}
             </span>
           </div>
 
-          {/* Headline */}
-          <div className="text-center mb-6">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-3 tracking-tight">
-              {t.headline}
-            </h1>
-            <p className="text-lg text-emerald-200 mb-2 font-medium">{t.sub}</p>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3">
-              {t.meta.split(" · ").map((item, i) => (
-                <span key={i} className="text-xs text-white/60 flex items-center gap-1">
-                  <span className="text-amber-400">·</span> {item}
+          {/* Hero image */}
+          <div className="qz-hero-img-wrap">
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/hero_quiz-4yyjBHkD2a3bcnpKdnwqZj.webp"
+              alt="Avaliação metabólica"
+              className="qz-hero-img"
+            />
+            <div className="qz-hero-overlay" />
+            <div className="qz-hero-bullets">
+              {[t.bullet1, t.bullet2, t.bullet3].map((b, i) => (
+                <span key={i} className="qz-hero-bullet">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <circle cx="7" cy="7" r="7" fill="#00BFA5" />
+                    <path d="M4 7l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {b}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Hero image */}
-          <div className="relative rounded-2xl overflow-hidden mb-6 shadow-2xl ring-1 ring-white/10">
-            <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/hero_quiz-4yyjBHkD2a3bcnpKdnwqZj.webp"
-              alt="Mulher descobrindo a solução metabólica"
-              className="w-full h-56 md:h-72 object-cover object-top"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="flex flex-wrap gap-3 text-white text-sm font-semibold">
-                {[t.bullet1, t.bullet2, t.bullet3].map((b, i) => (
-                  <div key={i} className="flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                    <span className="text-emerald-400 text-base">✓</span>
-                    <span>{b}</span>
-                  </div>
-                ))}
-              </div>
+          {/* Headline */}
+          <div className="qz-headline-wrap">
+            <h1 className="qz-headline">
+              {t.headline.split(t.headlineHighlight)[0]}
+              <span className="qz-headline-hl">{t.headlineHighlight}</span>
+              {t.headline.split(t.headlineHighlight)[1]}
+            </h1>
+            <p className="qz-sub">{t.sub}</p>
+            <div className="qz-meta-row">
+              {t.meta.map((m, i) => (
+                <span key={i} className="qz-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <circle cx="6" cy="6" r="6" fill="#00BFA5" opacity="0.15" />
+                    <path d="M3.5 6l1.5 1.5 3.5-3" stroke="#00BFA5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {m}
+                </span>
+              ))}
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
-            {[
-              { num: "45.000+", label: t.stat1, icon: "👥" },
-              { num: "87%", label: t.stat2, icon: "🎯" },
-              { num: "< 2 min", label: t.stat3, icon: "⚡" },
-            ].map((stat) => (
-              <div key={stat.num} className="quiz-stat-card">
-                <div className="text-xl mb-1">{stat.icon}</div>
-                <div className="text-xl font-extrabold text-amber-400">{stat.num}</div>
-                <div className="text-xs text-white/60 mt-0.5 leading-tight">{stat.label}</div>
+          <div className="qz-stats-row">
+            {[t.stat1, t.stat2, t.stat3].map((s, i) => (
+              <div key={i} className="qz-stat-card">
+                <span className="qz-stat-num">{s.num}</span>
+                <span className="qz-stat-label">{s.label}</span>
               </div>
             ))}
           </div>
@@ -338,71 +318,74 @@ export default function Quiz() {
           <button
             onClick={handleStart}
             disabled={startSession.isPending}
-            className="quiz-cta-btn w-full"
+            className="qz-cta-btn"
           >
-            <span>{startSession.isPending ? t.starting : t.startBtn}</span>
+            {startSession.isPending ? t.starting : t.startBtn}
           </button>
-          <p className="text-center text-xs text-white/40 mt-3">{t.privacy}</p>
+          <p className="qz-privacy">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ display: "inline", marginRight: 4 }}>
+              <path d="M6 1L2 3v3c0 2.2 1.7 4.2 4 4.7C8.3 10.2 10 8.2 10 6V3L6 1z" fill="#00BFA5" opacity="0.7" />
+            </svg>
+            {t.privacy}
+          </p>
         </div>
       )}
 
       {/* ===== QUESTIONS ===== */}
       {phase === "questions" && (
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <div key={currentQ} className="animate-in fade-in slide-in-from-right-4 duration-300">
+        <div className="qz-page">
+          <div key={currentQ} className="animate-in fade-in slide-in-from-right-3 duration-250">
 
-            {/* Highlight badge */}
+            {/* Highlight */}
             {questions[currentQ].highlight && (
-              <div className="quiz-highlight-badge mb-5">
-                <span className="text-amber-400 text-lg">🔬</span>
-                <p className="text-amber-200 text-sm font-semibold">{t.keyQuestion}</p>
+              <div className="qz-highlight">
+                <span className="qz-highlight-icon">⭐</span>
+                <span className="qz-highlight-text">{t.keyQuestion}</span>
               </div>
             )}
 
             {/* Pergunta */}
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-6 leading-snug tracking-tight">
-              {questions[currentQ].question}
-            </h2>
+            <h2 className="qz-question">{questions[currentQ].question}</h2>
 
             {/* Feedback */}
             {feedbackText && (
-              <div className="quiz-feedback mb-5 animate-in fade-in duration-200">
-                <span className="text-emerald-400 text-lg flex-shrink-0">✓</span>
-                <p className="text-emerald-200 text-sm font-medium">{feedbackText}</p>
+              <div className="qz-feedback animate-in fade-in duration-200">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="flex-shrink-0">
+                  <circle cx="9" cy="9" r="9" fill="#00BFA5" />
+                  <path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="qz-feedback-text">{feedbackText}</p>
               </div>
             )}
 
-            {/* Cards de opção */}
-            <div className="space-y-3">
+            {/* Opções */}
+            <div className="qz-options">
               {questions[currentQ].options.map((option, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
                   disabled={animating}
-                  className={`quiz-option-card w-full text-left ${
-                    selectedOption === idx ? "quiz-option-selected" : "quiz-option-default"
-                  }`}
+                  className={`qz-option ${selectedOption === idx ? "qz-option--selected" : ""}`}
                 >
-                  <span className={`quiz-option-letter flex-shrink-0 ${
-                    selectedOption === idx ? "quiz-option-letter-selected" : "quiz-option-letter-default"
-                  }`}>
+                  <span className={`qz-option-letter ${selectedOption === idx ? "qz-option-letter--selected" : ""}`}>
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  <span className={`flex-1 font-semibold text-sm md:text-base leading-snug ${
-                    selectedOption === idx ? "text-white" : "text-white/90"
-                  }`}>
-                    {option.text}
-                  </span>
+                  <span className="qz-option-text">{option.text}</span>
                   {selectedOption === idx && (
-                    <span className="text-emerald-400 text-lg flex-shrink-0">✓</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="flex-shrink-0 ml-auto">
+                      <circle cx="10" cy="10" r="10" fill="#00BFA5" />
+                      <path d="M6 10l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                   )}
                 </button>
               ))}
             </div>
 
-            {/* Badge de confiança */}
-            <p className="text-center text-xs text-white/30 mt-6 flex items-center justify-center gap-1.5">
-              <span>🔒</span> {t.confidential}
+            <p className="qz-confidential">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" style={{ display: "inline", marginRight: 4 }}>
+                <path d="M5.5 1L2 2.5v3c0 2 1.5 3.8 3.5 4.3C7.5 9.3 9 7.5 9 5.5v-3L5.5 1z" fill="#94A3B8" />
+              </svg>
+              {t.confidential}
             </p>
           </div>
         </div>
@@ -410,87 +393,83 @@ export default function Quiz() {
 
       {/* ===== OPT-IN ===== */}
       {phase === "optin" && (
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          {/* Ícone de sucesso */}
-          <div className="text-center mb-8">
-            <div className="quiz-optin-icon mx-auto mb-5">
-              <span className="text-4xl">🎯</span>
+        <div className="qz-page">
+          <div className="qz-optin-icon-wrap">
+            <div className="qz-optin-icon">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                <path d="M8 18l7 7 13-13" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">{t.optinTitle}</h2>
-            <p className="text-emerald-200 text-base leading-relaxed max-w-md mx-auto">{t.optinSub}</p>
           </div>
+          <h2 className="qz-optin-title">{t.optinTitle}</h2>
+          <p className="qz-optin-sub">{t.optinSub}</p>
 
-          {/* Formulário */}
-          <div className="quiz-optin-card">
-            <form onSubmit={handleOptIn} className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-white/80 mb-2">{t.nameLabel}</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder={t.namePlaceholder}
-                  required
-                  className="quiz-input w-full"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-white/80 mb-2">{t.emailLabel}</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder={t.emailPlaceholder}
-                  required
-                  className="quiz-input w-full"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={completeQuiz.isPending || !name || !email}
-                className="quiz-cta-btn w-full mt-2"
-              >
-                <span>{completeQuiz.isPending ? t.submitting : t.submitBtn}</span>
-              </button>
-              <p className="text-center text-xs text-white/30">{t.privacy}</p>
-            </form>
-          </div>
+          <form onSubmit={handleOptIn} className="qz-form">
+            <div className="qz-field">
+              <label className="qz-label">{t.nameLabel}</label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder={t.namePlaceholder}
+                required
+                className="qz-input"
+              />
+            </div>
+            <div className="qz-field">
+              <label className="qz-label">{t.emailLabel}</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder={t.emailPlaceholder}
+                required
+                className="qz-input"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={completeQuiz.isPending || !name || !email}
+              className="qz-cta-btn"
+              style={{ marginTop: 8 }}
+            >
+              {completeQuiz.isPending ? t.submitting : t.submitBtn}
+            </button>
+            <p className="qz-privacy">{t.privacy}</p>
+          </form>
         </div>
       )}
 
       {/* ===== LOADING ===== */}
       {phase === "loading" && (
-        <div className="max-w-2xl mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
-          {/* Spinner */}
-          <div className="quiz-loading-spinner mb-10">
-            <span className="text-4xl relative z-10">🧬</span>
-            <div className="absolute inset-0 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin" />
-            <div className="absolute inset-2 rounded-full border-2 border-amber-400/30 border-b-transparent animate-spin" style={{ animationDirection: "reverse", animationDuration: "1.5s" }} />
+        <div className="qz-loading-page">
+          <div className="qz-spinner-wrap">
+            <div className="qz-spinner">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <path d="M10 20l7 7 13-13" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
           </div>
 
-          {/* Steps */}
-          <div className="w-full max-w-sm space-y-3">
+          <div className="qz-loading-steps">
             {loadingSteps.map((step, idx) => (
               <div
                 key={idx}
-                className={`flex items-center gap-3 transition-all duration-500 ${
-                  idx <= loadingStep ? "opacity-100 translate-x-0" : "opacity-20 translate-x-2"
-                }`}
+                className={`qz-loading-step ${idx <= loadingStep ? "qz-loading-step--active" : ""}`}
               >
-                <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                  idx < loadingStep
-                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
-                    : idx === loadingStep
-                    ? "bg-amber-400/20 border-2 border-amber-400 text-amber-400"
-                    : "bg-white/5 border border-white/10 text-white/30"
+                <div className={`qz-loading-dot ${
+                  idx < loadingStep ? "qz-loading-dot--done" :
+                  idx === loadingStep ? "qz-loading-dot--current" : ""
                 }`}>
-                  {idx < loadingStep ? "✓" : idx + 1}
+                  {idx < loadingStep ? (
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path d="M2 5l2.5 2.5 3.5-3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  ) : (
+                    <span className="text-xs font-bold">{idx + 1}</span>
+                  )}
                 </div>
-                <p className={`text-sm font-medium transition-colors duration-300 ${
-                  idx < loadingStep ? "text-emerald-300" : idx === loadingStep ? "text-white" : "text-white/30"
-                }`}>
-                  {step}
-                </p>
+                <p className="qz-loading-text">{step}</p>
               </div>
             ))}
           </div>
