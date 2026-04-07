@@ -12,7 +12,6 @@ import {
 type Phase = "landing" | "questions" | "optin" | "loading" | "done";
 type Lang = "pt" | "es";
 
-// Detecta idioma do navegador automaticamente
 function detectLang(): Lang {
   const params = new URLSearchParams(window.location.search);
   const langParam = params.get("lang");
@@ -21,6 +20,9 @@ function detectLang(): Lang {
   if (nav.toLowerCase().startsWith("pt")) return "pt";
   return "es";
 }
+
+// Ícones por letra de opção
+const OPTION_ICONS = ["🎯", "⚡", "✨", "💪", "🌿", "🔥"];
 
 export default function Quiz() {
   const [lang] = useState<Lang>(() => detectLang());
@@ -34,6 +36,7 @@ export default function Quiz() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
+  const [slideDir, setSlideDir] = useState<"right" | "left">("right");
   const [, navigate] = useLocation();
 
   const questions = lang === "pt" ? QUIZ_QUESTIONS_PT : QUIZ_QUESTIONS;
@@ -43,14 +46,13 @@ export default function Quiz() {
   const saveAnswer = trpc.quiz.saveAnswer.useMutation();
   const completeQuiz = trpc.quiz.completeQuiz.useMutation();
 
-  // Textos da UI por idioma
   const t = useMemo(() => {
     if (lang === "pt") {
       return {
         badge: "Avaliação Metabólica Gratuita",
-        headline: <>Descubra qual dos 3{" "}<span className="text-emerald-600">"Bloqueios Metabólicos Silenciosos"</span>{" "}está impedindo você de perder a gordura abdominal</>,
+        headline: <>Descubra qual dos 3{" "}<span className="text-amber-400">"Bloqueios Metabólicos Silenciosos"</span>{" "}está impedindo você de perder a gordura abdominal</>,
         sub: "Mesmo que você coma pouco e faça exercício.",
-        meta: "Responda 10 perguntas rápidas · Resultado personalizado · 100% grátis · Menos de 2 minutos",
+        meta: "10 perguntas rápidas · Resultado personalizado · 100% grátis · Menos de 2 minutos",
         stat1: "Perfis analisados",
         stat2: "Identificam seu bloqueio",
         stat3: "Para completar",
@@ -70,13 +72,16 @@ export default function Quiz() {
         submitBtn: "Ver meu diagnóstico personalizado →",
         submitting: "Processando...",
         salesPath: "/vendas-br",
+        confidential: "Suas respostas são 100% confidenciais",
+        question: "Pergunta",
+        of: "de",
       };
     }
     return {
       badge: "Evaluación Metabólica Gratuita",
-      headline: <>Descubre cuál de los 3{" "}<span className="text-emerald-600">"Bloqueos Metabólicos Silenciosos"</span>{" "}está impidiendo que pierdas la grasa abdominal</>,
+      headline: <>Descubre cuál de los 3{" "}<span className="text-amber-400">"Bloqueos Metabólicos Silenciosos"</span>{" "}está impidiendo que pierdas la grasa abdominal</>,
       sub: "Incluso si comes poco y haces ejercicio.",
-      meta: "Responde 10 preguntas rápidas · Resultado personalizado · 100% gratis · Menos de 2 minutos",
+      meta: "10 preguntas rápidas · Resultado personalizado · 100% gratis · Menos de 2 minutos",
       stat1: "Perfiles analizados",
       stat2: "Identifican su bloqueo",
       stat3: "Para completar",
@@ -96,10 +101,12 @@ export default function Quiz() {
       submitBtn: "Ver mi diagnóstico personalizado →",
       submitting: "Procesando...",
       salesPath: "/vendas",
+      confidential: "Tus respuestas son 100% confidenciales",
+      question: "Pregunta",
+      of: "de",
     };
   }, [lang]);
 
-  // Loading steps dinâmicos por idioma
   const getLoadingSteps = () => {
     const stressAnswer = answers.find(a => a.questionIndex === 4);
     const frustrationAnswer = answers.find(a => a.questionIndex === 2);
@@ -195,6 +202,7 @@ export default function Quiz() {
       setFeedbackText(null);
       setSelectedOption(null);
       setAnimating(false);
+      setSlideDir("right");
       if (currentQ < questions.length - 1) {
         setCurrentQ(prev => prev + 1);
       } else {
@@ -216,218 +224,271 @@ export default function Quiz() {
     ? Math.round(((currentQ) / questions.length) * 100)
     : phase === "optin" ? 95 : phase === "loading" ? 100 : 0;
 
-  const getProgressLabel = () => {
-    if (phase === "questions") {
-      return questions[currentQ].progressLabel || (lang === "pt" ? "Você está no caminho certo..." : "Vas por buen camino...");
-    }
-    return "";
-  };
+  const progressPercent = phase === "questions"
+    ? Math.round(((currentQ + 1) / questions.length) * 100)
+    : phase === "optin" ? 95 : 0;
 
   const loadingSteps = getLoadingSteps();
 
   return (
-    <div className="min-h-screen bg-white font-sans">
-      {/* Header */}
-      <header className="border-b border-gray-100 bg-white sticky top-0 z-10">
+    <div className="min-h-screen quiz-bg font-sans">
+
+      {/* ===== HEADER ===== */}
+      <header className="quiz-header sticky top-0 z-20">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo_desbloqueio_metabolico-XXWBHTmoyhnmkSeSUASCTv.webp"
             alt="Desbloqueio Metabólico"
-            className="h-8 object-contain"
+            className="h-8 object-contain brightness-0 invert"
           />
           {phase === "questions" && (
-            <span className="text-sm text-gray-500 font-medium">
-              {currentQ + 1} / {questions.length}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="quiz-step-badge">
+                {t.question} {currentQ + 1} {t.of} {questions.length}
+              </span>
+            </div>
           )}
         </div>
+
+        {/* Barra de progresso */}
         {(phase === "questions" || phase === "optin") && (
-          <div>
-            <div className="h-1.5 bg-gray-100">
+          <div className="px-4 pb-3 max-w-2xl mx-auto w-full">
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-xs text-emerald-300 font-medium">
+                {phase === "questions"
+                  ? (questions[currentQ].progressLabel || (lang === "pt" ? "Você está no caminho certo..." : "Vas por buen camino..."))
+                  : (lang === "pt" ? "Quase lá! Só mais um passo..." : "¡Casi listo! Solo un paso más...")
+                }
+              </p>
+              <span className="text-xs font-bold text-amber-400">{progressPercent}%</span>
+            </div>
+            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500"
-                style={{ width: `${progress}%` }}
+                className="h-full quiz-progress-bar rounded-full transition-all duration-700 ease-out"
+                style={{ width: `${progressPercent}%` }}
               />
             </div>
-            {phase === "questions" && (
-              <div className="max-w-2xl mx-auto px-4 py-1">
-                <p className="text-xs text-emerald-600 font-medium">{getProgressLabel()}</p>
-              </div>
-            )}
           </div>
         )}
       </header>
 
-      {/* LANDING */}
+      {/* ===== LANDING ===== */}
       {phase === "landing" && (
-        <div className="max-w-2xl mx-auto px-4 py-12">
-          <div className="text-center mb-8">
-            <span className="inline-block bg-emerald-50 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">
+        <div className="max-w-2xl mx-auto px-4 py-10">
+
+          {/* Badge */}
+          <div className="text-center mb-6">
+            <span className="quiz-badge">
+              <span className="quiz-badge-dot" />
               {t.badge}
             </span>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
-              {t.headline}
-            </h1>
-            <p className="text-lg text-gray-600 mb-2">{t.sub}</p>
-            <p className="text-gray-500 text-sm">{t.meta}</p>
           </div>
 
-          <div className="relative rounded-2xl overflow-hidden mb-8 shadow-lg">
+          {/* Headline */}
+          <div className="text-center mb-6">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-3 tracking-tight">
+              {t.headline}
+            </h1>
+            <p className="text-lg text-emerald-200 mb-2 font-medium">{t.sub}</p>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3">
+              {t.meta.split(" · ").map((item, i) => (
+                <span key={i} className="text-xs text-white/60 flex items-center gap-1">
+                  <span className="text-amber-400">·</span> {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Hero image */}
+          <div className="relative rounded-2xl overflow-hidden mb-6 shadow-2xl ring-1 ring-white/10">
             <img
               src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/hero_quiz-4yyjBHkD2a3bcnpKdnwqZj.webp"
               alt="Mulher descobrindo a solução metabólica"
               className="w-full h-56 md:h-72 object-cover object-top"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             <div className="absolute bottom-4 left-4 right-4">
-              <div className="flex gap-4 text-white text-sm">
-                <div className="flex items-center gap-1"><span className="text-emerald-400">✓</span> {t.bullet1}</div>
-                <div className="flex items-center gap-1"><span className="text-emerald-400">✓</span> {t.bullet2}</div>
-                <div className="flex items-center gap-1"><span className="text-emerald-400">✓</span> {t.bullet3}</div>
+              <div className="flex flex-wrap gap-3 text-white text-sm font-semibold">
+                {[t.bullet1, t.bullet2, t.bullet3].map((b, i) => (
+                  <div key={i} className="flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                    <span className="text-emerald-400 text-base">✓</span>
+                    <span>{b}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-8">
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3 mb-6">
             {[
-              { num: "45.000+", label: t.stat1 },
-              { num: "87%", label: t.stat2 },
-              { num: "< 2 min", label: t.stat3 },
+              { num: "45.000+", label: t.stat1, icon: "👥" },
+              { num: "87%", label: t.stat2, icon: "🎯" },
+              { num: "< 2 min", label: t.stat3, icon: "⚡" },
             ].map((stat) => (
-              <div key={stat.num} className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="text-xl font-bold text-emerald-600">{stat.num}</div>
-                <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
+              <div key={stat.num} className="quiz-stat-card">
+                <div className="text-xl mb-1">{stat.icon}</div>
+                <div className="text-xl font-extrabold text-amber-400">{stat.num}</div>
+                <div className="text-xs text-white/60 mt-0.5 leading-tight">{stat.label}</div>
               </div>
             ))}
           </div>
 
+          {/* CTA */}
           <button
             onClick={handleStart}
             disabled={startSession.isPending}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-emerald-200 disabled:opacity-70"
+            className="quiz-cta-btn w-full"
           >
-            {startSession.isPending ? t.starting : t.startBtn}
+            <span>{startSession.isPending ? t.starting : t.startBtn}</span>
           </button>
-          <p className="text-center text-xs text-gray-400 mt-3">{t.privacy}</p>
+          <p className="text-center text-xs text-white/40 mt-3">{t.privacy}</p>
         </div>
       )}
 
-      {/* QUESTIONS */}
+      {/* ===== QUESTIONS ===== */}
       {phase === "questions" && (
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div key={currentQ} className="animate-in fade-in slide-in-from-right-4 duration-300">
+
+            {/* Highlight badge */}
             {questions[currentQ].highlight && (
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-4 flex items-start gap-2">
-                <span className="text-emerald-600 text-lg">🔬</span>
-                <p className="text-emerald-800 text-sm font-medium">{t.keyQuestion}</p>
+              <div className="quiz-highlight-badge mb-5">
+                <span className="text-amber-400 text-lg">🔬</span>
+                <p className="text-amber-200 text-sm font-semibold">{t.keyQuestion}</p>
               </div>
             )}
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 leading-snug">
+
+            {/* Pergunta */}
+            <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-6 leading-snug tracking-tight">
               {questions[currentQ].question}
             </h2>
 
+            {/* Feedback */}
             {feedbackText && (
-              <div className="mb-4 animate-in fade-in duration-200 bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-start gap-2">
-                <span className="text-emerald-600 text-base flex-shrink-0">✓</span>
-                <p className="text-emerald-800 text-sm font-medium">{feedbackText}</p>
+              <div className="quiz-feedback mb-5 animate-in fade-in duration-200">
+                <span className="text-emerald-400 text-lg flex-shrink-0">✓</span>
+                <p className="text-emerald-200 text-sm font-medium">{feedbackText}</p>
               </div>
             )}
 
+            {/* Cards de opção */}
             <div className="space-y-3">
               {questions[currentQ].options.map((option, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
                   disabled={animating}
-                  className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 font-medium text-gray-800
-                    ${selectedOption === idx
-                      ? "border-emerald-600 bg-emerald-50 text-emerald-800 scale-[0.99]"
-                      : "border-gray-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/50 active:scale-[0.99]"
-                    }`}
+                  className={`quiz-option-card w-full text-left ${
+                    selectedOption === idx ? "quiz-option-selected" : "quiz-option-default"
+                  }`}
                 >
-                  <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold mr-3 flex-shrink-0
-                    ${selectedOption === idx ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-500"}`}>
+                  <span className={`quiz-option-letter flex-shrink-0 ${
+                    selectedOption === idx ? "quiz-option-letter-selected" : "quiz-option-letter-default"
+                  }`}>
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  {option.text}
+                  <span className={`flex-1 font-semibold text-sm md:text-base leading-snug ${
+                    selectedOption === idx ? "text-white" : "text-white/90"
+                  }`}>
+                    {option.text}
+                  </span>
+                  {selectedOption === idx && (
+                    <span className="text-emerald-400 text-lg flex-shrink-0">✓</span>
+                  )}
                 </button>
               ))}
             </div>
+
+            {/* Badge de confiança */}
+            <p className="text-center text-xs text-white/30 mt-6 flex items-center justify-center gap-1.5">
+              <span>🔒</span> {t.confidential}
+            </p>
           </div>
         </div>
       )}
 
-      {/* OPT-IN */}
+      {/* ===== OPT-IN ===== */}
       {phase === "optin" && (
         <div className="max-w-2xl mx-auto px-4 py-8">
+          {/* Ícone de sucesso */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">🎯</span>
+            <div className="quiz-optin-icon mx-auto mb-5">
+              <span className="text-4xl">🎯</span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{t.optinTitle}</h2>
-            <p className="text-gray-600">{t.optinSub}</p>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">{t.optinTitle}</h2>
+            <p className="text-emerald-200 text-base leading-relaxed max-w-md mx-auto">{t.optinSub}</p>
           </div>
 
-          <form onSubmit={handleOptIn} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">{t.nameLabel}</label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder={t.namePlaceholder}
-                required
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">{t.emailLabel}</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder={t.emailPlaceholder}
-                required
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={completeQuiz.isPending || !name || !email}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-emerald-200 disabled:opacity-70"
-            >
-              {completeQuiz.isPending ? t.submitting : t.submitBtn}
-            </button>
-            <p className="text-center text-xs text-gray-400">{t.privacy}</p>
-          </form>
+          {/* Formulário */}
+          <div className="quiz-optin-card">
+            <form onSubmit={handleOptIn} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-white/80 mb-2">{t.nameLabel}</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder={t.namePlaceholder}
+                  required
+                  className="quiz-input w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-white/80 mb-2">{t.emailLabel}</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder={t.emailPlaceholder}
+                  required
+                  className="quiz-input w-full"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={completeQuiz.isPending || !name || !email}
+                className="quiz-cta-btn w-full mt-2"
+              >
+                <span>{completeQuiz.isPending ? t.submitting : t.submitBtn}</span>
+              </button>
+              <p className="text-center text-xs text-white/30">{t.privacy}</p>
+            </form>
+          </div>
         </div>
       )}
 
-      {/* LOADING */}
+      {/* ===== LOADING ===== */}
       {phase === "loading" && (
         <div className="max-w-2xl mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-8 relative">
-            <span className="text-4xl">🧬</span>
+          {/* Spinner */}
+          <div className="quiz-loading-spinner mb-10">
+            <span className="text-4xl relative z-10">🧬</span>
             <div className="absolute inset-0 rounded-full border-4 border-emerald-500 border-t-transparent animate-spin" />
+            <div className="absolute inset-2 rounded-full border-2 border-amber-400/30 border-b-transparent animate-spin" style={{ animationDirection: "reverse", animationDuration: "1.5s" }} />
           </div>
+
+          {/* Steps */}
           <div className="w-full max-w-sm space-y-3">
             {loadingSteps.map((step, idx) => (
               <div
                 key={idx}
                 className={`flex items-center gap-3 transition-all duration-500 ${
-                  idx <= loadingStep ? "opacity-100" : "opacity-20"
+                  idx <= loadingStep ? "opacity-100 translate-x-0" : "opacity-20 translate-x-2"
                 }`}
               >
-                <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold transition-colors duration-300 ${
+                <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                   idx < loadingStep
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
                     : idx === loadingStep
-                    ? "bg-emerald-100 border-2 border-emerald-500 text-emerald-600"
-                    : "bg-gray-100 text-gray-400"
+                    ? "bg-amber-400/20 border-2 border-amber-400 text-amber-400"
+                    : "bg-white/5 border border-white/10 text-white/30"
                 }`}>
                   {idx < loadingStep ? "✓" : idx + 1}
                 </div>
-                <p className={`text-sm font-medium ${idx <= loadingStep ? "text-gray-800" : "text-gray-400"}`}>
+                <p className={`text-sm font-medium transition-colors duration-300 ${
+                  idx < loadingStep ? "text-emerald-300" : idx === loadingStep ? "text-white" : "text-white/30"
+                }`}>
                   {step}
                 </p>
               </div>

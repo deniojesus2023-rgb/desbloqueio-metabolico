@@ -75,3 +75,17 @@
 - [x] Adaptar quiz para português com cultura BR (10 perguntas PT, referências BR: feijoada, churrasco, pão de queijo)
 - [x] Adaptar página de vendas para português com copy BR (rota /vendas-br, upsell-br, obrigado-br)
 - [x] Sistema de idioma único (PT-BR / ES) com detecção automática via navigator.language + param ?lang=pt|es
+
+## Redesign Visual do Quiz
+- [x] Fundo com gradiente verde escuro premium (quiz-bg)
+- [x] Header com glassmorphism e badge âmbar "Pergunta X de Y"
+- [x] Barra de progresso com porcentagem âmbar e label de contexto
+- [x] Paleta dual: verde esmeralda + âmbar/dourado
+- [x] Tipografia extrabold com hierarquia clara (headline branca, destaque âmbar)
+- [x] Cards de opção com borda sólida, hover com slide lateral e letra destacada
+- [x] Badge de confidencialidade abaixo dos cards
+- [x] Stats com ícones e números em âmbar
+- [x] Botão CTA com gradiente, sombra colorida e efeito hover
+- [x] Spinner de loading com duplo anel animado
+- [x] Inputs do opt-in com glassmorphism e focus verde
+- [x] Card do opt-in com backdrop-filter blur
