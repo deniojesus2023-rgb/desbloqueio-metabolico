@@ -283,19 +283,30 @@ export default function VendasBR() {
           </button>
         </div>
 
+        {/* CTA TOPO — Primeiro CTA após headline */}
+        <div className="mb-10 text-center">
+          <button
+            onClick={scrollToCta}
+            className="w-full max-w-sm mx-auto block bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-extrabold text-lg py-4 rounded-full shadow-xl shadow-teal-200 hover:scale-105 transition-all duration-200"
+          >
+            Quero o Protocolo Completo — R$47 →
+          </button>
+          <p className="text-xs text-gray-400 mt-2">🔒 Pagamento seguro · Acesso imediato · Garantia 30 dias</p>
+        </div>
+
         {/* PROBLEMA — MUP Brasileiro */}
         <div className="bg-gray-50 rounded-2xl p-6 md:p-8 mb-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Por que as dietas convencionais fazem seu corpo acumular <span className="text-red-500">mais gordura</span>
           </h2>
           <p className="text-gray-700 mb-4">
-            Quando você reduz calorias drasticamente, seu corpo ativa a <strong>Trava Metabólica do Estresse Crônico</strong> — um mecanismo evolutivo que interpreta a restrição como uma ameaça de fome.
+            Pense no seu metabolismo como um <strong>termostato</strong>. Quando está calibrado corretamente, seu corpo queima gordura naturalmente — mesmo em repouso, mesmo depois do churrasco de domingo, mesmo depois do pão de queijo no café.
           </p>
           <p className="text-gray-700 mb-4">
-            Em resposta, o cortisol sobe, o metabolismo cai, e as células de gordura ficam <strong>resistentes a liberar energia</strong>. É literalmente o oposto do que você quer.
+            O problema é que o estresse crônico age como um termostato travado: ativa a <strong>Trava Metabólica do Estresse Crônico</strong>, que faz o cortisol subir, o metabolismo cair, e as células de gordura ficarem <strong>resistentes a liberar energia</strong>. Não importa o quanto você force com dieta ou exercício — o termostato continua mandando o sinal errado.
           </p>
           <p className="text-gray-700">
-            Isso explica por que você pode comer "certinho" a semana toda e não perder nada — ou perder e recuperar tudo rapidinho. O problema não é você — é que seu metabolismo está travado no modo sobrevivência.
+            É por isso que você pode comer "certinho" a semana toda e não perder nada. O problema não é a quantidade de comida — é o sinal que seu corpo está recebendo. E nenhuma dieta convencional resolve isso porque elas atacam o sintoma (caloria), não a causa (o termostato travado).
           </p>
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
@@ -382,19 +393,25 @@ export default function VendasBR() {
             </div>
             <div className="space-y-3 text-gray-700 text-sm leading-relaxed">
               <p>
-                Durante 11 anos, Ana Paula tentou de tudo para emagrecer. Low carb, jejum intermitente, dieta dos pontos, detox de 21 dias, shake substituto de refeição. Perdia 4 quilos, recuperava 6. Perdia 3, recuperava 5. O ciclo nunca parava.
+                Em setembro de 2021, no aniversário de 15 anos da minha filha Laura, meu marido tirou uma foto nossa abraçadas. Quando ele me mostrou, eu não me reconheci. Estava usando um vestido largo justamente para esconder a barriga — e mesmo assim dava para ver.
+              </p>
+              <p>
+                Naquele momento, com a foto na mão, eu pensei: <em>"Isso não sou eu. Eu preciso fazer alguma coisa de verdade."</em>
+              </p>
+              <p>
+                Nos 11 anos anteriores, eu tinha tentado de tudo. Low carb por 4 meses — perdi 5kg, engordei 8kg. Jejum intermitente por 3 meses — fiquei irritada, não dormi direito, desisti. Academia 5 vezes por semana por 8 meses — emagreci 3kg, fiquei com dor no joelho, parei. Shakes, termogênicos, chás milagrosos. Nada funcionava por mais de algumas semanas.
               </p>
               <p>
                 <strong className="text-gray-900">"Eu achava que era fraqueza minha"</strong>, ela conta. <em>"Que eu não tinha disciplina suficiente. Que todo mundo conseguia emagrecer menos eu. Chorei muito me culpando por isso."</em>
               </p>
               <p>
-                A virada aconteceu por acidente. Em 2022, durante uma crise de ansiedade intensa no trabalho, Ana Paula começou a pesquisar sobre cortisol e estresse crônico. Foi aí que encontrou estudos sobre como o estresse de longo prazo literalmente bloqueia a queima de gordura em nível celular — independente de dieta ou exercício.
+                A virada aconteceu por acidente. Em uma noite de insônia em 2022, pesquisando sobre cortisol e sono, Ana Paula encontrou um estudo sobre como o estresse crônico literalmente bloqueia a queima de gordura em nível celular — como um <strong className="text-gray-900">termostato travado</strong>. Não importa o quanto você force com dieta ou exercício: se o termostato está travado, o corpo continua no modo armazenamento.
               </p>
               <p>
-                <em>"Quando li aquilo, caí em prantos. Não era falta de força de vontade. Era biologia. Meu corpo estava em modo de sobrevivência há anos e eu ficava tentando forçar ele a emagrecer com mais restrição — que era exatamente o que piorava o bloqueio."</em>
+                <em>"Quando li aquilo, caí em prantos. Não era falta de força de vontade. Era biologia. Meu corpo estava com o termostato travado há anos e eu ficava tentando forçar ele a emagrecer com mais restrição — que era exatamente o que piorava o bloqueio."</em>
               </p>
               <p>
-                Ela passou os 8 meses seguintes testando combinações de técnicas de regulação do cortisol, ativação enzimática e calibração de insulina — todas baseadas em estudos científicos, mas adaptadas para a rotina real de uma professora com dois filhos, marido e casa para cuidar.
+                Ela passou os 8 meses seguintes testando combinações de técnicas para destravar esse termostato — regulação do cortisol, ativação enzimática e calibração de insulina — todas baseadas em estudos científicos, mas simplificadas para a rotina real de uma professora com dois filhos, marido e casa para cuidar.
               </p>
               <p>
                 O resultado: <strong className="text-[#00897B]">14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café da manhã. Hoje ela compartilha o protocolo com outras mulheres que passaram pelo mesmo que ela.

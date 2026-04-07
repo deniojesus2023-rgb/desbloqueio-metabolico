@@ -128,3 +128,10 @@
 - [ ] Personalização: fluxo diferente por tipo de resposta (não só resultado)
 - [ ] Implementar novo Quiz.tsx com 6-8 perguntas encadeadas
 - [ ] Tela de resultado ultra-personalizada por perfil
+
+## Redesign Página de Vendas — Modelagem $100M+
+- [ ] Varredura swipefiles americanos: Agora, ClickFunnels, Organifi, Dr. Axe, Clickbank
+- [ ] Identificar estrutura invisível da página vencedora
+- [ ] Modelar copy PT-BR com nova estrutura validada
+- [ ] Reescrever VendasBR.tsx com estrutura modelada
+- [ ] Reescrever Vendas.tsx ES-LATAM com mesma estrutura
