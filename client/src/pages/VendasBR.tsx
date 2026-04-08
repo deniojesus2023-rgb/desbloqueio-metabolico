@@ -655,27 +655,7 @@ export default function VendasBR() {
           />
         </div>
 
-        {/* Depoimentos em texto */}
-        <div className="space-y-3">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="dm-card" style={{ padding: "20px" }}>
-              <div className="flex items-center gap-3 mb-3">
-                <img src={t.avatar} alt={t.name} className="w-11 h-11 rounded-full object-cover flex-shrink-0" style={{ border: "2px solid var(--teal-light)" }} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-[13px]" style={{ color: "var(--dm-text)" }}>{t.name}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{t.result}</span>
-                  </div>
-                  <span className="text-[10px]" style={{ color: "var(--dm-grey-300)" }}>{t.loc}</span>
-                </div>
-              </div>
-              <div className="flex mb-2">
-                {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-xs">★</span>)}
-              </div>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{ t.text}"</p>
-            </div>
-          ))}
-        </div>
+
       </section>
 
       {/* ════════════════════════════════════════════════════════════════
@@ -738,30 +718,53 @@ export default function VendasBR() {
 
         {/* Order Bump */}
         <div
-          className="rounded-xl p-4 mb-5 cursor-pointer transition-all duration-200"
+          className="rounded-xl p-4 mb-5 cursor-pointer transition-all duration-200 select-none"
           style={{
-            border: orderBump ? "2px solid var(--teal)" : "2px dashed var(--dm-grey-200)",
+            border: orderBump ? "2.5px solid var(--teal)" : "2px dashed var(--dm-grey-200)",
             background: orderBump ? "var(--teal-pale)" : "white",
+            boxShadow: orderBump ? "0 0 0 4px rgba(0,191,165,0.12)" : "none",
           }}
           onClick={() => setOrderBump(!orderBump)}
         >
-          <div className="flex items-start gap-3">
+          {/* Badge topo */}
+          {!orderBump && (
+            <div className="flex justify-center mb-3">
+              <span className="text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide" style={{ background: "#FEF3C7", color: "#92400E" }}>⚡ OFERTA ESPECIAL — ADICIONE AGORA</span>
+            </div>
+          )}
+          <div className="flex items-center gap-3">
+            {/* Checkbox grande e chamativo */}
             <div
-              className="w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors"
+              className="flex-shrink-0 flex items-center justify-center rounded-lg transition-all duration-200"
               style={{
-                background: orderBump ? "var(--teal-dark)" : "transparent",
-                border: orderBump ? "2px solid var(--teal-dark)" : "2px solid var(--dm-grey-200)",
+                width: 40,
+                height: 40,
+                background: orderBump ? "var(--teal-dark)" : "white",
+                border: orderBump ? "2.5px solid var(--teal-dark)" : "2.5px solid var(--dm-grey-200)",
+                boxShadow: orderBump ? "0 2px 8px rgba(0,121,107,0.25)" : "none",
               }}
             >
-              {orderBump && <Check s={10} />}
+              {orderBump ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="18" height="18" rx="3" stroke="var(--dm-grey-200)" strokeWidth="2"/>
+                </svg>
+              )}
             </div>
-            <div className="min-w-0">
-              <p className="font-bold text-[13px] leading-snug" style={{ color: "var(--dm-text)" }}>
-                Adicionar <span style={{ color: "var(--teal-dark)" }}>Guia dos Chás Noturnos</span> por +R$19,90
+            <div className="min-w-0 flex-1">
+              <p className="font-extrabold text-[14px] leading-snug" style={{ color: orderBump ? "var(--teal-dark)" : "var(--dm-text)" }}>
+                Adicionar <span style={{ color: "var(--teal-dark)" }}>Guia dos Chás Noturnos</span>
+                <span className="ml-1 font-extrabold">+R$19,90</span>
               </p>
-              <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>
+              <p className="text-[11px] mt-1 leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>
                 5 infusões que aceleram o desbloqueio enquanto você dorme. Chás fáceis de encontrar em qualquer mercado.
               </p>
+              {orderBump && (
+                <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--teal-dark)" }}>✓ Adicionado ao seu pedido</p>
+              )}
             </div>
           </div>
         </div>
