@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import { pixelPurchase } from "@/lib/pixel";
 
 export default function UpsellBR() {
   const [, navigate] = useLocation();
@@ -31,6 +32,7 @@ export default function UpsellBR() {
         sessionId,
       });
       await trackConversion.mutateAsync({ sessionId, type: "upsell_1", amount: 9700 });
+      pixelPurchase({ value: 97, currency: "BRL" });
       navigate(`/obrigado-br?upsell=1&cid=${customerId}`);
     } catch (err: any) {
       setError(err.message || "Erro ao processar pagamento. Tente novamente.");
@@ -56,6 +58,7 @@ export default function UpsellBR() {
         sessionId,
       });
       await trackConversion.mutateAsync({ sessionId, type: "downsell_1", amount: 3700 });
+      pixelPurchase({ value: 37, currency: "BRL" });
       navigate(`/obrigado-br?downsell=1&cid=${customerId}`);
     } catch (err: any) {
       setError(err.message || "Erro ao processar pagamento. Tente novamente.");

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { pixelLead } from "@/lib/pixel";
 import {
   quizQuestionsPT,
   quizQuestionsES,
@@ -192,6 +193,8 @@ export default function Quiz() {
     if (sessionId) {
       await completeQuiz.mutateAsync({ sessionId, name, email });
     }
+    // Meta Pixel — Lead após opt-in no quiz
+    pixelLead();
     const salesPath = lang === "pt" ? "/vendas-br" : "/vendas";
     const blockNum = blockType === "cortisol" ? 1 : blockType === "insulina" ? 2 : 3;
     const dest = `${salesPath}?block=${blockNum}&n=${encodeURIComponent(name)}${sessionId ? `&s=${sessionId}` : ""}&lang=${lang}`;

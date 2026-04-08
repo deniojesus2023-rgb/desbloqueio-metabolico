@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import StripeCheckout from "@/components/StripeCheckout";
+import { pixelViewContent, pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
 
 const PRODUCT_PRICE = 27;
 const ORDER_BUMP_PRICE = 9.9;
@@ -161,7 +162,14 @@ export default function Vendas() {
     return () => document.removeEventListener("mouseleave", handleMouseLeave);
   }, [exitDismissed]);
 
+  // Meta Pixel — ViewContent ao entrar na página de vendas
+  useEffect(() => {
+    pixelViewContent({ value: PRODUCT_PRICE, currency: "USD" });
+  }, []);
+
   const handleBuy = () => {
+    // Meta Pixel — InitiateCheckout ao abrir o checkout
+    pixelInitiateCheckout({ value: totalPrice, currency: "USD" });
     setShowCheckout(true);
     setTimeout(() => {
       ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -169,6 +177,8 @@ export default function Vendas() {
   };
 
   const handlePaymentSuccess = (data: { paymentIntentId: string; customerId?: string }) => {
+    // Meta Pixel — Purchase após pagamento confirmado
+    pixelPurchase({ value: totalPrice, currency: "USD", order_id: data.paymentIntentId });
     trackConversion.mutate({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
     if (orderBump) {
       trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
