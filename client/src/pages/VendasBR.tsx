@@ -739,9 +739,9 @@ export default function VendasBR() {
               style={{
                 width: 40,
                 height: 40,
-                background: orderBump ? "var(--teal-dark)" : "white",
-                border: orderBump ? "2.5px solid var(--teal-dark)" : "2.5px solid var(--dm-grey-200)",
-                boxShadow: orderBump ? "0 2px 8px rgba(0,121,107,0.25)" : "none",
+                background: orderBump ? "var(--teal-dark)" : "#f0faf8",
+                border: orderBump ? "2.5px solid var(--teal-dark)" : "2.5px solid var(--teal-mid)",
+                boxShadow: orderBump ? "0 2px 8px rgba(0,121,107,0.25)" : "inset 0 0 0 1px rgba(0,121,107,0.15)",
               }}
             >
               {orderBump ? (
