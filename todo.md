@@ -174,3 +174,13 @@
 - [x] Implementar downsell one-click
 - [x] Implementar checkout embutido na Vendas.tsx (ES-LATAM)
 - [x] Testar fluxo completo: pagamento → order bump → upsell → downsell
+
+## PIX + E-mails Automáticos + Página de Confirmação
+
+- [x] Adicionar PIX como método de pagamento no Stripe (payment_method_types: pix)
+- [x] Atualizar StripeCheckout.tsx para exibir opção PIX + Cartão
+- [x] Implementar e-mails automáticos pós-compra via notificação do sistema
+- [x] Criar página de confirmação de pedido (/confirmacao-br e /confirmacion)
+- [x] Resumo da compra com itens adquiridos e valores
+- [x] Orientações sobre próximos passos pós-compra
+- [x] Redirecionar para página de confirmação após último passo do funil

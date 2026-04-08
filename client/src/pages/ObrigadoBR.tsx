@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 
 export default function ObrigadoBR() {
@@ -6,6 +7,7 @@ export default function ObrigadoBR() {
   const [upsell2Dismissed, setUpsell2Dismissed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
+  const [, navigate] = useLocation();
   const chargeUpsell = trpc.payment.chargeUpsell.useMutation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
 
@@ -14,15 +16,32 @@ export default function ObrigadoBR() {
     : new URLSearchParams();
 
   const hasUpsell1 = params.get("upsell") === "1";
+  const hasBump = params.get("bump") === "1";
   const customerId = params.get("cid") || undefined;
   const sessionId = params.get("s") || undefined;
+  const customerName = params.get("name") || "";
+  const customerEmail = params.get("email") || "";
+
+  const buildConfirmUrl = (extraParams: Record<string, string> = {}) => {
+    const q = new URLSearchParams();
+    if (customerName) q.set("name", customerName);
+    if (customerEmail) q.set("email", customerEmail);
+    if (hasBump) q.set("bump", "1");
+    if (hasUpsell1) q.set("upsell", "1");
+    Object.entries(extraParams).forEach(([k, v]) => q.set(k, v));
+    return `/confirmacao-br?${q.toString()}`;
+  };
 
   useEffect(() => {
-    if (hasUpsell1) {
+    if (hasUpsell1 && customerId) {
       const timer = setTimeout(() => setShowUpsell2(true), 3000);
       return () => clearTimeout(timer);
+    } else if (!hasUpsell1) {
+      // No upsell 1 — redirect to confirmation directly after 2s
+      const timer = setTimeout(() => navigate(buildConfirmUrl()), 2000);
+      return () => clearTimeout(timer);
     }
-  }, [hasUpsell1]);
+  }, [hasUpsell1, customerId]);
 
   const handleUpsell2Accept = async () => {
     if (!customerId) {
@@ -38,7 +57,7 @@ export default function ObrigadoBR() {
         sessionId,
       });
       await trackConversion.mutateAsync({ sessionId, type: "upsell_2", amount: 5700 });
-      setUpsell2Dismissed(true);
+      navigate(buildConfirmUrl({ upsell2: "1" }));
     } catch (err: any) {
       setError(err.message || "Erro ao processar pagamento.");
       setProcessing(false);
@@ -140,7 +159,7 @@ export default function ObrigadoBR() {
               ⚡ Cobrança automática no mesmo cartão
             </p>
             <button
-              onClick={() => setUpsell2Dismissed(true)}
+              onClick={() => navigate(buildConfirmUrl())}
               className="w-full text-[11px] py-2 transition-colors" style={{ color: "var(--dm-grey-300)" }}
             >
               Não, obrigada.

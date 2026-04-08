@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 
 export default function Obrigado() {
@@ -6,6 +7,7 @@ export default function Obrigado() {
   const [upsell2Dismissed, setUpsell2Dismissed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [, navigate] = useLocation();
 
   const chargeUpsell = trpc.payment.chargeUpsell.useMutation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
@@ -17,10 +19,26 @@ export default function Obrigado() {
   const sessionId = params.get("s") || undefined;
   const customerId = params.get("cid") || undefined;
   const hasUpsell1 = params.get("upsell") === "1";
+  const hasBump = params.get("bump") === "1";
+  const customerName = params.get("name") || "";
+  const customerEmail = params.get("email") || "";
+
+  const buildConfirmUrl = (extraParams: Record<string, string> = {}) => {
+    const q = new URLSearchParams();
+    if (customerName) q.set("name", customerName);
+    if (customerEmail) q.set("email", customerEmail);
+    if (hasBump) q.set("bump", "1");
+    if (hasUpsell1) q.set("upsell", "1");
+    Object.entries(extraParams).forEach(([k, v]) => q.set(k, v));
+    return `/confirmacion?${q.toString()}`;
+  };
 
   useEffect(() => {
     if (hasUpsell1 && customerId) {
       const timer = setTimeout(() => setShowUpsell2(true), 3000);
+      return () => clearTimeout(timer);
+    } else if (!hasUpsell1) {
+      const timer = setTimeout(() => navigate(buildConfirmUrl()), 2000);
       return () => clearTimeout(timer);
     }
   }, [hasUpsell1, customerId]);
@@ -36,7 +54,7 @@ export default function Obrigado() {
         sessionId,
       });
       await trackConversion.mutateAsync({ sessionId, type: "upsell_2", amount: 5700 });
-      setUpsell2Dismissed(true);
+      navigate(buildConfirmUrl({ upsell2: "1" }));
     } catch (err: any) {
       setError(err.message || "Error al procesar el pago. Intenta de nuevo.");
       setProcessing(false);
@@ -124,7 +142,7 @@ export default function Obrigado() {
               Se cargará automáticamente a tu tarjeta registrada
             </p>
             <button
-              onClick={() => setUpsell2Dismissed(true)}
+              onClick={() => navigate(buildConfirmUrl())}
               className="w-full text-gray-400 text-xs py-2 hover:text-gray-500 transition-colors"
             >
               No gracias, no quiero postres que aceleren mis resultados.

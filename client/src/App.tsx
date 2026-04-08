@@ -12,6 +12,8 @@ import Upsell from "./pages/Upsell";
 import UpsellBR from "./pages/UpsellBR";
 import Obrigado from "./pages/Obrigado";
 import ObrigadoBR from "./pages/ObrigadoBR";
+import ConfirmacaoBR from "./pages/ConfirmacaoBR";
+import Confirmacion from "./pages/Confirmacion";
 import Admin from "./pages/Admin";
 
 function Router() {
@@ -25,11 +27,13 @@ function Router() {
       <Route path={"/vendas"} component={Vendas} />
       <Route path={"/upsell"} component={Upsell} />
       <Route path={"/obrigado"} component={Obrigado} />
+      <Route path={"/confirmacion"} component={Confirmacion} />
 
       {/* Funil Brasil (Português) */}
       <Route path={"/vendas-br"} component={VendasBR} />
       <Route path={"/upsell-br"} component={UpsellBR} />
       <Route path={"/obrigado-br"} component={ObrigadoBR} />
+      <Route path={"/confirmacao-br"} component={ConfirmacaoBR} />
 
       {/* Admin e utilitários */}
       <Route path={"/admin"} component={Admin} />

@@ -48,8 +48,12 @@ function CheckoutForm({
       setErrorMsg(error.message || "Erro no pagamento. Tente novamente.");
       onError(error.message || "Erro no pagamento");
       setProcessing(false);
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+    } else if (paymentIntent && (paymentIntent.status === "succeeded" || paymentIntent.status === "processing")) {
       onSuccess(paymentIntent.id);
+      setProcessing(false);
+    } else if (paymentIntent && paymentIntent.status === "requires_action") {
+      // PIX: Stripe handles the QR code display automatically
+      // The PaymentElement will show the PIX QR code
       setProcessing(false);
     } else {
       setProcessing(false);

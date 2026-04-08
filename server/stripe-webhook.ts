@@ -1,8 +1,10 @@
 import express, { type Express, type Request, type Response } from "express";
-import { constructWebhookEvent } from "./stripe";
+import { constructWebhookEvent, stripe } from "./stripe";
 import { getDb } from "./db";
 import { conversions, quizSessions } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { notifyOwner } from "./_core/notification";
+import { PRODUCTS, type ProductKey } from "./stripe-products";
 
 export function registerStripeWebhook(app: Express) {
   app.post(
@@ -69,6 +71,45 @@ export function registerStripeWebhook(app: Express) {
                 }
               }
             }
+
+            // --- Send post-purchase notification to owner ---
+            const purchasedItems = (productKeys || "").split(",").filter(Boolean);
+            const itemNames = purchasedItems
+              .map((k: string) => PRODUCTS[k as ProductKey]?.name || k)
+              .join(", ");
+            const totalBRL = (paymentIntent.amount / 100).toFixed(2).replace(".", ",");
+
+            await notifyOwner({
+              title: `Nova venda: R$${totalBRL}`,
+              content: [
+                `Cliente: ${customerName || "N/A"} (${customerEmail || "N/A"})`,
+                `Produtos: ${itemNames}`,
+                `Valor total: R$${totalBRL}`,
+                `Método: ${paymentIntent.payment_method_types?.join(", ") || "card"}`,
+                `Session ID: ${sessionId || "N/A"}`,
+                `Payment Intent: ${paymentIntent.id}`,
+              ].join("\n"),
+            }).catch((err: any) => {
+              console.warn("[Stripe Webhook] Failed to notify owner:", err.message);
+            });
+
+            // --- Send confirmation email to customer via Stripe receipt ---
+            // Stripe automatically sends receipts when email_receipt is set on the charge
+            if (customerEmail && paymentIntent.latest_charge) {
+              try {
+                await stripe.charges.update(paymentIntent.latest_charge as string, {
+                  receipt_email: customerEmail,
+                  metadata: {
+                    products: itemNames,
+                    customer_name: customerName || "",
+                  },
+                });
+                console.log(`[Stripe Webhook] Receipt email queued for ${customerEmail}`);
+              } catch (receiptErr: any) {
+                console.warn("[Stripe Webhook] Failed to set receipt email:", receiptErr.message);
+              }
+            }
+
             break;
           }
 
