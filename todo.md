@@ -189,3 +189,8 @@
 
 - [x] Remover PIX do payment_method_types (usar apenas card até ativação no Stripe dashboard)
 - [x] Adicionar lógica condicional para habilitar PIX quando disponível
+
+## Stripe Produção + PIX
+
+- [x] Atualizar chaves Stripe para produção (sk_live + pk_live)
+- [x] Reativar PIX no payment_method_types do stripe.ts
