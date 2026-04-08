@@ -194,3 +194,12 @@
 
 - [x] Atualizar chaves Stripe para produção (sk_live + pk_live)
 - [x] Reativar PIX no payment_method_types do stripe.ts
+
+## Reorganização da Página de Vendas BR
+
+- [x] Corrigir textos quebrados e ajustar line-height/word-break
+- [x] Otimizar espaçamentos entre seções (padding/margin consistentes)
+- [x] Alinhar e centralizar todas as informações
+- [x] Reescrever headline e subheadline com copy mais persuasiva
+- [x] Redesenhar grids para visual minimalista e moderno
+- [x] Manter design system teal/Montserrat intacto

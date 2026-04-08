@@ -3,42 +3,42 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import StripeCheckout from "@/components/StripeCheckout";
 
+/* ── PREÇOS ──────────────────────────────────────────────────────────── */
 const PRODUCT_PRICE = 47;
 const ORDER_BUMP_PRICE = 19.9;
 
+/* ── CONTEÚDO POR TIPO DE BLOQUEIO ───────────────────────────────────── */
 const BLOCK_CONTENT = {
   1: {
     badge: "Bloqueio Tipo 1 — Cortisol Elevado",
-    headline: (name: string) =>
-      `${name}, seu corpo está em modo "emergência" e por isso não consegue queimar gordura`,
-    subheadline:
-      "O estresse crônico eleva o cortisol, que ordena ao seu corpo armazenar gordura abdominal como 'reserva de emergência'. Não é falta de força de vontade. É biologia.",
+    headline: (n: string) =>
+      `${n}, seu corpo está em modo de emergência — e isso trava a queima de gordura`,
+    sub: "O estresse crônico eleva o cortisol e ordena ao seu corpo armazenar gordura abdominal como reserva. Não é falta de disciplina. É biologia pura.",
     color: "#EA580C",
     badgeBg: "#FFF7ED",
     badgeBorder: "#FED7AA",
   },
   2: {
     badge: "Bloqueio Tipo 2 — Resistência à Insulina",
-    headline: (name: string) =>
-      `${name}, cada vez que você faz dieta restritiva, seu corpo aprende a acumular MAIS gordura`,
-    subheadline:
-      "As dietas de restrição calórica ativam o mecanismo de sobrevivência celular, que bloqueia a queima de gordura e a armazena com mais eficiência. Quanto mais você restringe, mais o corpo retém.",
+    headline: (n: string) =>
+      `${n}, cada dieta restritiva ensina seu corpo a acumular mais gordura`,
+    sub: "As dietas de restrição calórica ativam o mecanismo de sobrevivência celular, que bloqueia a queima de gordura. Quanto mais você restringe, mais o corpo retém.",
     color: "#1A8A6E",
     badgeBg: "#E8F8F4",
     badgeBorder: "#6DDFC4",
   },
   3: {
-    badge: "Bloqueio Tipo 3 — Desregulação Hormonal Noturna",
-    headline: (name: string) =>
-      `${name}, sua vontade de doce à noite não é fraqueza — é um sinal hormonal que ninguém te explicou`,
-    subheadline:
-      "A leptina e a grelina — os hormônios da fome — se desregulam pelo estresse e pela restrição. Seu corpo literalmente pede carboidratos à noite para compensar. É química, não falta de vontade.",
+    badge: "Bloqueio Tipo 3 — Desregulação Hormonal",
+    headline: (n: string) =>
+      `${n}, sua vontade de doce à noite não é fraqueza — é um sinal hormonal`,
+    sub: "A leptina e a grelina se desregulam pelo estresse e pela restrição. Seu corpo pede carboidratos à noite para compensar. É química, não falta de vontade.",
     color: "#7C3AED",
     badgeBg: "#F5F3FF",
     badgeBorder: "#C4B5FD",
   },
 };
 
+/* ── COUNTDOWN ───────────────────────────────────────────────────────── */
 function useCountdown() {
   const KEY = "dm_br_countdown_end";
   const getEnd = () => {
@@ -59,8 +59,7 @@ function useCountdown() {
   useEffect(() => {
     const interval = setInterval(() => {
       const end = getEnd();
-      const left = Math.max(0, Math.floor((end - Date.now()) / 1000));
-      setTimeLeft(left);
+      setTimeLeft(Math.max(0, Math.floor((end - Date.now()) / 1000)));
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -69,80 +68,79 @@ function useCountdown() {
   return { minutes, seconds, expired: timeLeft === 0 };
 }
 
-const TESTIMONIALS_BR = [
+/* ── DEPOIMENTOS ─────────────────────────────────────────────────────── */
+const TESTIMONIALS = [
   {
     name: "Fernanda O.",
-    location: "São Paulo, SP",
+    loc: "São Paulo, SP",
     result: "−7 kg em 5 semanas",
-    text: "Fiz todas as dietas que existem. Low carb, jejum intermitente, dieta da proteína... Perdia uns quilinhos e voltava tudo. Quando entendi que meu corpo estava com a Trava Metabólica do Estresse, tudo fez sentido. Em 5 semanas perdi 7 kg sem abrir mão do arroz com feijão.",
+    text: "Fiz todas as dietas que existem. Quando entendi que meu corpo estava com a Trava Metabólica do Estresse, tudo fez sentido. Em 5 semanas perdi 7 kg sem abrir mão do arroz com feijão.",
     avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/avatar_valentina_3cb09301.png",
-    stars: 5,
   },
   {
     name: "Camila S.",
-    location: "Belo Horizonte, MG",
+    loc: "Belo Horizonte, MG",
     result: "−9 kg em 7 semanas",
-    text: "Sempre achei que a culpa era minha, que eu não tinha disciplina. Quando li sobre o Bloqueio Metabólico, chorei de alívio. Finalmente tinha uma explicação real. O protocolo de 3 minutos é tão simples que parece impossível funcionar — mas funciona. 9 quilos em 7 semanas.",
+    text: "Sempre achei que a culpa era minha. Quando li sobre o Bloqueio Metabólico, chorei de alívio. O protocolo de 3 minutos é tão simples que parece impossível funcionar — mas funciona.",
     avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/avatar_carolina_4fa4b365.png",
-    stars: 5,
   },
   {
     name: "Juliana P.",
-    location: "Curitiba, PR",
+    loc: "Curitiba, PR",
     result: "−5 kg em 3 semanas",
-    text: "O que mais me surpreendeu foi não ter que abrir mão de nada. Continuo comendo meu churrasco de fim de semana, meu pão de queijo no café. Só adicionei o ritual de 3 minutos antes das refeições. Na terceira semana já senti a barriga mais chapada e a calça mais folgada.",
+    text: "Continuo comendo meu churrasco de fim de semana, meu pão de queijo no café. Só adicionei o ritual de 3 minutos. Na terceira semana já senti a barriga mais chapada.",
     avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/avatar_daniela_2ce81877.png",
-    stars: 5,
   },
 ];
 
-const FAQ_BR = [
+/* ── FAQ ──────────────────────────────────────────────────────────────── */
+const FAQ = [
   {
-    q: "Funciona para mim se já tentei de tudo sem resultado?",
-    a: "Sim — especialmente para você. O Protocolo de Desbloqueio foi desenvolvido para mulheres que já tentaram dietas convencionais e não tiveram resultado permanente. Se as dietas normais não funcionaram, é porque seu bloqueio metabólico nunca foi tratado. Este protocolo ataca exatamente isso.",
+    q: "Funciona se já tentei de tudo?",
+    a: "Sim — especialmente para você. O Protocolo foi desenvolvido para mulheres que já tentaram dietas convencionais sem resultado permanente. Se as dietas normais não funcionaram, é porque seu bloqueio metabólico nunca foi tratado.",
   },
   {
-    q: "Preciso deixar de comer arroz, feijão, pão de queijo ou churrasco?",
-    a: "Não. O protocolo funciona ADICIONANDO um ritual de 3 minutos antes das suas refeições habituais. Você não elimina nada. Pode continuar comendo seus pratos favoritos — o protocolo prepara seu metabolismo para processá-los sem acumular gordura.",
+    q: "Preciso cortar arroz, feijão ou churrasco?",
+    a: "Não. O protocolo funciona adicionando um ritual de 3 minutos antes das suas refeições habituais. Você não elimina nada — o protocolo prepara seu metabolismo para processar os alimentos sem acumular gordura.",
   },
   {
-    q: "É seguro? Tem efeitos colaterais?",
-    a: "Completamente seguro. O protocolo se baseia em técnicas de ativação enzimática e regulação hormonal natural — sem remédios, sem suplementos, sem procedimentos. É simplesmente uma sequência de ações que sinaliza ao seu corpo que ele pode 'desbloquear' a queima de gordura.",
+    q: "É seguro?",
+    a: "Completamente. O protocolo se baseia em técnicas de ativação enzimática e regulação hormonal natural — sem remédios, sem suplementos, sem procedimentos.",
   },
   {
     q: "Em quanto tempo verei resultados?",
-    a: "A maioria das usuárias relata sentir a barriga mais desinchada nos primeiros 7 dias. Os resultados na balança costumam aparecer entre a semana 2 e 3. Os resultados completos se consolidam em 4 a 8 semanas de uso consistente.",
+    a: "A maioria das usuárias relata sentir a barriga mais desinchada nos primeiros 7 dias. Resultados na balança aparecem entre a semana 2 e 3. Resultados completos em 4 a 8 semanas.",
   },
   {
-    q: "E se não funcionar para mim?",
-    a: "Você tem 30 dias de garantia incondicional. Se por qualquer motivo não estiver satisfeita com os resultados, devolvemos 100% do seu investimento — sem perguntas, sem formulários complicados. O risco é completamente nosso.",
+    q: "E se não funcionar?",
+    a: "Você tem 30 dias de garantia incondicional. Devolvemos 100% do seu investimento — sem perguntas, sem formulários. O risco é completamente nosso.",
   },
 ];
 
-// Kiwify removed — using Stripe embedded checkout
 const VAGAS_GRUPO = 37;
 
-const Check = ({ size = 16, color = "white" }: { size?: number; color?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-    <path d="M5 12l5 5L19 7" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+/* ── ÍCONES ──────────────────────────────────────────────────────────── */
+const Check = ({ s = 14, c = "white" }: { s?: number; c?: string }) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
+    <path d="M5 12l5 5L19 7" stroke={c} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
+/* ════════════════════════════════════════════════════════════════════════
+   COMPONENTE PRINCIPAL
+   ════════════════════════════════════════════════════════════════════════ */
 export default function VendasBR() {
   const [orderBump, setOrderBump] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [exitDismissed, setExitDismissed] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
   const { minutes, seconds } = useCountdown();
-  const [showCheckout, setShowCheckout] = useState(false);
   const [, navigate] = useLocation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
 
-  const params = typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search)
-    : new URLSearchParams();
-
+  const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const sessionId = params.get("s") || undefined;
   const rawName = params.get("n") || "";
   const email = params.get("e") ? decodeURIComponent(params.get("e")!) : undefined;
@@ -161,554 +159,501 @@ export default function VendasBR() {
 
   const handleBuy = () => {
     setShowCheckout(true);
-    // Scroll to checkout after a small delay
-    setTimeout(() => {
-      ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 300);
+    setTimeout(() => ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
   };
 
   const handlePaymentSuccess = (data: { paymentIntentId: string; customerId?: string }) => {
-    // Track conversions
     trackConversion.mutate({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
-    if (orderBump) {
-      trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
-    }
-    // Navigate to upsell page with customer ID for one-click charges
+    if (orderBump) trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
     const custParam = data.customerId ? `&cid=${data.customerId}` : "";
     navigate(`/upsell-br?s=${sessionId || ""}${custParam}`);
   };
 
   const scrollToCta = () => ctaRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  return (
-    <div className="min-h-screen" style={{ background: "var(--dm-white)", fontFamily: "'Montserrat', sans-serif" }}>
+  /* ── ESTILOS REUTILIZÁVEIS ──────────────────────────────────────────── */
+  const sectionCls = "max-w-2xl mx-auto px-5";
+  const headingCls = "text-center mb-10";
+  const h2Cls = "text-[clamp(22px,4.5vw,32px)] font-extrabold leading-[1.25] tracking-tight";
+  const subCls = "text-sm mt-2 leading-relaxed";
 
-      {/* ── EXIT-INTENT POPUP ─────────────────────────────────────────────── */}
+  return (
+    <div className="min-h-screen" style={{ background: "#FAFBFC", fontFamily: "'Montserrat', sans-serif" }}>
+
+      {/* ── EXIT-INTENT POPUP ─────────────────────────────────────────── */}
       {showExitIntent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-[20px] max-w-md w-full p-8 relative animate-in fade-in zoom-in duration-300" style={{ boxShadow: "var(--shadow-lg)" }}>
+          <div className="bg-white rounded-xl max-w-sm w-full p-7 relative animate-in fade-in zoom-in duration-300" style={{ boxShadow: "var(--shadow-lg)" }}>
             <button
               onClick={() => { setShowExitIntent(false); setExitDismissed(true); }}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold transition-colors" style={{ color: "var(--dm-grey-300)", background: "var(--dm-grey-50)" }}
-            >
-              &times;
-            </button>
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--teal-pale)" }}>
-                <span className="text-3xl">⏳</span>
+              className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center text-base font-bold"
+              style={{ color: "var(--dm-grey-300)", background: "var(--dm-grey-50)" }}
+            >&times;</button>
+            <div className="text-center mb-5">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "var(--teal-pale)" }}>
+                <span className="text-2xl">⏳</span>
               </div>
-              <h2 className="text-[22px] font-extrabold mb-2 leading-tight" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
-                {name}, vai deixar seu metabolismo continuar travado?
+              <h2 className="text-xl font-extrabold leading-tight mb-1.5" style={{ color: "var(--dm-text)" }}>
+                {name}, vai deixar seu metabolismo travado?
               </h2>
-              <p className="text-[13px]" style={{ color: "var(--dm-text-soft)" }}>
-                Você já tentou tanto. Essa pode ser a última vez que vê essa oferta.
-              </p>
-            </div>
-            <div className="rounded-2xl p-4 mb-5" style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
-              <p className="text-[13px] font-semibold text-center" style={{ color: "#B91C1C" }}>
+              <p className="text-xs" style={{ color: "var(--dm-text-soft)" }}>
                 Se fechar essa página, o preço de R$47 desaparece.
               </p>
-              <p className="text-[11px] text-center mt-1" style={{ color: "#DC2626" }}>
-                Na próxima vez que ver isso, o preço será R$197.
-              </p>
             </div>
-            <div className="space-y-3 mb-6">
-              {[
-                "Seu bloqueio metabólico NÃO se resolve sozinho com o tempo",
-                "Cada dieta restritiva que você fizer vai piorar ainda mais",
-                "O Protocolo de 3 Minutos é a única solução que ataca a raiz",
-              ].map((point) => (
-                <div key={point} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "var(--teal)" }}>
-                    <Check size={12} />
+            <div className="space-y-2.5 mb-5">
+              {["Seu bloqueio metabólico foi identificado", "O protocolo de 3 minutos é a solução", "Garantia de 30 dias sem risco"].map((p) => (
+                <div key={p} className="flex items-center gap-2.5">
+                  <div className="w-4.5 h-4.5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal)", width: 18, height: 18 }}>
+                    <Check s={10} />
                   </div>
-                  <span className="text-[13px] font-medium" style={{ color: "var(--dm-text)" }}>{point}</span>
+                  <span className="text-xs font-medium" style={{ color: "var(--dm-text)" }}>{p}</span>
                 </div>
               ))}
             </div>
-            <button
-              onClick={() => { setShowExitIntent(false); setExitDismissed(true); handleBuy(); }}
-              className="dm-btn-primary mb-3"
-            >
-              Sim, quero desbloquear meu metabolismo →
+            <button onClick={() => { setShowExitIntent(false); setExitDismissed(true); handleBuy(); }} className="dm-btn-primary text-sm">
+              Sim, quero desbloquear →
             </button>
-            <button
-              onClick={() => { setShowExitIntent(false); setExitDismissed(true); }}
-              className="w-full text-[11px] py-2 transition-colors" style={{ color: "var(--dm-grey-300)" }}
-            >
-              Não, prefiro continuar sem resultado e perder essa oferta.
+            <button onClick={() => { setShowExitIntent(false); setExitDismissed(true); }} className="w-full text-[10px] py-2 mt-1" style={{ color: "var(--dm-grey-300)" }}>
+              Não, prefiro continuar sem resultado.
             </button>
           </div>
         </div>
       )}
 
-      {/* ── BARRA DE URGÊNCIA ─────────────────────────────────────────────── */}
-      <div className="text-white text-center py-3 px-4" style={{ background: "#DC2626" }}>
-        <p className="text-[13px] font-bold">
-          Oferta especial expira em:{" "}
-          <span className="font-mono text-[15px] px-2 py-0.5 rounded" style={{ background: "#991B1B" }}>
+      {/* ── BARRA DE URGÊNCIA ─────────────────────────────────────────── */}
+      <div className="text-white text-center py-2.5 px-4" style={{ background: "#DC2626" }}>
+        <p className="text-xs font-bold tracking-wide">
+          Oferta expira em{" "}
+          <span className="font-mono text-sm px-1.5 py-0.5 rounded" style={{ background: "#991B1B" }}>
             {minutes}:{seconds}
           </span>
           {" "}— Preço normal: <span className="line-through opacity-70">R$197</span>
         </p>
       </div>
 
-      {/* ── HEADER ────────────────────────────────────────────────────────── */}
+      {/* ── HEADER ────────────────────────────────────────────────────── */}
       <header className="dm-header">
-        <div className="max-w-3xl mx-auto px-5 py-3.5 flex items-center justify-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.18)" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
-              <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-center gap-2.5">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.18)" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25" />
+              <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-white font-extrabold text-[15px] leading-tight" style={{ letterSpacing: "-0.025em" }}>Desbloqueio Metabólico</span>
-            <span className="text-white/60 text-[10px] font-medium leading-none mt-0.5" style={{ letterSpacing: "0.15em", textTransform: "uppercase" }}>Protocolo de 3 Minutos</span>
+          <div className="text-center">
+            <span className="text-white font-extrabold text-sm leading-tight block" style={{ letterSpacing: "-0.02em" }}>Desbloqueio Metabólico</span>
+            <span className="text-white/55 text-[9px] font-semibold leading-none block mt-0.5" style={{ letterSpacing: "0.12em", textTransform: "uppercase" }}>Protocolo de 3 Minutos</span>
           </div>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-5 py-10">
-
-        {/* ── SEÇÃO 1: HERO ───────────────────────────────────────────────── */}
-        <div className="text-center mb-14">
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 1 — HERO
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pt-10 pb-12`}>
+        <div className="text-center">
           <span
-            className="inline-block text-[10px] font-bold px-5 py-2 rounded-full mb-5"
-            style={{ background: block.badgeBg, color: block.color, border: `1.5px solid ${block.badgeBorder}`, letterSpacing: "0.15em", textTransform: "uppercase" }}
+            className="inline-block text-[9px] font-bold px-4 py-1.5 rounded-full mb-5"
+            style={{ background: block.badgeBg, color: block.color, border: `1.5px solid ${block.badgeBorder}`, letterSpacing: "0.12em", textTransform: "uppercase" }}
           >
             {block.badge}
           </span>
-          <h1 className="text-[clamp(26px,5vw,38px)] font-extrabold leading-[1.2] mb-5" style={{ color: "var(--dm-text)", letterSpacing: "-0.025em" }}>
-            {block.headline(name).split(name).map((part, i, arr) => (
+
+          <h1
+            className="text-[clamp(24px,5.5vw,36px)] font-extrabold leading-[1.18] mb-4"
+            style={{ color: "var(--dm-text)", letterSpacing: "-0.03em", textWrap: "balance" }}
+          >
+            {block.headline(name).split(name).map((part, i, arr) =>
               i < arr.length - 1
                 ? <span key={i}>{part}<span style={{ color: block.color }}>{name}</span></span>
                 : <span key={i}>{part}</span>
-            ))}
+            )}
           </h1>
-          <p className="text-[15px] max-w-2xl mx-auto mb-7" style={{ color: "var(--dm-text-soft)", lineHeight: 1.75 }}>
-            {block.subheadline}
+
+          <p className="text-sm max-w-lg mx-auto mb-8 leading-relaxed" style={{ color: "var(--dm-text-soft)", textWrap: "pretty" }}>
+            {block.sub}
           </p>
 
           {/* Mini produto */}
-          <div className="inline-flex items-center gap-3 rounded-2xl px-5 py-3.5 mb-7" style={{ background: "var(--teal-pale)", border: `1.5px solid var(--teal-light)` }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "var(--grad)" }}>
-              <Check size={22} />
+          <div className="inline-flex items-center gap-3 rounded-lg px-4 py-3 mb-8" style={{ background: "var(--teal-pale)", border: "1px solid var(--teal-light)" }}>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--grad)" }}>
+              <Check s={18} />
             </div>
             <div className="text-left">
-              <p className="font-bold text-[14px] leading-tight" style={{ color: "var(--teal-dark)" }}>Protocolo do Desbloqueio de 3 Minutos</p>
-              <p className="text-[11px] mt-0.5" style={{ color: "var(--dm-text-soft)" }}>Acesso digital imediato · Funciona com qualquer comida brasileira</p>
+              <p className="font-bold text-[13px] leading-tight" style={{ color: "var(--teal-dark)" }}>Protocolo do Desbloqueio de 3 Minutos</p>
+              <p className="text-[10px] mt-0.5" style={{ color: "var(--dm-text-soft)" }}>Acesso digital imediato · Funciona com qualquer comida</p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={scrollToCta} className="dm-btn-primary max-w-md mx-auto">
+          <div>
+            <button onClick={scrollToCta} className="dm-btn-primary max-w-sm mx-auto text-[15px]">
               Ver minha solução personalizada ↓
             </button>
-          </div>
-          <p className="text-[11px] mt-4" style={{ color: "var(--dm-grey-300)" }}>
-            Pagamento seguro · Acesso imediato · Garantia 30 dias
-          </p>
-        </div>
-
-        {/* ── SEÇÃO 2: BENEFÍCIOS ─────────────────────────────────────────── */}
-        <div className="mb-14">
-          <div className="text-center mb-8">
-            <span className="dm-tag mb-3 inline-flex">
-              <Check size={13} color="#1A8A6E" />
-              Benefícios comprovados
-            </span>
-            <h2 className="text-[clamp(22px,4vw,30px)] font-extrabold" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
-              O que o Protocolo faz pelo seu corpo
-            </h2>
-            <p className="text-[13px] mt-2" style={{ color: "var(--dm-text-soft)" }}>Três transformações que acontecem quando o bloqueio é removido</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              {
-                icon: "🔥",
-                title: "Metabolismo desbloqueado",
-                desc: "Seu corpo volta a queimar gordura naturalmente — em repouso, depois do churrasco, depois do pão de queijo. Sem restrição, sem sofrimento.",
-                highlight: "Sem dieta restritiva",
-              },
-              {
-                icon: "😴",
-                title: "Compulsão noturna eliminada",
-                desc: "A vontade de doce à noite desaparece quando os hormônios da fome voltam ao equilíbrio. Você para de lutar contra o próprio corpo.",
-                highlight: "Sem força de vontade extra",
-              },
-              {
-                icon: "⚡",
-                title: "Energia e disposição de volta",
-                desc: "Com o cortisol regulado, você acorda disposta, dorme profundo e tem energia para a sua rotina — sem precisar de café extra.",
-                highlight: "Desde a primeira semana",
-              },
-            ].map((b) => (
-              <div key={b.title} className="dm-card hover:shadow-md transition-shadow" style={{ padding: "var(--space-6)" }}>
-                <div className="text-4xl mb-4">{b.icon}</div>
-                <h3 className="font-bold text-[15px] mb-2" style={{ color: "var(--dm-text)" }}>{b.title}</h3>
-                <p className="text-[13px] mb-4" style={{ color: "var(--dm-text-soft)", lineHeight: 1.65 }}>{b.desc}</p>
-                <span className="dm-tag">
-                  <Check size={13} color="#1A8A6E" />
-                  {b.highlight}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── SEÇÃO 3: COMO FUNCIONA ──────────────────────────────────────── */}
-        <div className="mb-14 rounded-[20px] p-6 md:p-10" style={{ background: "var(--teal-bg)" }}>
-          <div className="text-center mb-8">
-            <span className="dm-tag mb-3 inline-flex" style={{ letterSpacing: "0.15em", textTransform: "uppercase", fontSize: "10px", fontWeight: 700 }}>
-              Como funciona
-            </span>
-            <h2 className="text-[clamp(22px,4vw,30px)] font-extrabold" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
-              3 passos. 3 minutos. Antes de cada refeição.
-            </h2>
-            <p className="text-[13px] mt-3 max-w-xl mx-auto" style={{ color: "var(--dm-text-soft)", lineHeight: 1.65 }}>
-              Funciona com arroz com feijão, churrasco, feijoada, pão de queijo — qualquer comida brasileira.
+            <p className="text-[10px] mt-3" style={{ color: "var(--dm-grey-300)" }}>
+              Pagamento seguro · Acesso imediato · Garantia 30 dias
             </p>
           </div>
-          <div className="space-y-4">
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 2 — BENEFÍCIOS
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-14`}>
+        <div className={headingCls}>
+          <h2 className={h2Cls} style={{ color: "var(--dm-text)" }}>
+            O que acontece quando o bloqueio é removido
+          </h2>
+          <p className={subCls} style={{ color: "var(--dm-text-soft)" }}>Três transformações reais no seu corpo</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
+          {[
+            { icon: "🔥", title: "Metabolismo ativo", desc: "Seu corpo volta a queimar gordura naturalmente — em repouso, depois do churrasco, depois do pão de queijo.", tag: "Sem dieta restritiva" },
+            { icon: "😴", title: "Compulsão eliminada", desc: "A vontade de doce à noite desaparece quando os hormônios da fome voltam ao equilíbrio.", tag: "Sem força de vontade extra" },
+            { icon: "⚡", title: "Energia restaurada", desc: "Com o cortisol regulado, você acorda disposta, dorme profundo e tem energia para a rotina.", tag: "Desde a primeira semana" },
+          ].map((b) => (
+            <div key={b.title} className="dm-card flex items-start gap-4" style={{ padding: "20px" }}>
+              <span className="text-2xl flex-shrink-0 mt-0.5">{b.icon}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-sm mb-1" style={{ color: "var(--dm-text)" }}>{b.title}</h3>
+                <p className="text-xs leading-relaxed mb-2.5" style={{ color: "var(--dm-text-soft)" }}>{b.desc}</p>
+                <span className="dm-tag text-[10px]">
+                  <Check s={11} c="#1A8A6E" />
+                  {b.tag}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 3 — COMO FUNCIONA
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-14`}>
+        <div className="rounded-xl p-6 md:p-8" style={{ background: "var(--teal-bg)" }}>
+          <div className={headingCls}>
+            <p className="text-[9px] font-bold mb-2 tracking-widest uppercase" style={{ color: "var(--teal-dark)" }}>Como funciona</p>
+            <h2 className={h2Cls} style={{ color: "var(--dm-text)" }}>
+              3 passos. 3 minutos. Antes de cada refeição.
+            </h2>
+            <p className={subCls} style={{ color: "var(--dm-text-soft)" }}>
+              Funciona com arroz com feijão, churrasco, feijoada — qualquer comida brasileira.
+            </p>
+          </div>
+
+          <div className="space-y-3">
             {[
-              {
-                step: "01",
-                title: "Ativação Enzimática",
-                desc: "Uma combinação específica de alimentos comuns que ativa as enzimas lipolíticas — as responsáveis por 'desbloquear' as células de gordura para que liberem energia.",
-                time: "1 minuto",
-                bg: "var(--teal-dark)",
-              },
-              {
-                step: "02",
-                title: "Sinal de Saciedade Antecipada",
-                desc: "Uma técnica de respiração de 60 segundos que reduz o cortisol em tempo real e ativa o sistema nervoso parassimpático — o 'modo queima de gordura' do seu corpo.",
-                time: "1 minuto",
-                bg: "var(--teal)",
-              },
-              {
-                step: "03",
-                title: "Calibração de Insulina",
-                desc: "Um ritual alimentar de 60 segundos que estabiliza a glicose antes de comer, evitando o pico de insulina que converte os carboidratos em gordura armazenada.",
-                time: "1 minuto",
-                bg: "var(--teal-mid)",
-              },
-            ].map((item) => (
-              <div key={item.step} className="flex gap-4 dm-card" style={{ padding: "var(--space-5)" }}>
-                <div className="flex-shrink-0 w-11 h-11 text-white rounded-full flex items-center justify-center font-extrabold text-[13px]" style={{ background: item.bg, boxShadow: "var(--shadow-md)" }}>
-                  {item.step}
+              { n: "01", title: "Ativação Enzimática", desc: "Uma combinação de alimentos comuns que ativa as enzimas lipolíticas — responsáveis por desbloquear as células de gordura.", time: "1 min", bg: "var(--teal-dark)" },
+              { n: "02", title: "Saciedade Antecipada", desc: "Uma técnica de respiração de 60 segundos que reduz o cortisol e ativa o modo queima de gordura do seu corpo.", time: "1 min", bg: "var(--teal)" },
+              { n: "03", title: "Calibração de Insulina", desc: "Um ritual alimentar que estabiliza a glicose antes de comer, evitando o pico de insulina que converte carboidratos em gordura.", time: "1 min", bg: "var(--teal-mid)" },
+            ].map((s) => (
+              <div key={s.n} className="dm-card flex items-start gap-3.5" style={{ padding: "16px 20px" }}>
+                <div className="w-10 h-10 text-white rounded-full flex items-center justify-center font-extrabold text-xs flex-shrink-0" style={{ background: s.bg }}>
+                  {s.n}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-                    <h3 className="font-bold text-[15px]" style={{ color: "var(--dm-text)" }}>{item.title}</h3>
-                    <span className="dm-tag" style={{ fontSize: "11px", fontWeight: 700 }}>{item.time}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="font-bold text-sm" style={{ color: "var(--dm-text)" }}>{s.title}</h3>
+                    <span className="text-[10px] font-bold flex-shrink-0 px-2 py-0.5 rounded-full" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{s.time}</span>
                   </div>
-                  <p className="text-[13px]" style={{ color: "var(--dm-text-soft)", lineHeight: 1.65 }}>{item.desc}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>{s.desc}</p>
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-8 text-center">
-            <button onClick={scrollToCta} className="dm-btn-primary max-w-md mx-auto">
+
+          <div className="mt-7 text-center">
+            <button onClick={scrollToCta} className="dm-btn-primary max-w-sm mx-auto text-[15px]">
               Quero começar hoje →
             </button>
           </div>
         </div>
+      </section>
 
-        {/* ── SEÇÃO 4: QUEM CRIOU ─────────────────────────────────────────── */}
-        <div className="mb-14">
-          <div className="text-center mb-6">
-            <span className="dm-tag inline-flex" style={{ letterSpacing: "0.15em", textTransform: "uppercase", fontSize: "10px", fontWeight: 700 }}>
-              Quem criou este protocolo
-            </span>
-          </div>
-          <div className="dm-card" style={{ padding: "var(--space-6)" }}>
-            <div className="flex items-start gap-5 mb-5">
-              <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/ana_paula_ferreira-mjHRev2Yaie3xqQuHV2EXb.webp"
-                alt="Ana Paula Ferreira"
-                className="flex-shrink-0 w-20 h-20 rounded-full object-cover"
-                style={{ border: "3px solid var(--teal)", boxShadow: "var(--shadow-sm)" }}
-              />
-              <div>
-                <h3 className="font-extrabold text-lg" style={{ color: "var(--dm-text)" }}>Ana Paula Ferreira</h3>
-                <p className="text-[13px]" style={{ color: "var(--dm-text-soft)" }}>Professora · 47 anos · Belo Horizonte, MG</p>
-                <p className="text-[11px] mt-0.5" style={{ color: "var(--dm-grey-300)" }}>Mãe de José (19) e Laura (16)</p>
-              </div>
-            </div>
-            <div className="space-y-3 text-[14px] leading-[1.75]" style={{ color: "var(--dm-text-soft)" }}>
-              <p>
-                Em setembro de 2021, no aniversário de 15 anos da minha filha Laura, meu marido tirou uma foto nossa abraçadas. Quando ele me mostrou, eu não me reconheci. Estava usando um vestido largo justamente para esconder a barriga — e mesmo assim dava para ver.
-              </p>
-              <p>
-                <strong style={{ color: "var(--dm-text)" }}>"Eu achava que era fraqueza minha"</strong>, ela conta. <em>"Que eu não tinha disciplina suficiente. Que todo mundo conseguia emagrecer menos eu. Chorei muito me culpando por isso."</em>
-              </p>
-              <p>
-                A virada aconteceu por acidente. Em uma noite de insônia em 2022, pesquisando sobre cortisol e sono, Ana Paula encontrou um estudo sobre como o estresse crônico literalmente bloqueia a queima de gordura em nível celular — como um <strong style={{ color: "var(--dm-text)" }}>termostato travado</strong>.
-              </p>
-              <p>
-                O resultado: <strong style={{ color: "var(--teal-dark)" }}>14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café da manhã.
-              </p>
-            </div>
-            <div className="mt-5 rounded-2xl p-4" style={{ background: "var(--teal-pale)", border: "1px solid var(--teal-light)" }}>
-              <p className="text-[13px] font-semibold text-center" style={{ color: "var(--teal-dark)" }}>
-                "Se funcionou para mim depois de 11 anos tentando, vai funcionar para você."
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* ── SEÇÃO 5: DEPOIMENTOS ────────────────────────────────────────── */}
-        <div className="mb-14">
-          <div className="text-center mb-8">
-            <h2 className="text-[clamp(22px,4vw,30px)] font-extrabold" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
-              Mulheres brasileiras que já desbloquearam o metabolismo
-            </h2>
-            <p className="text-[13px] mt-2" style={{ color: "var(--dm-text-soft)" }}>Resultados reais de mulheres com os 3 tipos de bloqueio</p>
-          </div>
-          <div className="space-y-4">
-            {TESTIMONIALS_BR.map((t) => (
-              <div key={t.name} className="dm-card" style={{ padding: "var(--space-5)" }}>
-                <div className="flex items-start gap-4">
-                  <img
-                    src={t.avatar}
-                    alt={t.name}
-                    className="w-14 h-14 rounded-full object-cover flex-shrink-0"
-                    style={{ border: "2px solid var(--teal-light)" }}
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
-                      <div>
-                        <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{t.name}</span>
-                        <span className="text-[11px] ml-2" style={{ color: "var(--dm-grey-300)" }}>{t.location}</span>
-                      </div>
-                      <span className="dm-tag" style={{ fontSize: "12px", fontWeight: 700 }}>
-                        {t.result}
-                      </span>
-                    </div>
-                    <div className="flex mb-2">
-                      {Array.from({ length: t.stars }).map((_, i) => (
-                        <span key={i} className="text-amber-400 text-[14px]">★</span>
-                      ))}
-                    </div>
-                    <p className="text-[13px] leading-[1.65]" style={{ color: "var(--dm-text-soft)" }}>"{t.text}"</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ── SEÇÃO 6: URGÊNCIA ───────────────────────────────────────────── */}
-        <div className="rounded-[20px] p-5 mb-12" style={{ background: "#FEF2F2", border: "2px solid #FECACA" }}>
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#FEE2E2" }}>
-              <span className="text-lg">🔴</span>
-            </div>
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 4 — QUEM CRIOU
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-14`}>
+        <p className="text-[9px] font-bold mb-5 tracking-widest uppercase text-center" style={{ color: "var(--teal-dark)" }}>Quem criou este protocolo</p>
+        <div className="dm-card" style={{ padding: "24px" }}>
+          <div className="flex items-center gap-4 mb-5">
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/ana_paula_ferreira-mjHRev2Yaie3xqQuHV2EXb.webp"
+              alt="Ana Paula Ferreira"
+              className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+              style={{ border: "2.5px solid var(--teal)" }}
+            />
             <div>
-              <h3 className="font-extrabold text-[15px] mb-1" style={{ color: "#B91C1C" }}>
-                Apenas {VAGAS_GRUPO} vagas restantes no Grupo de Suporte Privado
-              </h3>
-              <p className="text-[13px] leading-[1.65]" style={{ color: "#DC2626" }}>
-                Cada compra inclui acesso ao grupo privado onde Ana Paula acompanha pessoalmente as participantes. O grupo tem capacidade limitada para garantir atenção individual — quando as {VAGAS_GRUPO} vagas acabarem, o acesso ao grupo será removido da oferta.
-              </p>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="flex-1 h-2 rounded-full" style={{ background: "#FECACA" }}>
-                  <div className="h-2 rounded-full" style={{ background: "#DC2626", width: `${Math.round((VAGAS_GRUPO / 100) * 100)}%` }}/>
-                </div>
-                <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: "#B91C1C" }}>{VAGAS_GRUPO} de 100 vagas</span>
-              </div>
+              <h3 className="font-extrabold text-base" style={{ color: "var(--dm-text)" }}>Ana Paula Ferreira</h3>
+              <p className="text-xs" style={{ color: "var(--dm-text-soft)" }}>Professora · 47 anos · Belo Horizonte, MG</p>
             </div>
           </div>
-        </div>
-
-        {/* ── SEÇÃO 7: OFERTA ─────────────────────────────────────────────── */}
-        <div ref={ctaRef} className="mb-12">
-          {/* Value Stack */}
-          <div className="rounded-[20px] p-6 md:p-8 mb-6" style={{ background: "var(--dm-text)", color: "white" }}>
-            <h2 className="text-[22px] font-extrabold text-center mb-2" style={{ letterSpacing: "-0.02em" }}>
-              Tudo que você recebe hoje
-            </h2>
-            <p className="text-[13px] text-center mb-7" style={{ color: "var(--dm-grey-300)" }}>
-              Valor total: <span className="line-through">R$465</span> — Seu investimento: <span className="font-extrabold text-lg" style={{ color: "var(--teal-mid)" }}>Só R$47</span>
+          <div className="space-y-3 text-[13px] leading-[1.75]" style={{ color: "var(--dm-text-soft)" }}>
+            <p>
+              Em setembro de 2021, no aniversário de 15 anos da filha Laura, o marido tirou uma foto das duas abraçadas. Quando ele mostrou, Ana Paula não se reconheceu. Estava usando um vestido largo para esconder a barriga — e mesmo assim dava para ver.
             </p>
-            <div className="space-y-3 mb-6">
-              {[
-                { item: "Protocolo do Desbloqueio de 3 Minutos (Guia Principal)", value: "R$197" },
-                { item: "Mapa de Alimentos Desbloqueadores para o Brasil", value: "R$97" },
-                { item: "Guia de Emergência: O que fazer quando a vontade de doce ataca", value: "R$67" },
-                { item: "Protocolo de Resgate para o Fim de Semana (churrasco, feijoada e mais)", value: "R$47" },
-                { item: "Acesso a atualizações vitalício", value: "R$57" },
-              ].map((row) => (
-                <div key={row.item} className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal)" }}>
-                      <Check size={12} />
-                    </div>
-                    <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.85)" }}>{row.item}</span>
-                  </div>
-                  <span className="text-[13px] line-through flex-shrink-0 ml-4" style={{ color: "rgba(255,255,255,0.35)" }}>{row.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Order Bump */}
-          <div
-            className="rounded-2xl p-5 mb-5 cursor-pointer transition-all duration-200"
-            style={{
-              border: orderBump ? "2px solid var(--teal)" : "2px dashed var(--dm-grey-300)",
-              background: orderBump ? "var(--teal-pale)" : "var(--dm-grey-50)",
-            }}
-            onClick={() => setOrderBump(!orderBump)}
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className="w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors"
-                style={{
-                  background: orderBump ? "var(--teal-dark)" : "transparent",
-                  border: orderBump ? "2px solid var(--teal-dark)" : "2px solid var(--dm-grey-300)",
-                }}
-              >
-                {orderBump && <Check size={12} />}
-              </div>
-              <div>
-                <p className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>
-                  SIM, quero adicionar o <span style={{ color: "var(--teal-dark)" }}>Guia dos Chás Noturnos Desbloqueadores</span> por apenas +R$19,90
-                </p>
-                <p className="text-[11px] mt-1" style={{ color: "var(--dm-text-soft)" }}>
-                  5 infusões específicas que aceleram o desbloqueio metabólico enquanto você dorme. Funciona em sinergia com o protocolo principal. Inclui chás fáceis de encontrar em qualquer mercado brasileiro.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Âncora de preço */}
-          <div className="rounded-2xl p-4 mb-6 text-center" style={{ background: "#FFFBEB", border: "1px solid #FDE68A" }}>
-            <p className="text-[13px] font-medium" style={{ color: "#92400E" }}>
-              Para referência: uma consulta com nutricionista custa entre R$150 e R$400 — e não vai te dar o Protocolo de Desbloqueio.
-              <strong> Hoje você paga menos que um jantar fora.</strong>
+            <p>
+              <strong style={{ color: "var(--dm-text)" }}>"Eu achava que era fraqueza minha"</strong>, ela conta. <em>"Que eu não tinha disciplina suficiente. Chorei muito me culpando por isso."</em>
+            </p>
+            <p>
+              A virada aconteceu por acidente. Em uma noite de insônia em 2022, pesquisando sobre cortisol e sono, encontrou um estudo sobre como o estresse crônico literalmente bloqueia a queima de gordura — como um <strong style={{ color: "var(--dm-text)" }}>termostato travado</strong>.
+            </p>
+            <p>
+              O resultado: <strong style={{ color: "var(--teal-dark)" }}>14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café.
             </p>
           </div>
-
-          {/* CTA principal / Checkout embutido */}
-          {!showCheckout ? (
-            <>
-              <button
-                onClick={handleBuy}
-                className="dm-btn-primary"
-                style={{ fontSize: "18px", padding: "22px 24px" }}
-              >
-                {`Desbloquear meu Metabolismo por R$${totalPrice.toFixed(2).replace(".", ",")} →`}
-              </button>
-              <p className="text-center text-[11px] mt-3" style={{ color: "var(--dm-grey-300)" }}>
-                Pagamento 100% seguro · Acesso imediato · Garantia de 30 dias
-              </p>
-            </>
-          ) : (
-            <div className="rounded-2xl p-5 md:p-7" style={{ background: "white", boxShadow: "var(--shadow-lg)", border: "2px solid var(--teal-light)" }}>
-              <div className="text-center mb-5">
-                <h3 className="font-extrabold text-[18px] mb-1" style={{ color: "var(--dm-text)" }}>
-                  Finalize seu pedido
-                </h3>
-                <p className="text-[13px]" style={{ color: "var(--dm-text-soft)" }}>
-                  Total: <strong style={{ color: "var(--teal-dark)" }}>R${totalPrice.toFixed(2).replace(".", ",")}</strong>
-                  {orderBump && <span className="text-[11px]"> (Protocolo + Guia de Chás)</span>}
-                </p>
-              </div>
-              <StripeCheckout
-                productKeys={orderBump ? ["main_offer", "order_bump"] : ["main_offer"]}
-                customerEmail={email}
-                customerName={name !== "Amiga" ? name : undefined}
-                sessionId={sessionId}
-                onSuccess={handlePaymentSuccess}
-                onError={(msg) => console.error("Payment error:", msg)}
-                buttonText={`Pagar R$${totalPrice.toFixed(2).replace(".", ",")} com segurança →`}
-              />
-              <div className="mt-4 flex items-center justify-center gap-2">
-                <span className="text-3xl">🛡️</span>
-                <span className="text-[11px]" style={{ color: "var(--dm-grey-300)" }}>Garantia incondicional de 30 dias</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ── SEÇÃO 8: GARANTIA ───────────────────────────────────────────── */}
-        <div className="rounded-[20px] p-6 mb-12 flex gap-4 items-start" style={{ background: "var(--teal-bg)", border: "2px solid var(--teal-light)" }}>
-          <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal-pale)" }}>
-            <span className="text-3xl">🛡️</span>
-          </div>
-          <div>
-            <h3 className="font-extrabold text-[15px] mb-1.5" style={{ color: "var(--dm-text)" }}>Garantia Incondicional de 30 Dias</h3>
-            <p className="text-[13px] leading-[1.65]" style={{ color: "var(--dm-text-soft)" }}>
-              Se por qualquer motivo você não estiver satisfeita com os resultados nos próximos 30 dias, devolvemos 100% do seu dinheiro. Sem perguntas. Sem formulários complicados. O risco é completamente nosso.
+          <div className="mt-5 rounded-lg p-3.5 text-center" style={{ background: "var(--teal-pale)", border: "1px solid var(--teal-light)" }}>
+            <p className="text-xs font-semibold" style={{ color: "var(--teal-dark)" }}>
+              "Se funcionou para mim depois de 11 anos tentando, vai funcionar para você."
             </p>
           </div>
         </div>
+      </section>
 
-        {/* ── SEÇÃO 9: FAQ ────────────────────────────────────────────────── */}
-        <div className="mb-12">
-          <h2 className="text-[clamp(22px,4vw,30px)] font-extrabold text-center mb-8" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
-            Perguntas frequentes
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 5 — DEPOIMENTOS
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-14`}>
+        <div className={headingCls}>
+          <h2 className={h2Cls} style={{ color: "var(--dm-text)" }}>
+            Resultados reais de mulheres brasileiras
           </h2>
-          <div className="space-y-3">
-            {FAQ_BR.map((item, idx) => (
-              <div key={idx} className="rounded-2xl overflow-hidden" style={{ background: "white", boxShadow: "var(--shadow-sm)" }}>
-                <button
-                  className="w-full text-left px-5 py-4 flex items-center justify-between font-semibold transition-colors"
-                  style={{ color: "var(--dm-text)" }}
-                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                >
-                  <span className="text-[14px] pr-4">{item.q}</span>
-                  <span
-                    className="text-lg flex-shrink-0 transition-transform duration-200"
-                    style={{ color: "var(--teal-dark)", transform: openFaq === idx ? "rotate(45deg)" : "none" }}
-                  >
-                    +
-                  </span>
-                </button>
-                {openFaq === idx && (
-                  <div className="px-5 pb-4 text-[13px] leading-[1.65] pt-1" style={{ color: "var(--dm-text-soft)", borderTop: "1px solid var(--dm-grey-100)" }}>
-                    {item.a}
+          <p className={subCls} style={{ color: "var(--dm-text-soft)" }}>Mulheres com os 3 tipos de bloqueio metabólico</p>
+        </div>
+
+        <div className="space-y-3">
+          {TESTIMONIALS.map((t) => (
+            <div key={t.name} className="dm-card" style={{ padding: "20px" }}>
+              <div className="flex items-center gap-3 mb-3">
+                <img src={t.avatar} alt={t.name} className="w-11 h-11 rounded-full object-cover flex-shrink-0" style={{ border: "2px solid var(--teal-light)" }} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-bold text-[13px]" style={{ color: "var(--dm-text)" }}>{t.name}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{t.result}</span>
                   </div>
-                )}
+                  <span className="text-[10px]" style={{ color: "var(--dm-grey-300)" }}>{t.loc}</span>
+                </div>
+              </div>
+              <div className="flex mb-2">
+                {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-xs">★</span>)}
+              </div>
+              <p className="text-xs leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{t.text}"</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 6 — URGÊNCIA
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-10`}>
+        <div className="rounded-xl p-5 flex items-start gap-3.5" style={{ background: "#FEF2F2", border: "1.5px solid #FECACA" }}>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#FEE2E2" }}>
+            <span className="text-base">🔴</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-extrabold text-sm mb-1" style={{ color: "#B91C1C" }}>
+              Apenas {VAGAS_GRUPO} vagas no Grupo de Suporte
+            </h3>
+            <p className="text-xs leading-relaxed" style={{ color: "#DC2626" }}>
+              Cada compra inclui acesso ao grupo privado com acompanhamento pessoal. Capacidade limitada para garantir atenção individual.
+            </p>
+            <div className="mt-3 flex items-center gap-2.5">
+              <div className="flex-1 h-1.5 rounded-full" style={{ background: "#FECACA" }}>
+                <div className="h-1.5 rounded-full" style={{ background: "#DC2626", width: "37%" }} />
+              </div>
+              <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: "#B91C1C" }}>{VAGAS_GRUPO}/100</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 7 — OFERTA + CHECKOUT
+         ════════════════════════════════════════════════════════════════ */}
+      <section ref={ctaRef} className={`${sectionCls} pb-10`}>
+        {/* Value Stack */}
+        <div className="rounded-xl p-6 mb-5" style={{ background: "var(--dm-text)", color: "white" }}>
+          <h2 className="text-xl font-extrabold text-center mb-1.5 tracking-tight">
+            Tudo que você recebe hoje
+          </h2>
+          <p className="text-xs text-center mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>
+            Valor total: <span className="line-through">R$465</span> — Hoje: <span className="font-extrabold text-base" style={{ color: "var(--teal-mid)" }}>R$47</span>
+          </p>
+          <div className="space-y-0">
+            {[
+              { item: "Protocolo do Desbloqueio de 3 Minutos", val: "R$197" },
+              { item: "Mapa de Alimentos Desbloqueadores", val: "R$97" },
+              { item: "Guia de Emergência Anti-Compulsão", val: "R$67" },
+              { item: "Protocolo de Resgate para o Fim de Semana", val: "R$47" },
+              { item: "Atualizações vitalícias", val: "R$57" },
+            ].map((r, i) => (
+              <div key={r.item} className="flex items-center justify-between py-3" style={{ borderBottom: i < 4 ? "1px solid rgba(255,255,255,0.08)" : "none" }}>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal)" }}>
+                    <Check s={10} />
+                  </div>
+                  <span className="text-xs truncate" style={{ color: "rgba(255,255,255,0.85)" }}>{r.item}</span>
+                </div>
+                <span className="text-xs line-through flex-shrink-0 ml-3" style={{ color: "rgba(255,255,255,0.3)" }}>{r.val}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── SEÇÃO 10: CTA FINAL ─────────────────────────────────────────── */}
-        <div className="text-center rounded-[20px] p-8 md:p-10" style={{ background: "var(--grad)" }}>
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: "rgba(255,255,255,0.18)" }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
+        {/* Order Bump */}
+        <div
+          className="rounded-xl p-4 mb-5 cursor-pointer transition-all duration-200"
+          style={{
+            border: orderBump ? "2px solid var(--teal)" : "2px dashed var(--dm-grey-200)",
+            background: orderBump ? "var(--teal-pale)" : "white",
+          }}
+          onClick={() => setOrderBump(!orderBump)}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className="w-5 h-5 rounded flex-shrink-0 mt-0.5 flex items-center justify-center transition-colors"
+              style={{
+                background: orderBump ? "var(--teal-dark)" : "transparent",
+                border: orderBump ? "2px solid var(--teal-dark)" : "2px solid var(--dm-grey-200)",
+              }}
+            >
+              {orderBump && <Check s={10} />}
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-[13px] leading-snug" style={{ color: "var(--dm-text)" }}>
+                Adicionar <span style={{ color: "var(--teal-dark)" }}>Guia dos Chás Noturnos</span> por +R$19,90
+              </p>
+              <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>
+                5 infusões que aceleram o desbloqueio enquanto você dorme. Chás fáceis de encontrar em qualquer mercado.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Âncora de preço */}
+        <div className="rounded-lg p-3.5 mb-5 text-center" style={{ background: "#FFFBEB", border: "1px solid #FDE68A" }}>
+          <p className="text-xs" style={{ color: "#92400E" }}>
+            Uma consulta com nutricionista custa entre R$150 e R$400.
+            <strong> Hoje você paga menos que um jantar fora.</strong>
+          </p>
+        </div>
+
+        {/* CTA / Checkout */}
+        {!showCheckout ? (
+          <div className="text-center">
+            <button onClick={handleBuy} className="dm-btn-primary text-base" style={{ padding: "18px 24px" }}>
+              Desbloquear meu Metabolismo por R${totalPrice.toFixed(2).replace(".", ",")} →
+            </button>
+            <p className="text-[10px] mt-2.5" style={{ color: "var(--dm-grey-300)" }}>
+              Pagamento 100% seguro · Acesso imediato · Garantia 30 dias
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-xl p-5 md:p-6" style={{ background: "white", boxShadow: "var(--shadow-lg)", border: "1.5px solid var(--teal-light)" }}>
+            <div className="text-center mb-4">
+              <h3 className="font-extrabold text-base mb-1" style={{ color: "var(--dm-text)" }}>Finalize seu pedido</h3>
+              <p className="text-xs" style={{ color: "var(--dm-text-soft)" }}>
+                Total: <strong style={{ color: "var(--teal-dark)" }}>R${totalPrice.toFixed(2).replace(".", ",")}</strong>
+                {orderBump && <span> (Protocolo + Guia de Chás)</span>}
+              </p>
+            </div>
+            <StripeCheckout
+              productKeys={orderBump ? ["main_offer", "order_bump"] : ["main_offer"]}
+              customerEmail={email}
+              customerName={name !== "Amiga" ? name : undefined}
+              sessionId={sessionId}
+              onSuccess={handlePaymentSuccess}
+              onError={(msg) => console.error("Payment error:", msg)}
+              buttonText={`Pagar R$${totalPrice.toFixed(2).replace(".", ",")} com segurança →`}
+            />
+            <div className="mt-3 flex items-center justify-center gap-1.5">
+              <span className="text-xl">🛡️</span>
+              <span className="text-[10px]" style={{ color: "var(--dm-grey-300)" }}>Garantia incondicional de 30 dias</span>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 8 — GARANTIA
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-10`}>
+        <div className="rounded-xl p-5 flex items-start gap-4" style={{ background: "var(--teal-bg)", border: "1.5px solid var(--teal-light)" }}>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal-pale)" }}>
+            <span className="text-2xl">🛡️</span>
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-extrabold text-sm mb-1" style={{ color: "var(--dm-text)" }}>Garantia Incondicional de 30 Dias</h3>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>
+              Se por qualquer motivo não estiver satisfeita nos próximos 30 dias, devolvemos 100% do seu dinheiro. Sem perguntas. O risco é completamente nosso.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 9 — FAQ
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-14`}>
+        <h2 className={`${h2Cls} text-center mb-7`} style={{ color: "var(--dm-text)" }}>
+          Perguntas frequentes
+        </h2>
+        <div className="space-y-2.5">
+          {FAQ.map((item, idx) => (
+            <div key={idx} className="rounded-xl overflow-hidden" style={{ background: "white", boxShadow: "var(--shadow-sm)" }}>
+              <button
+                className="w-full text-left px-4 py-3.5 flex items-center justify-between font-semibold"
+                style={{ color: "var(--dm-text)" }}
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+              >
+                <span className="text-[13px] pr-3">{item.q}</span>
+                <span className="text-base flex-shrink-0 transition-transform duration-200" style={{ color: "var(--teal-dark)", transform: openFaq === idx ? "rotate(45deg)" : "none" }}>+</span>
+              </button>
+              {openFaq === idx && (
+                <div className="px-4 pb-3.5 text-xs leading-relaxed pt-0.5" style={{ color: "var(--dm-text-soft)", borderTop: "1px solid var(--dm-grey-100)" }}>
+                  {item.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════════════════
+         SEÇÃO 10 — CTA FINAL
+         ════════════════════════════════════════════════════════════════ */}
+      <section className={`${sectionCls} pb-16`}>
+        <div className="text-center rounded-xl p-8" style={{ background: "var(--grad)" }}>
+          <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(255,255,255,0.18)" }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" />
             </svg>
           </div>
-          <h2 className="text-[22px] font-extrabold text-white mb-3" style={{ letterSpacing: "-0.02em" }}>
+          <h2 className="text-xl font-extrabold text-white mb-2 tracking-tight">
             Ainda aqui, {name}?
           </h2>
-          <p className="text-white/80 text-[14px] mb-2 max-w-md mx-auto">
-            Você tem duas opções agora.
-          </p>
-          <p className="text-white/70 text-[13px] mb-7 max-w-md mx-auto leading-[1.65]">
-            <strong className="text-white/90">Opção 1:</strong> Fechar essa página, continuar tentando as mesmas dietas que não funcionaram, e esperar que algo mude.<br/>
-            <strong className="text-white">Opção 2:</strong> Investir R$47 hoje, remover o bloqueio metabólico que está impedindo seu corpo de emagrecer, e começar a ver resultados em 7 dias.
+          <p className="text-white/75 text-[13px] mb-1.5">Você tem duas opções agora.</p>
+          <p className="text-white/65 text-xs mb-6 max-w-sm mx-auto leading-relaxed">
+            <strong className="text-white/90">Opção 1:</strong> Fechar essa página e continuar tentando as mesmas dietas.<br />
+            <strong className="text-white">Opção 2:</strong> Investir R$47, remover o bloqueio e ver resultados em 7 dias.
           </p>
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
-            className="dm-btn-white max-w-md mx-auto"
-            style={{ fontSize: "18px" }}
+            className="dm-btn-white max-w-sm mx-auto text-base"
           >
-            Sim, quero desbloquear meu metabolismo →
+            Sim, quero desbloquear →
           </button>
-          <p className="text-[11px] mt-4 text-white/50">
+          <p className="text-[10px] mt-3 text-white/45">
             Garantia de 30 dias · Acesso imediato · Só R$47
           </p>
         </div>
+      </section>
 
-      </div>
     </div>
   );
 }
