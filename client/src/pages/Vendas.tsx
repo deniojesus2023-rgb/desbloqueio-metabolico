@@ -270,12 +270,13 @@ export default function Vendas() {
 
       {/* Header */}
       <header className="bg-[#00BFA5] sticky top-0 z-10 shadow-md">
-        <div className="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-center gap-2">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <circle cx="11" cy="11" r="11" fill="white" fillOpacity="0.2"/>
-            <path d="M7 11l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="text-white font-extrabold text-base tracking-tight">Desbloqueo Metabólico</span>
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-center">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-desbloqueio-metabolico_52602d94.png"
+            alt="Desbloqueo Metab\u00f3lico"
+            className="h-10 w-auto object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
         </div>
       </header>
 

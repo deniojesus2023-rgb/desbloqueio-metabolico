@@ -136,6 +136,17 @@ export default function Upsell() {
           ⚠️ ¡ESPERA! Tu pedido aún no está completo. No cierres esta página.
         </p>
       </div>
+      {/* Logo Header */}
+      <header className="bg-[#00BFA5] shadow-md">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-center">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-desbloqueio-metabolico_52602d94.png"
+            alt="Desbloqueo Metab\u00f3lico"
+            className="h-10 w-auto object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
+        </div>
+      </header>
 
       <div className="max-w-2xl mx-auto px-4 py-10">
         <div className="text-center mb-8">

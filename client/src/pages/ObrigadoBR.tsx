@@ -65,7 +65,19 @@ export default function ObrigadoBR() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12" style={{ background: "var(--dm-white)", fontFamily: "'Montserrat', sans-serif" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--dm-white)", fontFamily: "'Montserrat', sans-serif" }}>
+      {/* Logo Header */}
+      <header className="dm-header">
+        <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-center">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-desbloqueio-metabolico_52602d94.png"
+            alt="Desbloqueio Metab\u00f3lico"
+            className="h-10 w-auto object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
+        </div>
+      </header>
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-12">
       <div className="max-w-lg w-full text-center">
         <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "var(--teal-pale)" }}>
           <span className="text-4xl">🎉</span>
@@ -167,6 +179,7 @@ export default function ObrigadoBR() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

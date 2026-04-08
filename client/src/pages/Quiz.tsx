@@ -231,21 +231,13 @@ export default function Quiz() {
     <header className="dm-header" style={{ paddingTop: "env(safe-area-inset-top, 12px)" }}>
       <div className="flex items-center justify-between max-w-md mx-auto px-5 py-3.5">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.18)" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
-              <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-extrabold text-[15px] leading-tight tracking-tight" style={{ letterSpacing: "-0.025em" }}>
-              {lang === "pt" ? "Desbloqueio Metabólico" : "Desbloqueo Metabólico"}
-            </span>
-            <span className="text-white/60 text-[10px] font-medium leading-none mt-0.5" style={{ letterSpacing: "0.15em", textTransform: "uppercase" }}>
-              {lang === "pt" ? "Diagnóstico Personalizado" : "Diagnóstico Personalizado"}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-desbloqueio-metabolico_52602d94.png"
+            alt="Desbloqueio Metab\u00f3lico"
+            className="h-9 w-auto object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
         </div>
         <div className="flex items-center gap-2">
           {showTimer && (

@@ -133,17 +133,13 @@ export default function UpsellBR() {
     <div className="min-h-screen" style={{ background: "var(--dm-white)", fontFamily: "'Montserrat', sans-serif" }}>
       {/* Header */}
       <header className="dm-header">
-        <div className="max-w-2xl mx-auto px-5 py-3.5 flex items-center justify-center gap-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.18)" }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
-              <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-white font-extrabold text-[15px] leading-tight" style={{ letterSpacing: "-0.025em" }}>Desbloqueio Metabólico</span>
-            <span className="text-white/60 text-[10px] font-medium leading-none mt-0.5" style={{ letterSpacing: "0.15em", textTransform: "uppercase" }}>Protocolo de 3 Minutos</span>
-          </div>
+        <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-center">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-desbloqueio-metabolico_52602d94.png"
+            alt="Desbloqueio Metab\u00f3lico"
+            className="h-10 w-auto object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
         </div>
       </header>
 
