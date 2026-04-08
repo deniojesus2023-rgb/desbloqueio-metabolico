@@ -232,7 +232,7 @@ export default function Vendas() {
                 setExitDismissed(true);
                 handleBuy();
               }}
-              className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-lg py-4 rounded-full transition-all active:scale-95 shadow-lg shadow-teal-200 mb-3"
+              className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-lg py-4 rounded-[5px] transition-all active:scale-95 shadow-lg shadow-teal-200 mb-3"
             >
               Sí, quiero desbloquear mi metabolismo por $27 →
             </button>
@@ -287,7 +287,7 @@ export default function Vendas() {
           </p>
           <button
             onClick={scrollToCta}
-            className="bg-[#00BFA5] hover:bg-[#00A896] text-white font-bold px-8 py-3 rounded-full text-base transition-all duration-200 shadow-lg shadow-teal-200"
+            className="bg-[#00BFA5] hover:bg-[#00A896] text-white font-bold px-8 py-3 rounded-[5px] text-base transition-all duration-200 shadow-lg shadow-teal-200"
           >
             Ver mi solución personalizada ↓
           </button>
@@ -603,7 +603,7 @@ export default function Vendas() {
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
-            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] active:scale-[0.99] text-white font-extrabold text-xl py-5 rounded-full transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
+            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] active:scale-[0.99] text-white font-extrabold text-xl py-5 rounded-[5px] transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
           >
             {trackConversion.isPending
               ? "Procesando..."
@@ -661,7 +661,7 @@ export default function Vendas() {
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
-            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-xl py-5 rounded-full transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
+            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-xl py-5 rounded-[5px] transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
           >
             Sí, quiero desbloquear mi metabolismo →
           </button>

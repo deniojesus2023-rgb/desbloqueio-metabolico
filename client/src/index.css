@@ -228,7 +228,7 @@
   font-weight: 700;
   font-size: 16px;
   padding: 20px 24px;
-  border-radius: 100px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -258,7 +258,7 @@
   font-weight: 700;
   font-size: 16px;
   padding: 20px 24px;
-  border-radius: 100px;
+  border-radius: 5px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;

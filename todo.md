@@ -158,3 +158,7 @@
 - [x] Reescrever index.css com tokens completos do design system (cores teal, sombras tonalizadas, espaçamentos 4px, gradiente, componentes CSS)
 - [x] Reescrever Quiz.tsx com design system aplicado (dm-header, dm-btn-primary, dm-option, dm-card, dm-pill, dm-tag, dm-progress)
 - [x] Reescrever VendasBR.tsx com design system aplicado (dm-header, dm-btn-primary, dm-btn-white, dm-card, dm-tag, dm-gradient-text)
+
+## Ajuste de Border Radius
+
+- [x] Alterar border-radius de todos os botões para 5px (CSS global + componentes inline)
