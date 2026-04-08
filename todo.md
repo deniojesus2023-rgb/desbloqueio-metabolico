@@ -162,3 +162,15 @@
 ## Ajuste de Border Radius
 
 - [x] Alterar border-radius de todos os botões para 5px (CSS global + componentes inline)
+
+## Integração Stripe — Checkout Embutido
+
+- [x] Ativar feature Stripe no projeto (webdev_add_feature)
+- [x] Configurar chaves da API (pk_test + sk_test)
+- [x] Criar procedimentos tRPC para criar PaymentIntent e processar pagamentos
+- [x] Implementar checkout embutido com Stripe Elements na VendasBR.tsx
+- [x] Implementar order bump no checkout (checkbox que soma ao valor)
+- [x] Implementar upsell one-click (cobrar sem pedir cartão novamente)
+- [x] Implementar downsell one-click
+- [x] Implementar checkout embutido na Vendas.tsx (ES-LATAM)
+- [x] Testar fluxo completo: pagamento → order bump → upsell → downsell

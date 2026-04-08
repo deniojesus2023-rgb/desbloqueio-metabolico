@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import StripeCheckout from "@/components/StripeCheckout";
 
 const PRODUCT_PRICE = 47;
 const ORDER_BUMP_PRICE = 19.9;
@@ -117,7 +119,7 @@ const FAQ_BR = [
   },
 ];
 
-const KIWIFY_BR_MAIN = "https://pay.kiwify.com/JTSj9Qi";
+// Kiwify removed — using Stripe embedded checkout
 const VAGAS_GRUPO = 37;
 
 const Check = ({ size = 16, color = "white" }: { size?: number; color?: string }) => (
@@ -133,6 +135,8 @@ export default function VendasBR() {
   const [exitDismissed, setExitDismissed] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
   const { minutes, seconds } = useCountdown();
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [, navigate] = useLocation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
 
   const params = typeof window !== "undefined"
@@ -141,6 +145,7 @@ export default function VendasBR() {
 
   const sessionId = params.get("s") || undefined;
   const rawName = params.get("n") || "";
+  const email = params.get("e") ? decodeURIComponent(params.get("e")!) : undefined;
   const name = rawName ? decodeURIComponent(rawName) : "Amiga";
   const blockType = (parseInt(params.get("block") || "2") || 2) as 1 | 2 | 3;
   const block = BLOCK_CONTENT[blockType] || BLOCK_CONTENT[2];
@@ -154,13 +159,23 @@ export default function VendasBR() {
     return () => document.removeEventListener("mouseleave", handleMouseLeave);
   }, [exitDismissed]);
 
-  const handleBuy = async () => {
-    await trackConversion.mutateAsync({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
+  const handleBuy = () => {
+    setShowCheckout(true);
+    // Scroll to checkout after a small delay
+    setTimeout(() => {
+      ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  };
+
+  const handlePaymentSuccess = (data: { paymentIntentId: string; customerId?: string }) => {
+    // Track conversions
+    trackConversion.mutate({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
     if (orderBump) {
-      await trackConversion.mutateAsync({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
+      trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
     }
-    const upsellUrl = encodeURIComponent(`${window.location.origin}/upsell-br?s=${sessionId || ""}`);
-    window.location.href = `${KIWIFY_BR_MAIN}?redirect_to=${upsellUrl}`;
+    // Navigate to upsell page with customer ID for one-click charges
+    const custParam = data.customerId ? `&cid=${data.customerId}` : "";
+    navigate(`/upsell-br?s=${sessionId || ""}${custParam}`);
   };
 
   const scrollToCta = () => ctaRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -576,20 +591,46 @@ export default function VendasBR() {
             </p>
           </div>
 
-          {/* CTA principal */}
-          <button
-            onClick={handleBuy}
-            disabled={trackConversion.isPending}
-            className="dm-btn-primary"
-            style={{ fontSize: "18px", padding: "22px 24px" }}
-          >
-            {trackConversion.isPending
-              ? "Processando..."
-              : `Desbloquear meu Metabolismo por R$${totalPrice.toFixed(2).replace(".", ",")} →`}
-          </button>
-          <p className="text-center text-[11px] mt-3" style={{ color: "var(--dm-grey-300)" }}>
-            Pagamento 100% seguro · Acesso imediato · Garantia de 30 dias
-          </p>
+          {/* CTA principal / Checkout embutido */}
+          {!showCheckout ? (
+            <>
+              <button
+                onClick={handleBuy}
+                className="dm-btn-primary"
+                style={{ fontSize: "18px", padding: "22px 24px" }}
+              >
+                {`Desbloquear meu Metabolismo por R$${totalPrice.toFixed(2).replace(".", ",")} →`}
+              </button>
+              <p className="text-center text-[11px] mt-3" style={{ color: "var(--dm-grey-300)" }}>
+                Pagamento 100% seguro · Acesso imediato · Garantia de 30 dias
+              </p>
+            </>
+          ) : (
+            <div className="rounded-2xl p-5 md:p-7" style={{ background: "white", boxShadow: "var(--shadow-lg)", border: "2px solid var(--teal-light)" }}>
+              <div className="text-center mb-5">
+                <h3 className="font-extrabold text-[18px] mb-1" style={{ color: "var(--dm-text)" }}>
+                  Finalize seu pedido
+                </h3>
+                <p className="text-[13px]" style={{ color: "var(--dm-text-soft)" }}>
+                  Total: <strong style={{ color: "var(--teal-dark)" }}>R${totalPrice.toFixed(2).replace(".", ",")}</strong>
+                  {orderBump && <span className="text-[11px]"> (Protocolo + Guia de Chás)</span>}
+                </p>
+              </div>
+              <StripeCheckout
+                productKeys={orderBump ? ["main_offer", "order_bump"] : ["main_offer"]}
+                customerEmail={email}
+                customerName={name !== "Amiga" ? name : undefined}
+                sessionId={sessionId}
+                onSuccess={handlePaymentSuccess}
+                onError={(msg) => console.error("Payment error:", msg)}
+                buttonText={`Pagar R$${totalPrice.toFixed(2).replace(".", ",")} com segurança →`}
+              />
+              <div className="mt-4 flex items-center justify-center gap-2">
+                <span className="text-3xl">🛡️</span>
+                <span className="text-[11px]" style={{ color: "var(--dm-grey-300)" }}>Garantia incondicional de 30 dias</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── SEÇÃO 8: GARANTIA ───────────────────────────────────────────── */}

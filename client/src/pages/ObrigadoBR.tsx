@@ -1,67 +1,101 @@
 import { useState, useEffect } from "react";
-
-const KIWIFY_UPSELL2_BR = "https://pay.kiwify.com/jDz6Q6C";
+import { trpc } from "@/lib/trpc";
 
 export default function ObrigadoBR() {
   const [showUpsell2, setShowUpsell2] = useState(false);
   const [upsell2Dismissed, setUpsell2Dismissed] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const chargeUpsell = trpc.payment.chargeUpsell.useMutation();
+  const trackConversion = trpc.quiz.trackConversion.useMutation();
+
+  const params = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+
+  const hasUpsell1 = params.get("upsell") === "1";
+  const customerId = params.get("cid") || undefined;
+  const sessionId = params.get("s") || undefined;
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const hasUpsell1 = params.get("upsell") === "1";
     if (hasUpsell1) {
       const timer = setTimeout(() => setShowUpsell2(true), 3000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [hasUpsell1]);
+
+  const handleUpsell2Accept = async () => {
+    if (!customerId) {
+      setError("Erro: dados de pagamento não encontrados.");
+      return;
+    }
+    setProcessing(true);
+    setError("");
+    try {
+      await chargeUpsell.mutateAsync({
+        customerId,
+        productKey: "upsell_2" as any,
+        sessionId,
+      });
+      await trackConversion.mutateAsync({ sessionId, type: "upsell_2", amount: 5700 });
+      setUpsell2Dismissed(true);
+    } catch (err: any) {
+      setError(err.message || "Erro ao processar pagamento.");
+      setProcessing(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white font-sans flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12" style={{ background: "var(--dm-white)", fontFamily: "'Montserrat', sans-serif" }}>
       <div className="max-w-lg w-full text-center">
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "var(--teal-pale)" }}>
           <span className="text-4xl">🎉</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-3">
+        <h1 className="text-[28px] font-extrabold mb-3" style={{ color: "var(--dm-text)", letterSpacing: "-0.025em" }}>
           Bem-vinda à sua transformação!
         </h1>
-        <p className="text-gray-600 mb-6 leading-relaxed">
+        <p className="text-[14px] mb-6 leading-[1.65]" style={{ color: "var(--dm-text-soft)" }}>
           Seu pedido foi confirmado com sucesso. Nos próximos minutos você receberá um e-mail com o acesso a todo o material. Verifique também sua caixa de spam.
         </p>
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 mb-6">
-          <h3 className="font-bold text-emerald-800 mb-2">O que fazer agora?</h3>
-          <ol className="text-left text-emerald-700 text-sm space-y-2">
-            <li><strong>1.</strong> Verifique seu e-mail (inclusive o spam)</li>
-            <li><strong>2.</strong> Baixe o Guia Mestre do Desbloqueio de 3 Minutos</li>
-            <li><strong>3.</strong> Aplique o protocolo amanhã antes do café da manhã</li>
-            <li><strong>4.</strong> Observe as mudanças nos primeiros 7 dias</li>
+        <div className="rounded-2xl p-5 mb-6 text-left" style={{ background: "var(--teal-bg)", border: "1.5px solid var(--teal-light)" }}>
+          <h3 className="font-bold text-[15px] mb-3" style={{ color: "var(--teal-dark)" }}>O que fazer agora?</h3>
+          <ol className="text-[13px] space-y-2" style={{ color: "var(--dm-text-soft)" }}>
+            <li><strong style={{ color: "var(--dm-text)" }}>1.</strong> Verifique seu e-mail (inclusive o spam)</li>
+            <li><strong style={{ color: "var(--dm-text)" }}>2.</strong> Baixe o Guia Mestre do Desbloqueio de 3 Minutos</li>
+            <li><strong style={{ color: "var(--dm-text)" }}>3.</strong> Aplique o protocolo amanhã antes do café da manhã</li>
+            <li><strong style={{ color: "var(--dm-text)" }}>4.</strong> Observe as mudanças nos primeiros 7 dias</li>
           </ol>
         </div>
-        <img
-          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo_desbloqueio_metabolico-XXWBHTmoyhnmkSeSUASCTv.webp"
-          alt="Desbloqueio Metabólico"
-          className="h-8 object-contain mx-auto opacity-50"
-        />
+        <div className="flex items-center justify-center gap-3 opacity-50">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "var(--teal-pale)" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M7 12l3.5 3.5L17 8" stroke="var(--teal-dark)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <span className="font-extrabold text-[13px]" style={{ color: "var(--dm-text)" }}>Desbloqueio Metabólico</span>
+        </div>
       </div>
 
       {/* UPSELL 2 POPUP — aparece 3s após a página carregar para quem comprou o Upsell1 */}
       {showUpsell2 && !upsell2Dismissed && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-[20px] max-w-md w-full p-8 relative animate-in fade-in zoom-in duration-300" style={{ boxShadow: "var(--shadow-lg)" }}>
             <button
               onClick={() => setUpsell2Dismissed(true)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl font-bold"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-lg font-bold transition-colors"
+              style={{ color: "var(--dm-grey-300)", background: "var(--dm-grey-50)" }}
             >
-              ✕
+              &times;
             </button>
 
             <div className="text-center mb-5">
-              <span className="inline-block bg-amber-100 text-amber-700 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase">
+              <span className="inline-block text-[10px] font-bold px-4 py-2 rounded-full mb-3" style={{ background: "#FFFBEB", color: "#92400E", border: "1.5px solid #FDE68A", letterSpacing: "0.15em", textTransform: "uppercase" }}>
                 ⚡ Oferta especial — Só para você
               </span>
-              <h2 className="text-xl font-extrabold text-gray-900 mb-2 leading-tight">
-                Adicione o <span className="text-emerald-600">Mapa Corporal de Desbloqueio</span> por apenas R$47
+              <h2 className="text-[20px] font-extrabold mb-2 leading-tight" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
+                Adicione o <span style={{ color: "var(--teal-dark)" }}>Mapa Corporal de Desbloqueio</span> por apenas R$57
               </h2>
-              <p className="text-gray-500 text-sm">
+              <p className="text-[13px]" style={{ color: "var(--dm-text-soft)" }}>
                 Um guia visual que mostra exatamente quais pontos do seu corpo ativar para acelerar a queima de gordura localizada — especialmente barriga, quadril e coxas.
               </p>
             </div>
@@ -73,29 +107,41 @@ export default function ObrigadoBR() {
                 "Técnica específica para gordura abdominal pós-estresse",
               ].map((point) => (
                 <div key={point} className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold flex-shrink-0 mt-0.5">✓</span>
-                  <span className="text-gray-700 text-sm">{point}</span>
+                  <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "var(--teal)" }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12l5 5L19 7" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span className="text-[13px]" style={{ color: "var(--dm-text-soft)" }}>{point}</span>
                 </div>
               ))}
             </div>
 
             <div className="text-center mb-5">
-              <p className="text-gray-400 line-through">R$97</p>
-              <p className="text-3xl font-extrabold text-emerald-600">R$47</p>
+              <p className="line-through" style={{ color: "var(--dm-grey-300)" }}>R$97</p>
+              <p className="text-3xl font-extrabold" style={{ color: "var(--teal-dark)" }}>R$57</p>
             </div>
 
+            {error && (
+              <div className="mb-3 p-3 rounded-lg text-[13px] font-medium" style={{ background: "#FEF2F2", color: "#B91C1C", border: "1px solid #FECACA" }}>
+                {error}
+              </div>
+            )}
+
             <button
-              onClick={() => {
-                setUpsell2Dismissed(true);
-                window.location.href = KIWIFY_UPSELL2_BR;
-              }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base py-4 rounded-2xl transition-all active:scale-95 mb-3"
+              onClick={handleUpsell2Accept}
+              disabled={processing}
+              className="dm-btn-primary mb-3"
+              style={{ opacity: processing ? 0.7 : 1 }}
             >
-              Sim, quero o Mapa Corporal por R$47 →
+              {processing ? "Processando..." : "Sim, quero o Mapa Corporal por R$57 →"}
             </button>
+            <p className="text-center text-[11px] mb-3" style={{ color: "var(--dm-grey-300)" }}>
+              ⚡ Cobrança automática no mesmo cartão
+            </p>
             <button
               onClick={() => setUpsell2Dismissed(true)}
-              className="w-full text-gray-400 text-xs py-2 hover:text-gray-500 transition-colors"
+              className="w-full text-[11px] py-2 transition-colors" style={{ color: "var(--dm-grey-300)" }}
             >
               Não, obrigada.
             </button>

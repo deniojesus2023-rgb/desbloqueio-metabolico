@@ -1,20 +1,47 @@
 import { useEffect, useState } from "react";
-
-const KIWIFY_UPSELL2 = "https://pay.kiwify.com/jDz6Q6C";
+import { trpc } from "@/lib/trpc";
 
 export default function Obrigado() {
   const [showUpsell2, setShowUpsell2] = useState(false);
   const [upsell2Dismissed, setUpsell2Dismissed] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const chargeUpsell = trpc.payment.chargeUpsell.useMutation();
+  const trackConversion = trpc.quiz.trackConversion.useMutation();
+
+  const params = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+
+  const sessionId = params.get("s") || undefined;
+  const customerId = params.get("cid") || undefined;
+  const hasUpsell1 = params.get("upsell") === "1";
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const hasUpsell1 = params.get("upsell") === "1";
-    // Mostrar Upsell2 apenas para quem comprou o Upsell1
-    if (hasUpsell1) {
+    if (hasUpsell1 && customerId) {
       const timer = setTimeout(() => setShowUpsell2(true), 3000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [hasUpsell1, customerId]);
+
+  const handleUpsell2Accept = async () => {
+    if (!customerId) return;
+    setProcessing(true);
+    setError(null);
+    try {
+      await chargeUpsell.mutateAsync({
+        customerId,
+        productKey: "upsell_2",
+        sessionId,
+      });
+      await trackConversion.mutateAsync({ sessionId, type: "upsell_2", amount: 5700 });
+      setUpsell2Dismissed(true);
+    } catch (err: any) {
+      setError(err.message || "Error al procesar el pago. Intenta de nuevo.");
+      setProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col items-center justify-center px-4 py-12">
@@ -44,7 +71,7 @@ export default function Obrigado() {
         />
       </div>
 
-      {/* UPSELL 2 POPUP — aparece 3s após a página carregar para quem comprou Upsell1 */}
+      {/* UPSELL 2 POPUP — one-click Stripe */}
       {showUpsell2 && !upsell2Dismissed && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative">
@@ -75,20 +102,27 @@ export default function Obrigado() {
             </div>
 
             <div className="text-center mb-5">
-              <p className="text-gray-400 line-through text-base">$47</p>
-              <p className="text-4xl font-extrabold text-emerald-600">$27</p>
+              <p className="text-gray-400 line-through text-base">$97</p>
+              <p className="text-4xl font-extrabold text-emerald-600">$57</p>
               <p className="text-gray-400 text-xs mt-1">Un único pago · Acceso inmediato</p>
             </div>
 
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-center">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+
             <button
-              onClick={() => {
-                setUpsell2Dismissed(true);
-                window.location.href = KIWIFY_UPSELL2;
-              }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 rounded-2xl mb-3 transition-all active:scale-95 shadow-lg shadow-emerald-200"
+              onClick={handleUpsell2Accept}
+              disabled={processing}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 rounded-[5px] mb-2 transition-all active:scale-95 shadow-lg shadow-emerald-200 disabled:opacity-70"
             >
-              Sí, quiero los Postres Desbloqueadores por $27 →
+              {processing ? "Procesando pago..." : "Sí, quiero los Postres Desbloqueadores por $57 →"}
             </button>
+            <p className="text-center text-[11px] text-gray-400 mb-3">
+              Se cargará automáticamente a tu tarjeta registrada
+            </p>
             <button
               onClick={() => setUpsell2Dismissed(true)}
               className="w-full text-gray-400 text-xs py-2 hover:text-gray-500 transition-colors"

@@ -7,6 +7,8 @@ import { getDb } from "./db";
 import { quizSessions, quizAnswers, conversions } from "../drizzle/schema";
 import { eq, desc, count, sql, and, gte, lte } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { createPaymentIntent, chargeOneClick } from "./stripe";
+import { PRODUCTS } from "./stripe-products";
 
 export const appRouter = router({
   system: systemRouter,
@@ -111,6 +113,49 @@ export const appRouter = router({
             .where(eq(quizSessions.sessionId, input.sessionId));
         }
         return { success: true };
+      }),
+  }),
+
+  payment: router({
+    createIntent: publicProcedure
+      .input(z.object({
+        productKeys: z.array(z.enum(["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2"])),
+        customerEmail: z.string().email().optional(),
+        customerName: z.string().optional(),
+        sessionId: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await createPaymentIntent({
+          productKeys: input.productKeys,
+          customerEmail: input.customerEmail,
+          customerName: input.customerName,
+          sessionId: input.sessionId,
+        });
+        return result;
+      }),
+
+    chargeUpsell: publicProcedure
+      .input(z.object({
+        customerId: z.string(),
+        productKey: z.enum(["upsell_1", "downsell_1", "upsell_2"]),
+        sessionId: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await chargeOneClick({
+          customerId: input.customerId,
+          productKey: input.productKey,
+          sessionId: input.sessionId,
+        });
+        return result;
+      }),
+
+    getProducts: publicProcedure
+      .query(() => {
+        return Object.entries(PRODUCTS).map(([key, product]) => ({
+          key,
+          ...product,
+          displayPrice: (product.amount / 100).toFixed(2),
+        }));
       }),
   }),
 

@@ -2,23 +2,40 @@ import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 
-const KIWIFY_UPSELL1 = "https://pay.kiwify.com/sodA6jl";
-const KIWIFY_DOWNSELL = "https://pay.kiwify.com/rB4iy3r";
-
 export default function Upsell() {
   const [, navigate] = useLocation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
+  const chargeUpsell = trpc.payment.chargeUpsell.useMutation();
   const [declined, setDeclined] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const sessionId = typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search).get("s") || undefined
-    : undefined;
+  const params = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+
+  const sessionId = params.get("s") || undefined;
+  const customerId = params.get("cid") || undefined;
 
   const handleAccept = async () => {
-    await trackConversion.mutateAsync({ sessionId, type: "upsell_1", amount: 4700 });
-    // Redirecionar para Kiwify Upsell 1 com retorno para página de obrigado
-    const obrigadoUrl = encodeURIComponent(`${window.location.origin}/obrigado?upsell=1`);
-    window.location.href = `${KIWIFY_UPSELL1}?redirect_to=${obrigadoUrl}`;
+    if (!customerId) {
+      navigate(`/obrigado?s=${sessionId || ""}`);
+      return;
+    }
+    setProcessing(true);
+    setError(null);
+    try {
+      await chargeUpsell.mutateAsync({
+        customerId,
+        productKey: "upsell_1",
+        sessionId,
+      });
+      await trackConversion.mutateAsync({ sessionId, type: "upsell_1", amount: 9700 });
+      navigate(`/obrigado?s=${sessionId || ""}&cid=${customerId}&upsell=1`);
+    } catch (err: any) {
+      setError(err.message || "Error al procesar el pago. Intenta de nuevo.");
+      setProcessing(false);
+    }
   };
 
   const handleDecline = () => {
@@ -26,14 +43,28 @@ export default function Upsell() {
   };
 
   const handleDownsellAccept = async () => {
-    await trackConversion.mutateAsync({ sessionId, type: "downsell_1", amount: 1700 });
-    // Redirecionar para Kiwify Downsell com retorno para página de obrigado
-    const obrigadoUrl = encodeURIComponent(`${window.location.origin}/obrigado?downsell=1`);
-    window.location.href = `${KIWIFY_DOWNSELL}?redirect_to=${obrigadoUrl}`;
+    if (!customerId) {
+      navigate(`/obrigado?s=${sessionId || ""}`);
+      return;
+    }
+    setProcessing(true);
+    setError(null);
+    try {
+      await chargeUpsell.mutateAsync({
+        customerId,
+        productKey: "downsell_1",
+        sessionId,
+      });
+      await trackConversion.mutateAsync({ sessionId, type: "downsell_1", amount: 3700 });
+      navigate(`/obrigado?s=${sessionId || ""}&cid=${customerId}&downsell=1`);
+    } catch (err: any) {
+      setError(err.message || "Error al procesar el pago. Intenta de nuevo.");
+      setProcessing(false);
+    }
   };
 
   const handleDownsellDecline = () => {
-    navigate("/obrigado");
+    navigate(`/obrigado?s=${sessionId || ""}`);
   };
 
   if (declined) {
@@ -43,7 +74,7 @@ export default function Upsell() {
           <div className="text-center mb-8">
             <span className="text-4xl mb-4 block">🤔</span>
             <h2 className="text-2xl font-bold text-gray-900 mb-3">
-              Entendido. ¿El precio de $47 era un poco alto ahora?
+              Entendido. ¿El precio de $97 era un poco alto ahora?
             </h2>
             <p className="text-gray-600">
               No quiero que el dinero sea el motivo para que no tengas acceso al Acelerador. Por eso voy a hacer algo que mi equipo me prohibió hacer.
@@ -61,19 +92,28 @@ export default function Upsell() {
               Voy a quitar los bonos y el soporte grupal. Solo el núcleo duro: <strong>La Guía Práctica del Ayuno Circadiano</strong>. El método que acelera la quema 3 veces más rápido cuando se combina con el Protocolo que ya compraste.
             </p>
             <div className="text-center">
-              <p className="text-gray-400 line-through text-lg">$47</p>
-              <p className="text-4xl font-extrabold text-emerald-600">$17</p>
+              <p className="text-gray-400 line-through text-lg">$97</p>
+              <p className="text-4xl font-extrabold text-emerald-600">$37</p>
               <p className="text-gray-500 text-sm">El precio de dos cafés</p>
             </div>
           </div>
 
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-center">
+              <p className="text-red-600 text-sm">{error}</p>
+            </div>
+          )}
+
           <button
             onClick={handleDownsellAccept}
-            disabled={trackConversion.isPending}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg py-4 rounded-2xl mb-3 transition-all active:scale-95"
+            disabled={processing}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg py-4 rounded-[5px] mb-3 transition-all active:scale-95 disabled:opacity-70"
           >
-            ¡Sí, quiero la versión esencial por $17! →
+            {processing ? "Procesando pago..." : "¡Sí, quiero la versión esencial por $37! →"}
           </button>
+          <p className="text-center text-[11px] text-gray-400 mb-3">
+            Se cargará automáticamente a tu tarjeta registrada
+          </p>
           <button
             onClick={handleDownsellDecline}
             className="w-full text-gray-400 text-sm py-2 hover:text-gray-600 transition-colors"
@@ -127,7 +167,7 @@ export default function Upsell() {
           <p className="text-emerald-200 text-sm mb-1">Normalmente cuesta</p>
           <p className="text-2xl line-through text-emerald-300 mb-1">$147</p>
           <p className="text-emerald-200 text-sm mb-2">Solo en esta página</p>
-          <p className="text-5xl font-extrabold">$47</p>
+          <p className="text-5xl font-extrabold">$97</p>
           <p className="text-emerald-200 text-sm mt-1">Un único pago · Garantía incluida</p>
         </div>
 
@@ -145,13 +185,22 @@ export default function Upsell() {
           ))}
         </div>
 
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-center">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+
         <button
           onClick={handleAccept}
-          disabled={trackConversion.isPending}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-lg py-5 rounded-2xl mb-4 transition-all active:scale-95 shadow-lg shadow-orange-200"
+          disabled={processing}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-lg py-5 rounded-[5px] mb-2 transition-all active:scale-95 shadow-lg shadow-orange-200 disabled:opacity-70"
         >
-          ¡Sí, agregar el Acelerador por $47! →
+          {processing ? "Procesando pago..." : "¡Sí, agregar el Acelerador por $97! →"}
         </button>
+        <p className="text-center text-[11px] text-gray-400 mb-4">
+          Se cargará automáticamente a tu tarjeta registrada · Sin necesidad de ingresar datos nuevamente
+        </p>
         <button
           onClick={handleDecline}
           className="w-full text-gray-400 text-sm py-2 hover:text-gray-600 transition-colors"
