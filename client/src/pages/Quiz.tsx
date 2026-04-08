@@ -232,7 +232,7 @@ export default function Quiz() {
       <div className="relative max-w-md mx-auto px-5 py-2 flex items-center justify-center">
         {/* Logo centralizada */}
         <img
-          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-transparent-kyWgSpYUsgYseU7Z4wHEEo.png"
+          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-horizontal-n9a8yuvGoTiJrKpUzYtKBQ.png"
           alt="Desbloqueio Metabólico"
           className="h-12 w-auto object-contain"
         />
