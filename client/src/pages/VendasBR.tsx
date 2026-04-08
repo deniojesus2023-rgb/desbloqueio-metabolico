@@ -378,7 +378,7 @@ export default function VendasBR() {
       <header className="dm-header">
         <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-center">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-horizontal-n9a8yuvGoTiJrKpUzYtKBQ.png"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-final_ded01597.png"
             alt="Desbloqueio Metab\u00f3lico"
             className="h-10 w-auto object-contain"
             
@@ -562,6 +562,53 @@ export default function VendasBR() {
           <p className={subCls} style={{ color: "var(--dm-text-soft)" }}>Mulheres com os 3 tipos de bloqueio metabólico</p>
         </div>
 
+        {/* Depoimento destaque — foto antes/depois real */}
+        <div className="dm-card mb-5 overflow-hidden" style={{ padding: 0 }}>
+          {/* Foto antes/depois */}
+          <div className="relative">
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo1_ddc1eae5.webp"
+              alt="Transformação real — antes e depois"
+              className="w-full object-cover"
+              style={{ maxHeight: 340 }}
+            />
+            <div className="absolute bottom-0 left-0 right-0 flex justify-between px-3 pb-2">
+              <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>ANTES</span>
+              <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>DEPOIS</span>
+            </div>
+          </div>
+          {/* Texto do depoimento */}
+          <div style={{ padding: "20px" }}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>Ana Paula M.</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>−18 kg em 11 semanas</span>
+                </div>
+                <span className="text-[10px]" style={{ color: "var(--dm-grey-300)" }}>Belo Horizonte, MG · Bloqueio Tipo 2</span>
+              </div>
+            </div>
+            <div className="flex mb-3">
+              {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">★</span>)}
+            </div>
+            <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>
+              "Eu passei 6 anos tentando emagrecer. Fiz low carb, jejum intermitente, contagem de calorias. Perdia 3 kg e voltava 5. Quando fiz o quiz e descobri que tinha o Bloqueio de Resistência à Insulina, foi a primeira vez que alguém me explicou <em>por que</em> as dietas não funcionavam pra mim — não era fraqueza, era biologia.
+              <br /><br />
+              Em 11 semanas, sem cortar o arroz com feijão, sem academia todo dia, só seguindo o protocolo de 3 minutos antes das refeições, perdi 18 kg. Mas o que mais me surpreendeu foi que parei de ter aquela fome desesperada à noite. Meu corpo finalmente entrou em equilíbrio."
+            </p>
+          </div>
+        </div>
+
+        {/* Selo de avaliação */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/4.8estrela_ade7735d.webp"
+            alt="4.8 estrelas — 50 milhões de downloads"
+            className="w-48 object-contain"
+          />
+        </div>
+
+        {/* Depoimentos em texto */}
         <div className="space-y-3">
           {TESTIMONIALS.map((t) => (
             <div key={t.name} className="dm-card" style={{ padding: "20px" }}>
@@ -578,7 +625,7 @@ export default function VendasBR() {
               <div className="flex mb-2">
                 {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-xs">★</span>)}
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{t.text}"</p>
+              <p className="text-xs leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{ t.text}"</p>
             </div>
           ))}
         </div>

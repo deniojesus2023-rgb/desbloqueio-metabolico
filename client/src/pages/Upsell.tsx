@@ -140,7 +140,7 @@ export default function Upsell() {
       <header className="bg-[#00BFA5] shadow-md">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-center">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-horizontal-n9a8yuvGoTiJrKpUzYtKBQ.png"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-final_ded01597.png"
             alt="Desbloqueo Metab\u00f3lico"
             className="h-10 w-auto object-contain"
             
