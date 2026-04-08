@@ -22,7 +22,6 @@ function detectLang(): Language {
   return nav.toLowerCase().startsWith("pt") ? "pt" : "es";
 }
 
-// ─── Componente Principal ─────────────────────────────────────────────────────
 export default function Quiz() {
   const [, navigate] = useLocation();
   const [lang] = useState<Language>(() => detectLang());
@@ -50,7 +49,6 @@ export default function Quiz() {
   const saveAnswer = trpc.quiz.saveAnswer.useMutation();
   const completeQuiz = trpc.quiz.completeQuiz.useMutation();
 
-  // Obter as opções da pergunta atual (com suporte a perguntas dinâmicas)
   const currentQuestion = questions[currentQ];
   const currentOptions = useMemo(() => {
     if (!currentQuestion) return [];
@@ -65,7 +63,6 @@ export default function Quiz() {
     return currentQuestion.options;
   }, [currentQuestion, answers]);
 
-  // Timer de escassez
   useEffect(() => {
     if (phase === "result" || phase === "optin") {
       timerRef.current = setInterval(() => setOptinTimer(s => Math.max(0, s - 1)), 1000);
@@ -73,7 +70,6 @@ export default function Quiz() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase]);
 
-  // Loading animado
   useEffect(() => {
     if (phase !== "loading") return;
     setLoadingProgress(0);
@@ -111,18 +107,14 @@ export default function Quiz() {
     setPhase("questions");
   };
 
-  // Seleção de opção única
   const handleSelectOption = async (optionId: string) => {
     if (animating || currentQuestion.multiple) return;
     const opt = currentOptions.find(o => o.id === optionId);
     if (!opt) return;
-
     setSelectedOption(optionId);
     setAnimating(true);
-
     const newAnswers = { ...answers, [currentQuestion.id]: optionId };
     setAnswers(newAnswers);
-
     if (sessionId) {
       await saveAnswer.mutateAsync({
         sessionId,
@@ -132,8 +124,6 @@ export default function Quiz() {
         answerText: opt.text,
       });
     }
-
-    // Mostrar feedback por 900ms antes de avançar
     const feedbacks: Record<Language, Record<string, string>> = {
       pt: {
         a: "Entendemos. Isso vai ajudar a personalizar seu diagnóstico.",
@@ -153,7 +143,6 @@ export default function Quiz() {
       },
     };
     setFeedbackText(feedbacks[lang][optionId] || feedbacks[lang]["a"]);
-
     setTimeout(() => {
       setFeedbackText(null);
       setSelectedOption(null);
@@ -162,21 +151,17 @@ export default function Quiz() {
     }, 900);
   };
 
-  // Toggle de opção múltipla
   const handleToggleMulti = (optionId: string) => {
     setMultiSelected(prev =>
       prev.includes(optionId) ? prev.filter(id => id !== optionId) : [...prev, optionId]
     );
   };
 
-  // Confirmar seleção múltipla
   const handleConfirmMulti = async () => {
     if (multiSelected.length === 0 || animating) return;
     setAnimating(true);
-
     const newAnswers = { ...answers, [currentQuestion.id]: multiSelected };
     setAnswers(newAnswers);
-
     if (sessionId) {
       await saveAnswer.mutateAsync({
         sessionId,
@@ -186,7 +171,6 @@ export default function Quiz() {
         answerText: multiSelected.join(", "),
       });
     }
-
     setMultiSelected([]);
     setAnimating(false);
     advanceQuestion(newAnswers);
@@ -220,44 +204,49 @@ export default function Quiz() {
 
   const profile = profiles[blockType];
 
-  // ── Fase Label ────────────────────────────────────────────────────────────────
   const phaseLabel = currentQuestion
     ? t.phaseLabels[currentQuestion.phase as keyof typeof t.phaseLabels] || ""
     : "";
 
-  // ── Indicadores de fase ───────────────────────────────────────────────────────
   const phaseColors: Record<string, string> = {
-    positive: "#00BFA5",
-    neutral: "#26C6DA",
+    positive: "#2BAE8E",
+    neutral: "#3EC9A7",
     negative: "#F59E0B",
     relief: "#6366F1",
   };
-  const currentPhaseColor = currentQuestion ? (phaseColors[currentQuestion.phase] || "#00BFA5") : "#00BFA5";
+  const currentPhaseColor = currentQuestion ? (phaseColors[currentQuestion.phase] || "#2BAE8E") : "#2BAE8E";
+
+  // ── Ícone checkmark SVG reutilizável ─────────────────────────────────────────
+  const Check = ({ size = 16, color = "white" }: { size?: number; color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <path d="M5 12l5 5L19 7" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
 
   // ── Header compartilhado ──────────────────────────────────────────────────────
   const Header = ({ showTimer }: { showTimer?: boolean }) => (
-    <header className="bg-[#00BFA5] px-4 shadow-sm" style={{ paddingTop: "env(safe-area-inset-top, 12px)", paddingBottom: "14px" }}>
-      <div className="flex items-center justify-between max-w-md mx-auto mb-2">
+    <header className="dm-header" style={{ paddingTop: "env(safe-area-inset-top, 12px)" }}>
+      <div className="flex items-center justify-between max-w-md mx-auto px-5 py-3.5">
+        {/* Logo */}
         <div className="flex items-center gap-3">
-          {/* Logo icon */}
-          <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 shadow-inner">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.3"/>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.18)" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
               <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="text-white font-extrabold text-base leading-tight tracking-tight">
+            <span className="text-white font-extrabold text-[15px] leading-tight tracking-tight" style={{ letterSpacing: "-0.025em" }}>
               {lang === "pt" ? "Desbloqueio Metabólico" : "Desbloqueo Metabólico"}
             </span>
-            <span className="text-white/70 text-[10px] font-medium leading-none">
+            <span className="text-white/60 text-[10px] font-medium leading-none mt-0.5" style={{ letterSpacing: "0.15em", textTransform: "uppercase" }}>
               {lang === "pt" ? "Diagnóstico Personalizado" : "Diagnóstico Personalizado"}
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {showTimer && (
-            <div className="flex items-center gap-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+            <div className="flex items-center gap-1.5 bg-red-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
                 <path d="M12 7v5l3 3" stroke="white" strokeWidth="2" strokeLinecap="round"/>
@@ -266,21 +255,21 @@ export default function Quiz() {
             </div>
           )}
           {phase === "questions" && (
-            <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">
+            <span className="text-white/80 text-[11px] font-semibold">
               {t.progressLabel(currentQ + 1, questions.length)}
             </span>
           )}
         </div>
       </div>
       {(phase === "questions" || phase === "optin" || phase === "loading" || phase === "result") && (
-        <div className="max-w-md mx-auto">
-          <div className="h-2 bg-white/30 rounded-full overflow-hidden">
-            <div className="h-full bg-white rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }}/>
+        <div className="max-w-md mx-auto px-5 pb-3">
+          <div className="dm-progress-track">
+            <div className="dm-progress-fill" style={{ width: `${progressPercent}%` }}/>
           </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-white/70 text-xs">{progressPercent}% {lang === "pt" ? "concluído" : "completado"}</span>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-white/60 text-[11px] font-medium">{progressPercent}% {lang === "pt" ? "concluído" : "completado"}</span>
             {phase === "questions" && (
-              <span className="text-white/80 text-xs font-semibold">{phaseLabel}</span>
+              <span className="text-white/80 text-[11px] font-semibold">{phaseLabel}</span>
             )}
           </div>
         </div>
@@ -288,40 +277,43 @@ export default function Quiz() {
     </header>
   );
 
-  // ── LANDING ───────────────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════════
+  // LANDING
+  // ══════════════════════════════════════════════════════════════════════════════
   if (phase === "landing") {
     return (
-      <div className="min-h-screen bg-[#F0F4F8] flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--teal-bg)" }}>
         <Header />
-        <div className="flex-1 flex flex-col items-center px-4 pt-4 pb-8 max-w-md mx-auto w-full">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white border border-[#00BFA5]/30 rounded-full px-4 py-2 mb-4 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-[#00BFA5] animate-pulse"/>
-            <span className="text-[#00BFA5] text-xs font-semibold tracking-widest uppercase">{t.startBadge}</span>
+        <div className="flex-1 flex flex-col items-center px-5 pt-6 pb-10 max-w-md mx-auto w-full">
+
+          {/* Pill badge */}
+          <div className="dm-pill mb-5">
+            <span className="dm-pill-dot"/>
+            <span>{t.startBadge}</span>
           </div>
 
-          {/* Hero visual — sem imagem, substituído por card de diagnóstico */}
-          <div className="w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-[#00BFA5] to-[#26C6DA] p-5 shadow-md">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+          {/* Hero card gradiente */}
+          <div className="w-full rounded-[20px] overflow-hidden mb-6 p-6" style={{ background: "var(--grad)", boxShadow: "var(--shadow-lg)" }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.18)" }}>
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
                   <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
               <div>
-                <p className="text-white font-extrabold text-base leading-tight">
+                <p className="text-white font-extrabold text-[15px] leading-tight" style={{ letterSpacing: "-0.02em" }}>
                   {lang === "pt" ? "Diagnóstico Metabólico" : "Diagnóstico Metabólico"}
                 </p>
-                <p className="text-white/80 text-xs">
+                <p className="text-white/70 text-[11px] font-medium mt-0.5">
                   {lang === "pt" ? "Avaliação gratuita e personalizada" : "Evaluación gratuita y personalizada"}
                 </p>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
               {t.startBenefits.map((b) => (
-                <span key={b} className="flex items-center gap-1 bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span key={b} className="dm-tag-dark">
+                  <Check size={12} />
                   {b}
                 </span>
               ))}
@@ -329,35 +321,35 @@ export default function Quiz() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-[#1A1A2E] text-[1.6rem] font-extrabold leading-tight text-left w-full mb-2">
+          <h1 className="text-[26px] font-extrabold leading-[1.25] text-left w-full mb-3" style={{ color: "var(--dm-text)", letterSpacing: "-0.025em" }}>
             {lang === "pt" ? (
-              <>Descubra qual <span className="text-[#00BFA5]">Bloqueio Metabólico</span> está impedindo você de emagrecer</>
+              <>Descubra qual <span style={{ color: "var(--teal-dark)" }}>Bloqueio Metabólico</span> está impedindo você de emagrecer</>
             ) : (
-              <>Descubre qué <span className="text-[#00BFA5]">Bloqueo Metabólico</span> te está impidiendo adelgazar</>
+              <>Descubre qué <span style={{ color: "var(--teal-dark)" }}>Bloqueo Metabólico</span> te está impidiendo adelgazar</>
             )}
           </h1>
-          <p className="text-[#6B7280] text-sm text-left w-full mb-4">{t.startSubtitle}</p>
+          <p className="text-[15px] text-left w-full mb-5" style={{ color: "var(--dm-text-soft)", lineHeight: 1.75 }}>{t.startSubtitle}</p>
 
-          {/* Checklist */}
-          <div className="flex flex-wrap gap-x-4 gap-y-1 w-full mb-5">
+          {/* Tags de benefícios */}
+          <div className="flex flex-wrap gap-2 w-full mb-6">
             {[
               lang === "pt" ? "7 perguntas rápidas" : "7 preguntas rápidas",
               lang === "pt" ? "Resultado personalizado" : "Resultado personalizado",
               lang === "pt" ? "100% grátis" : "100% gratis",
             ].map((item) => (
-              <span key={item} className="flex items-center gap-1.5 text-[#374151] text-sm">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="#00BFA5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <span key={item} className="dm-tag">
+                <Check size={13} color="#1A8A6E" />
                 {item}
               </span>
             ))}
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 w-full mb-5">
+          <div className="grid grid-cols-3 gap-3 w-full mb-7">
             {t.startStats.map((s) => (
-              <div key={s.value} className="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100">
-                <div className="text-[#00BFA5] text-lg font-extrabold">{s.value}</div>
-                <div className="text-[#6B7280] text-xs mt-0.5 leading-tight">{s.label}</div>
+              <div key={s.value} className="dm-stat">
+                <div className="dm-stat-num">{s.value}</div>
+                <div className="dm-stat-label">{s.label}</div>
               </div>
             ))}
           </div>
@@ -366,12 +358,12 @@ export default function Quiz() {
           <button
             onClick={handleStart}
             disabled={startSession.isPending}
-            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-extrabold text-lg py-4 rounded-full shadow-lg shadow-[#00BFA5]/30 active:scale-95 transition-transform disabled:opacity-60"
+            className="dm-btn-primary"
           >
             {startSession.isPending ? (lang === "pt" ? "Iniciando..." : "Iniciando...") : t.startCta}
           </button>
-          <p className="text-[#9CA3AF] text-xs mt-3 flex items-center gap-1 justify-center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#9CA3AF" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#9CA3AF" strokeWidth="2"/></svg>
+          <p className="text-[11px] mt-4 flex items-center gap-1.5 justify-center" style={{ color: "var(--dm-grey-300)" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2"/></svg>
             {t.startTrust}
           </p>
         </div>
@@ -379,43 +371,45 @@ export default function Quiz() {
     );
   }
 
-  // ── QUESTIONS ─────────────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════════
+  // QUESTIONS
+  // ══════════════════════════════════════════════════════════════════════════════
   if (phase === "questions" && currentQuestion) {
     const isMultiple = currentQuestion.multiple === true;
     return (
-      <div className="min-h-screen bg-[#F0F4F8] flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--teal-bg)" }}>
         <Header />
-        <div className="flex-1 px-4 pt-5 pb-8 max-w-md mx-auto w-full">
+        <div className="flex-1 px-5 pt-6 pb-10 max-w-md mx-auto w-full">
           <div key={currentQ} className="animate-in fade-in slide-in-from-right-3 duration-250">
 
             {/* Indicador de fase */}
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-4">
               <span
-                className="text-xs font-bold px-3 py-1 rounded-full"
-                style={{ backgroundColor: `${currentPhaseColor}20`, color: currentPhaseColor }}
+                className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: `${currentPhaseColor}18`, color: currentPhaseColor }}
               >
                 {phaseLabel}
               </span>
               {isMultiple && (
-                <span className="text-xs text-[#6B7280] bg-gray-100 px-2 py-1 rounded-full">
+                <span className="text-[11px] font-medium px-2.5 py-1 rounded-full" style={{ background: "var(--dm-grey-100)", color: "var(--dm-text-soft)" }}>
                   {t.multipleHint}
                 </span>
               )}
             </div>
 
-            <h2 className="text-[#1A1A2E] text-xl font-extrabold leading-tight mb-2">{currentQuestion.question}</h2>
+            <h2 className="text-[22px] font-extrabold leading-[1.3] mb-2" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>{currentQuestion.question}</h2>
             {currentQuestion.subtitle && (
-              <p className="text-[#6B7280] text-sm mb-4">{currentQuestion.subtitle}</p>
+              <p className="text-[15px] mb-5" style={{ color: "var(--dm-text-soft)", lineHeight: 1.75 }}>{currentQuestion.subtitle}</p>
             )}
 
-            {/* Feedback de seleção única */}
+            {/* Feedback */}
             {feedbackText && (
-              <div className="flex items-start gap-2 bg-[#E0F7F4] border border-[#00BFA5]/30 rounded-xl px-4 py-3 mb-4 animate-in fade-in duration-200">
+              <div className="dm-feedback mb-4 animate-in fade-in duration-200">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="flex-shrink-0 mt-0.5">
-                  <circle cx="9" cy="9" r="9" fill="#00BFA5"/>
+                  <circle cx="9" cy="9" r="9" fill="#2BAE8E"/>
                   <path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <p className="text-[#00796B] text-sm font-medium">{feedbackText}</p>
+                <p className="text-[13px] font-medium" style={{ color: "var(--teal-dark)" }}>{feedbackText}</p>
               </div>
             )}
 
@@ -430,40 +424,34 @@ export default function Quiz() {
                     key={opt.id}
                     onClick={() => isMultiple ? handleToggleMulti(opt.id) : handleSelectOption(opt.id)}
                     disabled={animating && !isMultiple}
-                    className={`w-full text-left p-4 rounded-2xl border-2 transition-all duration-200 flex items-start gap-3 ${
-                      isSelected
-                        ? "border-[#00BFA5] bg-[#E0F7F4] shadow-md scale-[0.98]"
-                        : "border-gray-200 bg-white hover:border-[#00BFA5]/50 hover:shadow-sm active:scale-[0.98]"
-                    }`}
+                    className={`dm-option ${isSelected ? "dm-option--selected" : ""}`}
                   >
-                    <span className="text-xl flex-shrink-0 mt-0.5">{opt.emoji}</span>
-                    <span className={`flex-1 text-sm font-semibold leading-snug ${isSelected ? "text-[#00796B]" : "text-[#1A1A2E]"}`}>
+                    <span className="text-xl flex-shrink-0">{opt.emoji}</span>
+                    <span className="flex-1 text-[14px] font-semibold leading-snug" style={{ color: isSelected ? "var(--teal-dark)" : "var(--dm-text)" }}>
                       {opt.text}
                     </span>
                     {isSelected && (
-                      <svg className="flex-shrink-0 mt-0.5" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" fill="#00BFA5"/>
-                        <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal)" }}>
+                        <Check size={12} />
+                      </div>
                     )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Botão de confirmar para múltipla escolha */}
             {isMultiple && (
               <button
                 onClick={handleConfirmMulti}
                 disabled={multiSelected.length === 0 || animating}
-                className="w-full mt-4 bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-[#00BFA5]/30 disabled:opacity-40 active:scale-95 transition-all"
+                className="dm-btn-primary mt-5"
               >
                 {t.continueButton}
               </button>
             )}
 
-            <p className="text-center text-[#9CA3AF] text-xs mt-5 flex items-center justify-center gap-1">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#9CA3AF" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#9CA3AF" strokeWidth="2"/></svg>
+            <p className="text-center text-[11px] mt-6 flex items-center justify-center gap-1.5" style={{ color: "var(--dm-grey-300)" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2"/></svg>
               {lang === "pt" ? "Suas respostas são 100% confidenciais" : "Tus respuestas son 100% confidenciales"}
             </p>
           </div>
@@ -472,40 +460,42 @@ export default function Quiz() {
     );
   }
 
-  // ── LOADING ───────────────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════════
+  // LOADING
+  // ══════════════════════════════════════════════════════════════════════════════
   if (phase === "loading") {
     return (
-      <div className="min-h-screen bg-[#F0F4F8] flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--teal-bg)" }}>
         <Header />
-        <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="flex-1 flex flex-col items-center justify-center px-5">
           <div className="w-full max-w-sm text-center">
-            {/* Spinner duplo */}
-            <div className="relative w-24 h-24 mx-auto mb-6">
-              <div className="absolute inset-0 rounded-full border-4 border-[#00BFA5]/20"/>
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#00BFA5] animate-spin"/>
-              <div className="absolute inset-3 rounded-full border-4 border-transparent border-t-[#26C6DA] animate-spin" style={{animationDirection:"reverse", animationDuration:"0.8s"}}/>
+            {/* Spinner */}
+            <div className="relative w-24 h-24 mx-auto mb-8">
+              <div className="absolute inset-0 rounded-full" style={{ border: "4px solid rgba(43,174,143,.15)" }}/>
+              <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: "var(--teal-dark)" }}/>
+              <div className="absolute inset-3 rounded-full border-4 border-transparent animate-spin" style={{ borderTopColor: "var(--teal-mid)", animationDirection: "reverse", animationDuration: "0.8s" }}/>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[#00BFA5] font-extrabold text-lg">{loadingProgress}%</span>
+                <span className="text-lg font-extrabold" style={{ color: "var(--teal-dark)" }}>{loadingProgress}%</span>
               </div>
             </div>
 
-            <h3 className="text-[#1A1A2E] text-lg font-bold mb-2">
+            <h3 className="text-lg font-bold mb-2" style={{ color: "var(--dm-text)" }}>
               {lang === "pt" ? "Calculando seu diagnóstico" : "Calculando tu diagnóstico"}
             </h3>
-            <p className="text-[#6B7280] text-sm mb-6 min-h-[20px]">{t.loadingTexts[loadingMsgIdx]}</p>
+            <p className="text-[14px] mb-7 min-h-[20px]" style={{ color: "var(--dm-text-soft)" }}>{t.loadingTexts[loadingMsgIdx]}</p>
 
-            <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-5">
-              <div className="h-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] rounded-full transition-all duration-500" style={{ width: `${loadingProgress}%` }}/>
+            <div className="h-3 rounded-full overflow-hidden mb-6" style={{ background: "var(--dm-grey-100)" }}>
+              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${loadingProgress}%`, background: "var(--grad)" }}/>
             </div>
 
-            <div className="text-left space-y-2">
+            <div className="text-left space-y-3">
               {t.loadingTexts.map((m, i) => (
-                <div key={i} className={`flex items-center gap-2 text-sm transition-all duration-300 ${loadingProgress > (i / t.loadingTexts.length) * 100 ? "text-[#00BFA5]" : "text-gray-300"}`}>
+                <div key={i} className={`flex items-center gap-3 text-[13px] transition-all duration-300`} style={{ color: loadingProgress > (i / t.loadingTexts.length) * 100 ? "var(--teal-dark)" : "var(--dm-grey-300)" }}>
                   {loadingProgress > (i / t.loadingTexts.length) * 100
-                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#00BFA5"/><path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    : <div className="w-4 h-4 rounded-full border-2 border-gray-300"/>
+                    ? <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal)" }}><Check size={12}/></div>
+                    : <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ border: "2px solid var(--dm-grey-300)" }}/>
                   }
-                  {m}
+                  <span className="font-medium">{m}</span>
                 </div>
               ))}
             </div>
@@ -515,60 +505,61 @@ export default function Quiz() {
     );
   }
 
-  // ── RESULTADO ─────────────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════════
+  // RESULTADO
+  // ══════════════════════════════════════════════════════════════════════════════
   if (phase === "result" && profile) {
     return (
-      <div className="min-h-screen bg-[#F0F4F8] flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--teal-bg)" }}>
         <Header showTimer />
-        <div className="flex-1 px-4 pt-5 pb-8 max-w-md mx-auto w-full">
+        <div className="flex-1 px-5 pt-6 pb-10 max-w-md mx-auto w-full">
 
           {/* Badge do tipo */}
           <div
-            className="rounded-xl px-4 py-3 mb-4 text-center"
-            style={{ backgroundColor: `${profile.color}15`, border: `1px solid ${profile.color}40` }}
+            className="rounded-2xl px-5 py-3.5 mb-5 text-center"
+            style={{ backgroundColor: `${profile.color}12`, border: `1.5px solid ${profile.color}35` }}
           >
-            <span className="text-xs font-bold tracking-widest uppercase" style={{ color: profile.color }}>
+            <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: profile.color, letterSpacing: "0.15em" }}>
               {profile.badge}
             </span>
           </div>
 
           {/* Headline */}
-          <h2 className="text-[#1A1A2E] text-xl font-extrabold leading-tight mb-3">
+          <h2 className="text-[22px] font-extrabold leading-[1.25] mb-4" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>
             {lang === "pt"
               ? `Seu metabolismo está travado pelo mecanismo de ${profile.mechanism}`
               : `Tu metabolismo está bloqueado por el mecanismo de ${profile.mechanism}`}
           </h2>
 
           {/* Absolvição */}
-          <div className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100">
-            <p className="text-[#374151] text-sm leading-relaxed">{profile.absolution}</p>
+          <div className="dm-card mb-5">
+            <p className="text-[15px] leading-[1.75]" style={{ color: "var(--dm-text-soft)" }}>{profile.absolution}</p>
           </div>
 
-          {/* Insights personalizados */}
-          <div className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100">
-            <p className="text-[#374151] text-xs font-bold mb-3 uppercase tracking-wide">
+          {/* Insights */}
+          <div className="dm-card mb-5">
+            <p className="text-[10px] font-bold mb-4 uppercase" style={{ color: "var(--dm-text-soft)", letterSpacing: "0.2em" }}>
               {t.resultInsightsTitle}
             </p>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {profile.insights.map((insight, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5">
-                    <circle cx="12" cy="12" r="10" fill="#00BFA5"/>
-                    <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <p className="text-[#374151] text-sm">{insight}</p>
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "var(--teal)" }}>
+                    <Check size={12} />
+                  </div>
+                  <p className="text-[14px] leading-[1.65]" style={{ color: "var(--dm-text-soft)" }}>{insight}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Barra de bloqueio */}
-          <div className="bg-white rounded-2xl p-4 mb-5 shadow-sm border border-gray-100">
-            <div className="flex justify-between text-xs text-[#6B7280] mb-2">
-              <span>{t.resultBlockLabel}</span>
+          <div className="dm-card mb-7">
+            <div className="flex justify-between text-[11px] mb-2" style={{ color: "var(--dm-text-soft)" }}>
+              <span className="font-medium">{t.resultBlockLabel}</span>
               <span className="font-bold" style={{ color: profile.color }}>{profile.blockPercentage}%</span>
             </div>
-            <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-3 rounded-full overflow-hidden" style={{ background: "var(--dm-grey-100)" }}>
               <div
                 className="h-full rounded-full transition-all duration-1000"
                 style={{
@@ -577,7 +568,7 @@ export default function Quiz() {
                 }}
               />
             </div>
-            <p className="text-[#6B7280] text-xs mt-2">
+            <p className="text-[11px] mt-2.5" style={{ color: "var(--dm-text-soft)" }}>
               {lang === "pt"
                 ? "Quanto mais alto o bloqueio, mais difícil emagrecer sem tratar a causa raiz"
                 : "Cuanto más alto el bloqueo, más difícil adelgazar sin tratar la causa raíz"}
@@ -587,11 +578,11 @@ export default function Quiz() {
           {/* CTA */}
           <button
             onClick={() => setPhase("optin")}
-            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-[#00BFA5]/30 active:scale-95 transition-transform mb-3"
+            className="dm-btn-primary mb-3"
           >
             {lang === "pt" ? "Quero meu protocolo personalizado →" : "Quiero mi protocolo personalizado →"}
           </button>
-          <p className="text-center text-[#9CA3AF] text-xs">
+          <p className="text-center text-[11px]" style={{ color: "var(--dm-grey-300)" }}>
             {lang === "pt" ? "Protocolo específico para o seu tipo de bloqueio" : "Protocolo específico para tu tipo de bloqueo"}
           </p>
         </div>
@@ -599,26 +590,28 @@ export default function Quiz() {
     );
   }
 
-  // ── OPT-IN ────────────────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════════
+  // OPT-IN
+  // ══════════════════════════════════════════════════════════════════════════════
   if (phase === "optin" && profile) {
     return (
-      <div className="min-h-screen bg-[#F0F4F8] flex flex-col">
+      <div className="min-h-screen flex flex-col" style={{ background: "var(--teal-bg)" }}>
         <Header showTimer />
-        <div className="flex-1 px-4 pt-5 pb-8 max-w-md mx-auto w-full">
+        <div className="flex-1 px-5 pt-6 pb-10 max-w-md mx-auto w-full">
 
           <div
-            className="rounded-xl px-4 py-2 mb-4 text-center"
-            style={{ backgroundColor: `${profile.color}15`, border: `1px solid ${profile.color}40` }}
+            className="rounded-2xl px-4 py-2.5 mb-5 text-center"
+            style={{ backgroundColor: `${profile.color}12`, border: `1.5px solid ${profile.color}35` }}
           >
-            <span className="text-xs font-bold" style={{ color: profile.color }}>{profile.badge}</span>
+            <span className="text-[11px] font-bold" style={{ color: profile.color, letterSpacing: "0.15em", textTransform: "uppercase" }}>{profile.badge}</span>
           </div>
 
-          <h2 className="text-[#1A1A2E] text-xl font-extrabold leading-tight mb-2">{t.optinTitle}</h2>
-          <p className="text-[#6B7280] text-sm mb-5">{t.optinSubtitle}</p>
+          <h2 className="text-[22px] font-extrabold leading-[1.25] mb-2" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>{t.optinTitle}</h2>
+          <p className="text-[15px] mb-6" style={{ color: "var(--dm-text-soft)", lineHeight: 1.75 }}>{t.optinSubtitle}</p>
 
-          <form onSubmit={handleOptIn} className="space-y-4">
+          <form onSubmit={handleOptIn} className="space-y-5">
             <div>
-              <label className="block text-[#374151] text-sm font-semibold mb-1.5">
+              <label className="block text-[13px] font-bold mb-2" style={{ color: "var(--dm-text)" }}>
                 {lang === "pt" ? "Seu primeiro nome" : "Tu primer nombre"}
               </label>
               <input
@@ -627,11 +620,11 @@ export default function Quiz() {
                 onChange={e => setName(e.target.value)}
                 placeholder={t.optinNamePlaceholder}
                 required
-                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3.5 text-[#1A1A2E] text-sm placeholder-gray-400 focus:outline-none focus:border-[#00BFA5] transition-colors"
+                className="dm-input"
               />
             </div>
             <div>
-              <label className="block text-[#374151] text-sm font-semibold mb-1.5">
+              <label className="block text-[13px] font-bold mb-2" style={{ color: "var(--dm-text)" }}>
                 {lang === "pt" ? "Seu melhor e-mail" : "Tu mejor e-mail"}
               </label>
               <input
@@ -640,39 +633,44 @@ export default function Quiz() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder={t.optinEmailPlaceholder}
                 required
-                className="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3.5 text-[#1A1A2E] text-sm placeholder-gray-400 focus:outline-none focus:border-[#00BFA5] transition-colors"
+                className="dm-input"
               />
             </div>
 
             {/* O que vão receber */}
-            <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-              <p className="text-[#374151] text-xs font-bold mb-2 uppercase tracking-wide">
+            <div className="dm-card">
+              <p className="text-[10px] font-bold mb-3 uppercase" style={{ color: "var(--dm-text-soft)", letterSpacing: "0.2em" }}>
                 {lang === "pt" ? "Você vai receber:" : "Vas a recibir:"}
               </p>
               {[
                 lang === "pt"
-                  ? `✅ Protocolo específico para ${profile.name}`
-                  : `✅ Protocolo específico para ${profile.name}`,
-                lang === "pt" ? "✅ Mapa de alimentos desbloqueadores" : "✅ Mapa de alimentos desbloqueadores",
-                lang === "pt" ? "✅ Guia de emergência para o antojo noturno" : "✅ Guía de emergencia para el antojo nocturno",
-                lang === "pt" ? "✅ Acesso ao grupo privado de suporte" : "✅ Acceso al grupo privado de soporte",
+                  ? `Protocolo específico para ${profile.name}`
+                  : `Protocolo específico para ${profile.name}`,
+                lang === "pt" ? "Mapa de alimentos desbloqueadores" : "Mapa de alimentos desbloqueadores",
+                lang === "pt" ? "Guia de emergência para o antojo noturno" : "Guía de emergencia para el antojo nocturno",
+                lang === "pt" ? "Acesso ao grupo privado de suporte" : "Acceso al grupo privado de soporte",
               ].map((item) => (
-                <p key={item} className="text-[#374151] text-sm py-1">{item}</p>
+                <div key={item} className="flex items-center gap-3 py-2">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal)" }}>
+                    <Check size={12} />
+                  </div>
+                  <span className="text-[14px] font-medium" style={{ color: "var(--dm-text)" }}>{item}</span>
+                </div>
               ))}
             </div>
 
             <button
               type="submit"
               disabled={completeQuiz.isPending || !name || !email}
-              className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-[#00BFA5]/30 disabled:opacity-60 active:scale-95 transition-all"
+              className="dm-btn-primary"
             >
               {completeQuiz.isPending
                 ? (lang === "pt" ? "Preparando..." : "Preparando...")
                 : t.optinCta}
             </button>
 
-            <p className="text-center text-[#9CA3AF] text-xs flex items-center justify-center gap-1">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="#9CA3AF" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#9CA3AF" strokeWidth="2"/></svg>
+            <p className="text-center text-[11px] flex items-center justify-center gap-1.5" style={{ color: "var(--dm-grey-300)" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2"/></svg>
               {t.optinTrust}
             </p>
           </form>

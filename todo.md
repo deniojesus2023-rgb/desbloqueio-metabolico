@@ -151,3 +151,10 @@
 - [x] Destacar a logo no header do Quiz — aumentar tamanho, adicionar símbolo visual mais proeminente
 - [x] Otimização mobile: melhorar espaçamentos, tipografia e layout responsivo na fase landing
 - [x] Reestruturar VendasBR.tsx com modelo SwipeFile: Hero + Benefícios (3 itens) + Como Funciona (3 passos) + Depoimentos + Oferta + CTA
+
+## Aplicação do Design System Desbloqueio Metabólico
+
+- [x] Atualizar index.html com fonte Montserrat (substituir Inter)
+- [x] Reescrever index.css com tokens completos do design system (cores teal, sombras tonalizadas, espaçamentos 4px, gradiente, componentes CSS)
+- [x] Reescrever Quiz.tsx com design system aplicado (dm-header, dm-btn-primary, dm-option, dm-card, dm-pill, dm-tag, dm-progress)
+- [x] Reescrever VendasBR.tsx com design system aplicado (dm-header, dm-btn-primary, dm-btn-white, dm-card, dm-tag, dm-gradient-text)
