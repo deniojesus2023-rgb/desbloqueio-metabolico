@@ -53,7 +53,7 @@ export async function createPaymentIntent(opts: {
     currency: "brl",
     description,
     customer: customerId,
-    payment_method_types: ["card", "pix"],
+    payment_method_types: ["card"],
     metadata: {
       sessionId: opts.sessionId || "",
       productKeys: opts.productKeys.join(","),
