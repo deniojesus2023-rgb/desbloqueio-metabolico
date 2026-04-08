@@ -117,7 +117,104 @@ const FAQ = [
   },
 ];
 
-const VAGAS_GRUPO = 37;
+/* ── NOMES FAKE PARA NOTIFICAÇÕES ─────────────────────────────────── */
+const FAKE_NAMES = [
+  { name: "Maria S.", city: "São Paulo, SP" },
+  { name: "Juliana R.", city: "Rio de Janeiro, RJ" },
+  { name: "Patrícia M.", city: "Belo Horizonte, MG" },
+  { name: "Fernanda L.", city: "Curitiba, PR" },
+  { name: "Camila A.", city: "Porto Alegre, RS" },
+  { name: "Ana C.", city: "Salvador, BA" },
+  { name: "Luciana F.", city: "Brasília, DF" },
+  { name: "Renata P.", city: "Recife, PE" },
+  { name: "Tatiane B.", city: "Fortaleza, CE" },
+  { name: "Adriana G.", city: "Goiânia, GO" },
+  { name: "Carla D.", city: "Florianópolis, SC" },
+  { name: "Simone V.", city: "Manaus, AM" },
+  { name: "Débora N.", city: "Campinas, SP" },
+  { name: "Priscila T.", city: "Vitória, ES" },
+  { name: "Elaine K.", city: "Belém, PA" },
+];
+
+const FAKE_TIMES = ["agora", "há 1 min", "há 2 min", "há 3 min", "há 5 min", "há 8 min", "há 12 min"];
+
+/* ── HOOK: NOTIFICAÇÕES FAKE ─────────────────────────────────────────── */
+function useFakeNotifications() {
+  const [current, setCurrent] = useState<{ name: string; city: string; time: string } | null>(null);
+  const [visible, setVisible] = useState(false);
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    // Shuffle order on mount
+    const shuffled = [...FAKE_NAMES].sort(() => Math.random() - 0.5);
+    const firstDelay = 5000 + Math.random() * 5000; // 5-10s first notification
+
+    const showNext = () => {
+      const person = shuffled[indexRef.current % shuffled.length];
+      const time = FAKE_TIMES[Math.floor(Math.random() * FAKE_TIMES.length)];
+      setCurrent({ name: person.name, city: person.city, time });
+      setVisible(true);
+      indexRef.current++;
+
+      // Hide after 4s
+      setTimeout(() => setVisible(false), 4000);
+    };
+
+    const firstTimer = setTimeout(() => {
+      showNext();
+      // Then repeat every 8-15s
+      const interval = setInterval(showNext, 8000 + Math.random() * 7000);
+      return () => clearInterval(interval);
+    }, firstDelay);
+
+    return () => clearTimeout(firstTimer);
+  }, []);
+
+  return { current, visible };
+}
+
+/* ── HOOK: VAGAS DINÂMICAS ───────────────────────────────────────────── */
+function useDynamicVagas(initial: number) {
+  const KEY = "dm_br_vagas";
+  const KEY_TS = "dm_br_vagas_ts";
+
+  const getStored = (): number => {
+    if (typeof window === "undefined") return initial;
+    const stored = localStorage.getItem(KEY);
+    const storedTs = localStorage.getItem(KEY_TS);
+    if (stored && storedTs) {
+      const elapsed = (Date.now() - parseInt(storedTs, 10)) / 1000;
+      // Reduce 1 vaga every 45-90 seconds of real elapsed time
+      const reduction = Math.floor(elapsed / 60);
+      const val = Math.max(3, parseInt(stored, 10) - reduction);
+      return val;
+    }
+    localStorage.setItem(KEY, String(initial));
+    localStorage.setItem(KEY_TS, String(Date.now()));
+    return initial;
+  };
+
+  const [vagas, setVagas] = useState(getStored);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVagas((prev) => {
+        if (prev <= 3) return 3;
+        // Random chance to decrease
+        if (Math.random() < 0.35) {
+          const next = prev - 1;
+          localStorage.setItem(KEY, String(next));
+          localStorage.setItem(KEY_TS, String(Date.now()));
+          return next;
+        }
+        return prev;
+      });
+    }, 25000 + Math.random() * 20000); // every 25-45s
+    return () => clearInterval(interval);
+  }, []);
+
+  return vagas;
+}
 
 /* ── ÍCONES ──────────────────────────────────────────────────────────── */
 const Check = ({ s = 14, c = "white" }: { s?: number; c?: string }) => (
@@ -137,6 +234,8 @@ export default function VendasBR() {
   const [showCheckout, setShowCheckout] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
   const { minutes, seconds } = useCountdown();
+  const fakeNotif = useFakeNotifications();
+  const vagas = useDynamicVagas(37);
   const [, navigate] = useLocation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
 
@@ -216,6 +315,40 @@ export default function VendasBR() {
             <button onClick={() => { setShowExitIntent(false); setExitDismissed(true); }} className="w-full text-[10px] py-2 mt-1" style={{ color: "var(--dm-grey-300)" }}>
               Não, prefiro continuar sem resultado.
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── NOTIFICAÇÃO DE VENDA FAKE ────────────────────────────────── */}
+      {fakeNotif.current && (
+        <div
+          className="fixed bottom-4 left-4 z-40 max-w-[280px] transition-all duration-500 ease-out"
+          style={{
+            transform: fakeNotif.visible ? "translateX(0)" : "translateX(-120%)",
+            opacity: fakeNotif.visible ? 1 : 0,
+          }}
+        >
+          <div
+            className="rounded-lg p-3 flex items-center gap-3"
+            style={{
+              background: "white",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
+            }}
+          >
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ background: "var(--teal-pale)" }}
+            >
+              <span className="text-sm">✅</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--dm-text)" }}>
+                {fakeNotif.current.name}
+              </p>
+              <p className="text-[9px] leading-tight mt-0.5" style={{ color: "var(--dm-text-soft)" }}>
+                {fakeNotif.current.city} — comprou {fakeNotif.current.time}
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -455,16 +588,16 @@ export default function VendasBR() {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-extrabold text-sm mb-1" style={{ color: "#B91C1C" }}>
-              Apenas {VAGAS_GRUPO} vagas no Grupo de Suporte
+              Apenas <span className="tabular-nums">{vagas}</span> vagas no Grupo de Suporte
             </h3>
             <p className="text-xs leading-relaxed" style={{ color: "#DC2626" }}>
               Cada compra inclui acesso ao grupo privado com acompanhamento pessoal. Capacidade limitada para garantir atenção individual.
             </p>
             <div className="mt-3 flex items-center gap-2.5">
               <div className="flex-1 h-1.5 rounded-full" style={{ background: "#FECACA" }}>
-                <div className="h-1.5 rounded-full" style={{ background: "#DC2626", width: "37%" }} />
+                <div className="h-1.5 rounded-full transition-all duration-1000" style={{ background: "#DC2626", width: `${vagas}%` }} />
               </div>
-              <span className="text-[10px] font-bold whitespace-nowrap" style={{ color: "#B91C1C" }}>{VAGAS_GRUPO}/100</span>
+              <span className="text-[10px] font-bold whitespace-nowrap tabular-nums" style={{ color: "#B91C1C" }}>{vagas}/100</span>
             </div>
           </div>
         </div>

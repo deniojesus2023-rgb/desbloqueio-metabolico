@@ -203,3 +203,11 @@
 - [x] Reescrever headline e subheadline com copy mais persuasiva
 - [x] Redesenhar grids para visual minimalista e moderno
 - [x] Manter design system teal/Montserrat intacto
+
+## Notificações de Vendas Fake + Vagas Dinâmicas
+
+- [x] Criar componente de notificação de venda fake (canto inferior esquerdo, slide-in/out)
+- [x] Lista de nomes brasileiros + cidades + tempo aleatório ("há 2 min", "há 5 min")
+- [x] Rotação automática a cada 8-12 segundos com animação
+- [x] Contador de vagas que diminui gradualmente ao longo do tempo
+- [x] Aplicar na VendasBR.tsx
