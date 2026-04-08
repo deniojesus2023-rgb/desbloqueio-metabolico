@@ -236,16 +236,24 @@ export default function Quiz() {
 
   // ── Header compartilhado ──────────────────────────────────────────────────────
   const Header = ({ showTimer }: { showTimer?: boolean }) => (
-    <header className="bg-[#00BFA5] px-4 shadow-sm" style={{ paddingTop: "env(safe-area-inset-top, 12px)", paddingBottom: "12px" }}>
+    <header className="bg-[#00BFA5] px-4 shadow-sm" style={{ paddingTop: "env(safe-area-inset-top, 12px)", paddingBottom: "14px" }}>
       <div className="flex items-center justify-between max-w-md mx-auto mb-2">
-        <div className="flex items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
-            <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="text-white font-bold text-sm">
-            {lang === "pt" ? "Desbloqueio Metabólico" : "Desbloqueo Metabólico"}
-          </span>
+        <div className="flex items-center gap-3">
+          {/* Logo icon */}
+          <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 shadow-inner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.3"/>
+              <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-white font-extrabold text-base leading-tight tracking-tight">
+              {lang === "pt" ? "Desbloqueio Metabólico" : "Desbloqueo Metabólico"}
+            </span>
+            <span className="text-white/70 text-[10px] font-medium leading-none">
+              {lang === "pt" ? "Diagnóstico Personalizado" : "Diagnóstico Personalizado"}
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {showTimer && (
@@ -285,25 +293,35 @@ export default function Quiz() {
     return (
       <div className="min-h-screen bg-[#F0F4F8] flex flex-col">
         <Header />
-        <div className="flex-1 flex flex-col items-center px-4 pt-5 pb-8 max-w-md mx-auto w-full">
+        <div className="flex-1 flex flex-col items-center px-4 pt-4 pb-8 max-w-md mx-auto w-full">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white border border-[#00BFA5]/30 rounded-full px-4 py-2 mb-4 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-[#00BFA5] animate-pulse"/>
             <span className="text-[#00BFA5] text-xs font-semibold tracking-widest uppercase">{t.startBadge}</span>
           </div>
 
-          {/* Imagem hero */}
-          <div className="relative w-full rounded-2xl overflow-hidden mb-5 shadow-md" style={{aspectRatio:"16/9"}}>
-            <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/hero_quiz-4yyjBHkD2a3bcnpKdnwqZj.webp"
-              alt={lang === "pt" ? "Avaliação metabólica" : "Evaluación metabólica"}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"/>
-            <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-2">
+          {/* Hero visual — sem imagem, substituído por card de diagnóstico */}
+          <div className="w-full rounded-2xl overflow-hidden mb-5 bg-gradient-to-br from-[#00BFA5] to-[#26C6DA] p-5 shadow-md">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.25"/>
+                  <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-white font-extrabold text-base leading-tight">
+                  {lang === "pt" ? "Diagnóstico Metabólico" : "Diagnóstico Metabólico"}
+                </p>
+                <p className="text-white/80 text-xs">
+                  {lang === "pt" ? "Avaliação gratuita e personalizada" : "Evaluación gratuita y personalizada"}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
               {t.startBenefits.map((b) => (
-                <span key={b} className="flex items-center gap-1 bg-white/95 text-[#00BFA5] text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="#00BFA5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span key={b} className="flex items-center gap-1 bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   {b}
                 </span>
               ))}
@@ -311,7 +329,7 @@ export default function Quiz() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-[#1A1A2E] text-2xl font-extrabold leading-tight text-left w-full mb-2">
+          <h1 className="text-[#1A1A2E] text-[1.6rem] font-extrabold leading-tight text-left w-full mb-2">
             {lang === "pt" ? (
               <>Descubra qual <span className="text-[#00BFA5]">Bloqueio Metabólico</span> está impedindo você de emagrecer</>
             ) : (
@@ -348,7 +366,7 @@ export default function Quiz() {
           <button
             onClick={handleStart}
             disabled={startSession.isPending}
-            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-bold text-base py-4 rounded-full shadow-lg shadow-[#00BFA5]/30 active:scale-95 transition-transform disabled:opacity-60"
+            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-extrabold text-lg py-4 rounded-full shadow-lg shadow-[#00BFA5]/30 active:scale-95 transition-transform disabled:opacity-60"
           >
             {startSession.isPending ? (lang === "pt" ? "Iniciando..." : "Iniciando...") : t.startCta}
           </button>

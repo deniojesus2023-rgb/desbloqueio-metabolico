@@ -144,3 +144,10 @@
 - [x] Replicar metáfora do termostato na Vendas.tsx (ES-LATAM)
 - [x] Replicar evento gatilho da Ana Paula na Vendas.tsx (ES-LATAM)
 - [x] Adicionar seção "Antes e Depois" na Vendas.tsx (ES-LATAM)
+
+## Melhorias Solicitadas (07/04/2026)
+
+- [x] Remover imagem da mulher (hero image 16/9) da fase landing do Quiz.tsx
+- [x] Destacar a logo no header do Quiz — aumentar tamanho, adicionar símbolo visual mais proeminente
+- [x] Otimização mobile: melhorar espaçamentos, tipografia e layout responsivo na fase landing
+- [x] Reestruturar VendasBR.tsx com modelo SwipeFile: Hero + Benefícios (3 itens) + Como Funciona (3 passos) + Depoimentos + Oferta + CTA

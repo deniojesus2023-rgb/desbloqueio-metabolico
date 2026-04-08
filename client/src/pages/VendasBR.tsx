@@ -13,7 +13,7 @@ const BLOCK_CONTENT = {
     subheadline:
       "O estresse crônico eleva o cortisol, que ordena ao seu corpo armazenar gordura abdominal como 'reserva de emergência'. Não é falta de força de vontade. É biologia.",
     color: "text-orange-600",
-    badgeColor: "bg-orange-50 text-orange-700",
+    badgeColor: "bg-orange-50 text-orange-700 border border-orange-200",
   },
   2: {
     badge: "Bloqueio Tipo 2 — Resistência à Insulina",
@@ -22,7 +22,7 @@ const BLOCK_CONTENT = {
     subheadline:
       "As dietas de restrição calórica ativam o mecanismo de sobrevivência celular, que bloqueia a queima de gordura e a armazena com mais eficiência. Quanto mais você restringe, mais o corpo retém.",
     color: "text-emerald-600",
-    badgeColor: "bg-emerald-50 text-emerald-700",
+    badgeColor: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   },
   3: {
     badge: "Bloqueio Tipo 3 — Desregulação Hormonal Noturna",
@@ -31,7 +31,7 @@ const BLOCK_CONTENT = {
     subheadline:
       "A leptina e a grelina — os hormônios da fome — se desregulam pelo estresse e pela restrição. Seu corpo literalmente pede carboidratos à noite para compensar. É química, não falta de vontade.",
     color: "text-purple-600",
-    badgeColor: "bg-purple-50 text-purple-700",
+    badgeColor: "bg-purple-50 text-purple-700 border border-purple-200",
   },
 };
 
@@ -236,7 +236,7 @@ export default function VendasBR() {
         </div>
       )}
 
-      {/* Barra de urgência */}
+      {/* ── BARRA DE URGÊNCIA ─────────────────────────────────────────────────── */}
       <div className="bg-red-600 text-white text-center py-2.5 px-4">
         <p className="text-sm font-bold">
           ⚡ Oferta especial expira em:{" "}
@@ -247,22 +247,27 @@ export default function VendasBR() {
         </p>
       </div>
 
-      {/* Header */}
+      {/* ── HEADER COM LOGO DESTACADA ─────────────────────────────────────────── */}
       <header className="bg-[#00BFA5] sticky top-0 z-10 shadow-md">
-        <div className="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-center gap-2">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <circle cx="11" cy="11" r="11" fill="white" fillOpacity="0.2"/>
-            <path d="M7 11l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="text-white font-extrabold text-base tracking-tight">Desbloqueio Metabólico</span>
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" fill="white" fillOpacity="0.3"/>
+              <path d="M7 12l3.5 3.5L17 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-white font-extrabold text-base leading-tight tracking-tight">Desbloqueio Metabólico</span>
+            <span className="text-white/70 text-[10px] font-medium leading-none">Protocolo de 3 Minutos</span>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="max-w-3xl mx-auto px-4 py-8">
 
-        {/* HERO — Personalizado por nome e tipo de bloqueio */}
+        {/* ── SEÇÃO 1: HERO — Personalizado por nome e tipo de bloqueio ─────────── */}
         <div className="text-center mb-10">
-          <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wide ${block.badgeColor}`}>
+          <span className={`inline-block text-xs font-bold px-4 py-1.5 rounded-full mb-4 uppercase tracking-wide ${block.badgeColor}`}>
             🔬 {block.badge}
           </span>
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-4">
@@ -275,108 +280,136 @@ export default function VendasBR() {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
             {block.subheadline}
           </p>
-          <button
-            onClick={scrollToCta}
-            className="bg-[#00BFA5] hover:bg-[#00A896] text-white font-bold px-8 py-3 rounded-full text-base transition-all duration-200 shadow-lg shadow-teal-200"
-          >
-            Ver minha solução personalizada ↓
-          </button>
+          {/* Mini produto visual */}
+          <div className="inline-flex items-center gap-3 bg-[#E0F7F4] border border-[#B2DFDB] rounded-2xl px-5 py-3 mb-6">
+            <div className="w-10 h-10 bg-[#00BFA5] rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
+              </svg>
+            </div>
+            <div className="text-left">
+              <p className="text-[#00897B] font-extrabold text-sm leading-tight">Protocolo do Desbloqueio de 3 Minutos</p>
+              <p className="text-[#00897B]/70 text-xs">Acesso digital imediato · Funciona com qualquer comida brasileira</p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={scrollToCta}
+              className="bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-extrabold px-8 py-4 rounded-full text-base transition-all duration-200 shadow-lg shadow-teal-200 hover:scale-105 active:scale-95"
+            >
+              Ver minha solução personalizada ↓
+            </button>
+          </div>
+          <p className="text-xs text-gray-400 mt-3">🔒 Pagamento seguro · Acesso imediato · Garantia 30 dias</p>
         </div>
 
-        {/* CTA TOPO — Primeiro CTA após headline */}
-        <div className="mb-10 text-center">
-          <button
-            onClick={scrollToCta}
-            className="w-full max-w-sm mx-auto block bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-extrabold text-lg py-4 rounded-full shadow-xl shadow-teal-200 hover:scale-105 transition-all duration-200"
-          >
-            Quero o Protocolo Completo — R$47 →
-          </button>
-          <p className="text-xs text-gray-400 mt-2">🔒 Pagamento seguro · Acesso imediato · Garantia 30 dias</p>
-        </div>
-
-        {/* PROBLEMA — MUP Brasileiro */}
-        <div className="bg-gray-50 rounded-2xl p-6 md:p-8 mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Por que as dietas convencionais fazem seu corpo acumular <span className="text-red-500">mais gordura</span>
-          </h2>
-          <p className="text-gray-700 mb-4">
-            Pense no seu metabolismo como um <strong>termostato</strong>. Quando está calibrado corretamente, seu corpo queima gordura naturalmente — mesmo em repouso, mesmo depois do churrasco de domingo, mesmo depois do pão de queijo no café.
-          </p>
-          <p className="text-gray-700 mb-4">
-            O problema é que o estresse crônico age como um termostato travado: ativa a <strong>Trava Metabólica do Estresse Crônico</strong>, que faz o cortisol subir, o metabolismo cair, e as células de gordura ficarem <strong>resistentes a liberar energia</strong>. Não importa o quanto você force com dieta ou exercício — o termostato continua mandando o sinal errado.
-          </p>
-          <p className="text-gray-700">
-            É por isso que você pode comer "certinho" a semana toda e não perder nada. O problema não é a quantidade de comida — é o sinal que seu corpo está recebendo. E nenhuma dieta convencional resolve isso porque elas atacam o sintoma (caloria), não a causa (o termostato travado).
-          </p>
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* ── SEÇÃO 2: BENEFÍCIOS — 3 principais (modelo SwipeFile) ─────────────── */}
+        <div className="mb-12">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-extrabold text-gray-900">
+              O que o Protocolo faz pelo seu corpo
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">Três transformações que acontecem quando o bloqueio é removido</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
-              { icon: "🧠", title: "Cortisol elevado", desc: "Ordena ao corpo armazenar gordura abdominal como 'reserva'" },
-              { icon: "🔒", title: "Células bloqueadas", desc: "As células de gordura se recusam a liberar energia" },
-              { icon: "📉", title: "Metabolismo lento", desc: "O corpo queima até 40% menos calorias em repouso" },
-            ].map((item) => (
-              <div key={item.title} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-                <div className="text-2xl mb-2">{item.icon}</div>
-                <div className="font-bold text-gray-900 text-sm mb-1">{item.title}</div>
-                <div className="text-gray-500 text-xs">{item.desc}</div>
+              {
+                icon: "🔥",
+                title: "Metabolismo desbloqueado",
+                desc: "Seu corpo volta a queimar gordura naturalmente — em repouso, depois do churrasco, depois do pão de queijo. Sem restrição, sem sofrimento.",
+                highlight: "Sem dieta restritiva",
+              },
+              {
+                icon: "😴",
+                title: "Compulsão noturna eliminada",
+                desc: "A vontade de doce à noite desaparece quando os hormônios da fome voltam ao equilíbrio. Você para de lutar contra o próprio corpo.",
+                highlight: "Sem força de vontade extra",
+              },
+              {
+                icon: "⚡",
+                title: "Energia e disposição de volta",
+                desc: "Com o cortisol regulado, você acorda disposta, dorme profundo e tem energia para a sua rotina — sem precisar de café extra.",
+                highlight: "Desde a primeira semana",
+              },
+            ].map((b) => (
+              <div key={b.title} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="text-4xl mb-4">{b.icon}</div>
+                <h3 className="font-extrabold text-gray-900 text-base mb-2">{b.title}</h3>
+                <p className="text-gray-500 text-sm leading-relaxed mb-3">{b.desc}</p>
+                <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full">
+                  ✓ {b.highlight}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* SOLUÇÃO — MUS Brasileiro */}
-        <div className="mb-10">
-          <div className="text-center mb-6">
-            <span className="inline-block bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
-              A Solução
+        {/* ── SEÇÃO 3: COMO FUNCIONA — 3 passos simples (modelo SwipeFile) ──────── */}
+        <div className="mb-12 bg-gray-50 rounded-3xl p-6 md:p-10">
+          <div className="text-center mb-8">
+            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-4 py-1.5 rounded-full mb-3 uppercase tracking-wide">
+              Como funciona
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              O <span className="text-emerald-600">Protocolo do Desbloqueio de 3 Minutos</span>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900">
+              3 passos. 3 minutos. Antes de cada refeição.
             </h2>
-            <p className="text-gray-600 mt-3 max-w-2xl mx-auto">
-              Uma sequência de 3 passos simples que, realizados antes das suas refeições principais, envia um sinal bioquímico às suas células para que saiam do modo sobrevivência e voltem a queimar gordura normalmente.
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
+              Funciona com arroz com feijão, churrasco, feijoada, pão de queijo — qualquer comida brasileira.
             </p>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {[
               {
                 step: "01",
                 title: "Ativação Enzimática",
-                desc: "Uma combinação específica de alimentos comuns que ativa as enzimas lipolíticas — as responsáveis por 'desbloquear' as células de gordura para que liberem energia. Funciona com arroz, feijão, pão de queijo e qualquer comida brasileira.",
+                desc: "Uma combinação específica de alimentos comuns que ativa as enzimas lipolíticas — as responsáveis por 'desbloquear' as células de gordura para que liberem energia.",
                 time: "1 minuto",
+                color: "bg-[#00BFA5]",
               },
               {
                 step: "02",
                 title: "Sinal de Saciedade Antecipada",
-                desc: "Uma técnica de respiração de 60 segundos que reduz o cortisol em tempo real e ativa o sistema nervoso parassimpático — o 'modo queima de gordura' do seu corpo. Pode ser feita em qualquer lugar, inclusive no trabalho.",
+                desc: "Uma técnica de respiração de 60 segundos que reduz o cortisol em tempo real e ativa o sistema nervoso parassimpático — o 'modo queima de gordura' do seu corpo.",
                 time: "1 minuto",
+                color: "bg-[#26C6DA]",
               },
               {
                 step: "03",
                 title: "Calibração de Insulina",
-                desc: "Um ritual alimentar de 60 segundos que estabiliza a glicose antes de comer, evitando o pico de insulina que converte os carboidratos em gordura armazenada. Funciona mesmo com feijoada e churrasco.",
+                desc: "Um ritual alimentar de 60 segundos que estabiliza a glicose antes de comer, evitando o pico de insulina que converte os carboidratos em gordura armazenada.",
                 time: "1 minuto",
+                color: "bg-[#00897B]",
               },
             ].map((item) => (
-              <div key={item.step} className="flex gap-4 p-5 bg-[#E0F7F4] rounded-xl border border-[#B2DFDB]">
-                <div className="flex-shrink-0 w-10 h-10 bg-[#00BFA5] text-white rounded-full flex items-center justify-center font-bold text-sm">
+              <div key={item.step} className="flex gap-4 bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                <div className={`flex-shrink-0 w-11 h-11 ${item.color} text-white rounded-full flex items-center justify-center font-extrabold text-sm shadow-md`}>
                   {item.step}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-bold text-gray-900">{item.title}</h3>
-                    <span className="text-xs text-[#00897B] font-semibold bg-[#E0F7F4] px-2 py-0.5 rounded-full">{item.time}</span>
+                  <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+                    <h3 className="font-extrabold text-gray-900">{item.title}</h3>
+                    <span className="text-xs text-[#00897B] font-bold bg-[#E0F7F4] px-3 py-1 rounded-full">{item.time}</span>
                   </div>
-                  <p className="text-gray-600 text-sm">{item.desc}</p>
+                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
           </div>
+          <div className="mt-6 text-center">
+            <button
+              onClick={scrollToCta}
+              className="bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] text-white font-extrabold px-8 py-4 rounded-full text-base shadow-lg shadow-teal-200 hover:scale-105 transition-all active:scale-95"
+            >
+              Quero começar hoje →
+            </button>
+          </div>
         </div>
 
-        {/* PERSONA — Ana Paula Ferreira */}
-        <div className="mb-10">
+        {/* ── SEÇÃO 4: QUEM CRIOU — Ana Paula Ferreira ──────────────────────────── */}
+        <div className="mb-12">
           <div className="text-center mb-6">
-            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
+            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-4 py-1.5 rounded-full mb-3 uppercase tracking-wide">
               Quem criou este protocolo
             </span>
           </div>
@@ -385,7 +418,7 @@ export default function VendasBR() {
               <img
                 src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/ana_paula_ferreira-mjHRev2Yaie3xqQuHV2EXb.webp"
                 alt="Ana Paula Ferreira"
-                className="flex-shrink-0 w-20 h-20 rounded-full object-cover border-3 border-[#00BFA5] shadow-md"
+                className="flex-shrink-0 w-20 h-20 rounded-full object-cover border-4 border-[#00BFA5] shadow-md"
               />
               <div>
                 <h3 className="font-extrabold text-gray-900 text-lg">Ana Paula Ferreira</h3>
@@ -398,25 +431,16 @@ export default function VendasBR() {
                 Em setembro de 2021, no aniversário de 15 anos da minha filha Laura, meu marido tirou uma foto nossa abraçadas. Quando ele me mostrou, eu não me reconheci. Estava usando um vestido largo justamente para esconder a barriga — e mesmo assim dava para ver.
               </p>
               <p>
-                Naquele momento, com a foto na mão, eu pensei: <em>"Isso não sou eu. Eu preciso fazer alguma coisa de verdade."</em>
-              </p>
-              <p>
-                Nos 11 anos anteriores, eu tinha tentado de tudo. Low carb por 4 meses — perdi 5kg, engordei 8kg. Jejum intermitente por 3 meses — fiquei irritada, não dormi direito, desisti. Academia 5 vezes por semana por 8 meses — emagreci 3kg, fiquei com dor no joelho, parei. Shakes, termogênicos, chás milagrosos. Nada funcionava por mais de algumas semanas.
+                Nos 11 anos anteriores, eu tinha tentado de tudo. Low carb por 4 meses — perdi 5kg, engordei 8kg. Jejum intermitente por 3 meses — fiquei irritada, não dormi direito, desisti. Academia 5 vezes por semana por 8 meses — emagreci 3kg, fiquei com dor no joelho, parei.
               </p>
               <p>
                 <strong className="text-gray-900">"Eu achava que era fraqueza minha"</strong>, ela conta. <em>"Que eu não tinha disciplina suficiente. Que todo mundo conseguia emagrecer menos eu. Chorei muito me culpando por isso."</em>
               </p>
               <p>
-                A virada aconteceu por acidente. Em uma noite de insônia em 2022, pesquisando sobre cortisol e sono, Ana Paula encontrou um estudo sobre como o estresse crônico literalmente bloqueia a queima de gordura em nível celular — como um <strong className="text-gray-900">termostato travado</strong>. Não importa o quanto você force com dieta ou exercício: se o termostato está travado, o corpo continua no modo armazenamento.
+                A virada aconteceu por acidente. Em uma noite de insônia em 2022, pesquisando sobre cortisol e sono, Ana Paula encontrou um estudo sobre como o estresse crônico literalmente bloqueia a queima de gordura em nível celular — como um <strong className="text-gray-900">termostato travado</strong>.
               </p>
               <p>
-                <em>"Quando li aquilo, caí em prantos. Não era falta de força de vontade. Era biologia. Meu corpo estava com o termostato travado há anos e eu ficava tentando forçar ele a emagrecer com mais restrição — que era exatamente o que piorava o bloqueio."</em>
-              </p>
-              <p>
-                Ela passou os 8 meses seguintes testando combinações de técnicas para destravar esse termostato — regulação do cortisol, ativação enzimática e calibração de insulina — todas baseadas em estudos científicos, mas simplificadas para a rotina real de uma professora com dois filhos, marido e casa para cuidar.
-              </p>
-              <p>
-                O resultado: <strong className="text-[#00897B]">14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café da manhã. Hoje ela compartilha o protocolo com outras mulheres que passaram pelo mesmo que ela.
+                O resultado: <strong className="text-[#00897B]">14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café da manhã.
               </p>
             </div>
             <div className="mt-5 bg-[#F0FDFB] rounded-xl p-4 border border-[#B2DFDB]">
@@ -427,11 +451,14 @@ export default function VendasBR() {
           </div>
         </div>
 
-        {/* DEPOIMENTOS BR */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
-            Mulheres brasileiras que já desbloquearam o metabolismo
-          </h2>
+        {/* ── SEÇÃO 5: DEPOIMENTOS — Prova social com resultados reais ─────────── */}
+        <div className="mb-12">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-extrabold text-gray-900">
+              Mulheres brasileiras que já desbloquearam o metabolismo
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">Resultados reais de mulheres com os 3 tipos de bloqueio</p>
+          </div>
           <div className="space-y-4">
             {TESTIMONIALS_BR.map((t) => (
               <div key={t.name} className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
@@ -442,7 +469,7 @@ export default function VendasBR() {
                     className="w-14 h-14 rounded-full object-cover flex-shrink-0 border-2 border-[#B2DFDB]"
                   />
                   <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-1 flex-wrap gap-2">
                       <div>
                         <span className="font-bold text-gray-900 text-sm">{t.name}</span>
                         <span className="text-gray-400 text-xs ml-2">{t.location}</span>
@@ -464,80 +491,8 @@ export default function VendasBR() {
           </div>
         </div>
 
-        {/* ANTES E DEPOIS */}
-        <div className="mb-10">
-          <div className="text-center mb-6">
-            <span className="inline-block bg-[#E0F7F4] text-[#00897B] text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
-              Resultados reais
-            </span>
-            <h2 className="text-2xl font-bold text-gray-900">
-              O que acontece quando o bloqueio é desbloqueado
-            </h2>
-            <p className="text-gray-500 text-sm mt-2">Resultados de mulheres com cada tipo de bloqueio metabólico</p>
-          </div>
-          <div className="space-y-4">
-            {[
-              {
-                tipo: "Bloqueio Tipo 1 — Cortisol",
-                nome: "Fernanda O., 44 anos · SP",
-                antes: ["Acordava cansada todo dia", "Barriga que não saía com nenhuma dieta", "Ansiedade e compulsão noturna"],
-                depois: ["Dorme profundo e acorda disposta", "Perdeu 7 kg em 5 semanas", "Compulsão noturna desapareceu na semana 2"],
-                cor: "from-orange-50 to-orange-100",
-                badge: "bg-orange-100 text-orange-700",
-              },
-              {
-                tipo: "Bloqueio Tipo 2 — Insulina",
-                nome: "Camila S., 51 anos · BH",
-                antes: ["Engordava mesmo comendo pouco", "Vontade de doce incontrolável", "Energia baixa após as refeições"],
-                depois: ["Metabolismo acelerou visivelmente", "Perdeu 9 kg em 7 semanas", "Vontade de doce reduziu 80%"],
-                cor: "from-blue-50 to-blue-100",
-                badge: "bg-blue-100 text-blue-700",
-              },
-              {
-                tipo: "Bloqueio Tipo 3 — Hormonal",
-                nome: "Juliana P., 48 anos · Curitiba",
-                antes: ["Peso que oscilava sem razão", "Retenção de líquido constante", "Sensação de inchaço permanente"],
-                depois: ["Estabilizou o peso pela primeira vez", "Perdeu 5 kg em 3 semanas", "Inchaço desapareceu na semana 1"],
-                cor: "from-purple-50 to-purple-100",
-                badge: "bg-purple-100 text-purple-700",
-              },
-            ].map((card) => (
-              <div key={card.tipo} className={`bg-gradient-to-br ${card.cor} rounded-2xl p-5 border border-gray-100`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`text-xs font-bold px-2 py-1 rounded-full ${card.badge}`}>{card.tipo}</span>
-                </div>
-                <p className="text-gray-500 text-xs mb-3 font-medium">{card.nome}</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs font-bold text-red-600 mb-2 uppercase tracking-wide">Antes</p>
-                    <ul className="space-y-1">
-                      {card.antes.map((item) => (
-                        <li key={item} className="flex items-start gap-1.5 text-xs text-gray-600">
-                          <span className="text-red-400 mt-0.5 flex-shrink-0">✗</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#00897B] mb-2 uppercase tracking-wide">Depois</p>
-                    <ul className="space-y-1">
-                      {card.depois.map((item) => (
-                        <li key={item} className="flex items-start gap-1.5 text-xs text-gray-600">
-                          <span className="text-[#00BFA5] mt-0.5 flex-shrink-0">✓</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* URGÊNCIA — 37 vagas no grupo */}
-        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 mb-8">
+        {/* ── SEÇÃO 6: URGÊNCIA ─────────────────────────────────────────────────── */}
+        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 mb-10">
           <div className="flex items-start gap-3">
             <div className="text-2xl flex-shrink-0">🔴</div>
             <div>
@@ -557,40 +512,33 @@ export default function VendasBR() {
           </div>
         </div>
 
-        {/* VALUE STACK BR */}
-        <div className="bg-gray-900 text-white rounded-2xl p-6 md:p-8 mb-8">
-          <h2 className="text-xl font-bold text-center mb-6">
-            Tudo que você recebe hoje
-          </h2>
-          <div className="space-y-3 mb-6">
-            {[
-              { item: "Protocolo do Desbloqueio de 3 Minutos (Guia Principal)", value: "R$197" },
-              { item: "Mapa de Alimentos Desbloqueadores para o Brasil", value: "R$97" },
-              { item: "Guia de Emergência: O que fazer quando a vontade de doce ataca", value: "R$67" },
-              { item: "Protocolo de Resgate para o Fim de Semana (churrasco, feijoada e mais)", value: "R$47" },
-              { item: "Acesso a atualizações vitalício", value: "R$57" },
-            ].map((row) => (
-              <div key={row.item} className="flex items-center justify-between py-2 border-b border-gray-700">
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
-                  <span className="text-gray-200 text-sm">{row.item}</span>
+        {/* ── SEÇÃO 7: OFERTA — Value Stack + CTA ──────────────────────────────── */}
+        <div ref={ctaRef} className="mb-10">
+          {/* Value Stack */}
+          <div className="bg-gray-900 text-white rounded-2xl p-6 md:p-8 mb-6">
+            <h2 className="text-xl font-extrabold text-center mb-2">
+              Tudo que você recebe hoje
+            </h2>
+            <p className="text-gray-400 text-sm text-center mb-6">Valor total: <span className="line-through">R$465</span> — Seu investimento: <span className="text-emerald-400 font-extrabold text-lg">Só R$47</span></p>
+            <div className="space-y-3 mb-6">
+              {[
+                { item: "Protocolo do Desbloqueio de 3 Minutos (Guia Principal)", value: "R$197" },
+                { item: "Mapa de Alimentos Desbloqueadores para o Brasil", value: "R$97" },
+                { item: "Guia de Emergência: O que fazer quando a vontade de doce ataca", value: "R$67" },
+                { item: "Protocolo de Resgate para o Fim de Semana (churrasco, feijoada e mais)", value: "R$47" },
+                { item: "Acesso a atualizações vitalício", value: "R$57" },
+              ].map((row) => (
+                <div key={row.item} className="flex items-center justify-between py-2 border-b border-gray-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-emerald-400 text-sm flex-shrink-0">✓</span>
+                    <span className="text-gray-200 text-sm">{row.item}</span>
+                  </div>
+                  <span className="text-gray-500 text-sm line-through flex-shrink-0 ml-4">{row.value}</span>
                 </div>
-                <span className="text-gray-400 text-sm line-through flex-shrink-0 ml-4">{row.value}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-          <div className="flex items-center justify-between text-lg font-bold border-t border-gray-600 pt-4">
-            <span className="text-gray-300">Valor total:</span>
-            <span className="text-gray-400 line-through">R$465</span>
-          </div>
-          <div className="flex items-center justify-between text-2xl font-extrabold mt-1">
-            <span className="text-white">Seu investimento hoje:</span>
-            <span className="text-emerald-400">Só R$47</span>
-          </div>
-        </div>
 
-        {/* CTA PRINCIPAL */}
-        <div ref={ctaRef} className="mb-8">
           {/* Order Bump */}
           <div
             className={`border-2 rounded-xl p-4 mb-4 cursor-pointer transition-all duration-200 ${orderBump ? "border-emerald-500 bg-emerald-50" : "border-dashed border-gray-300 bg-gray-50"}`}
@@ -612,13 +560,14 @@ export default function VendasBR() {
           </div>
 
           {/* Âncora de preço */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 text-center">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-5 text-center">
             <p className="text-amber-800 text-sm font-medium">
               💡 Para referência: uma consulta com nutricionista custa entre R$150 e R$400 — e não vai te dar o Protocolo de Desbloqueio.
               <strong> Hoje você paga menos que um jantar fora.</strong>
             </p>
           </div>
 
+          {/* Botão CTA principal */}
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
@@ -633,20 +582,20 @@ export default function VendasBR() {
           </p>
         </div>
 
-        {/* GARANTIA */}
+        {/* ── SEÇÃO 8: GARANTIA ─────────────────────────────────────────────────── */}
         <div className="border-2 border-[#B2DFDB] rounded-2xl p-6 mb-10 flex gap-4 items-start bg-[#F0FDFB]">
           <div className="text-4xl flex-shrink-0">🛡️</div>
           <div>
-            <h3 className="font-bold text-gray-900 mb-1">Garantia Incondicional de 30 Dias</h3>
-            <p className="text-gray-600 text-sm">
+            <h3 className="font-extrabold text-gray-900 mb-1">Garantia Incondicional de 30 Dias</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
               Se por qualquer motivo você não estiver satisfeita com os resultados nos próximos 30 dias, devolvemos 100% do seu dinheiro. Sem perguntas. Sem formulários complicados. O risco é completamente nosso.
             </p>
           </div>
         </div>
 
-        {/* FAQ BR */}
+        {/* ── SEÇÃO 9: FAQ ──────────────────────────────────────────────────────── */}
         <div className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">
+          <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-6">
             Perguntas frequentes
           </h2>
           <div className="space-y-3">
@@ -669,18 +618,28 @@ export default function VendasBR() {
           </div>
         </div>
 
-        {/* CTA FINAL */}
-        <div className="text-center bg-[#E0F7F4] rounded-2xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        {/* ── SEÇÃO 10: CTA FINAL ───────────────────────────────────────────────── */}
+        <div className="text-center bg-gradient-to-br from-[#E0F7F4] to-[#F0FDFB] rounded-3xl p-8 border border-[#B2DFDB]">
+          <div className="w-16 h-16 bg-[#00BFA5] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-200">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
+            </svg>
+          </div>
+          <h2 className="text-2xl font-extrabold text-gray-900 mb-2">
             Ainda aqui, {name}?
           </h2>
-          <p className="text-gray-600 mb-6">
-            Cada dia que seu metabolismo continua travado é mais um dia de dietas que não funcionam. A solução está a um clique de distância.
+          <p className="text-gray-600 mb-2 text-sm max-w-md mx-auto">
+            Você tem duas opções agora.
+          </p>
+          <p className="text-gray-500 text-sm mb-6 max-w-md mx-auto">
+            <strong className="text-gray-700">Opção 1:</strong> Fechar essa página, continuar tentando as mesmas dietas que não funcionaram, e esperar que algo mude.<br/>
+            <strong className="text-[#00897B]">Opção 2:</strong> Investir R$47 hoje, remover o bloqueio metabólico que está impedindo seu corpo de emagrecer, e começar a ver resultados em 7 dias.
           </p>
           <button
             onClick={handleBuy}
             disabled={trackConversion.isPending}
-            className="w-full bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-xl py-5 rounded-full transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70"
+            className="w-full max-w-md mx-auto block bg-gradient-to-r from-[#00BFA5] to-[#26C6DA] hover:from-[#00A896] hover:to-[#1EBDD0] text-white font-extrabold text-xl py-5 rounded-full transition-all duration-200 shadow-xl shadow-teal-200 disabled:opacity-70 active:scale-95"
           >
             Sim, quero desbloquear meu metabolismo →
           </button>
@@ -688,6 +647,7 @@ export default function VendasBR() {
             🔒 Garantia de 30 dias · Acesso imediato · Só R$47
           </p>
         </div>
+
       </div>
     </div>
   );
