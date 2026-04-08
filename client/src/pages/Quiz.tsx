@@ -229,17 +229,15 @@ export default function Quiz() {
   // ── Header compartilhado ──────────────────────────────────────────────────────
   const Header = ({ showTimer }: { showTimer?: boolean }) => (
     <header className="dm-header" style={{ paddingTop: "env(safe-area-inset-top, 12px)" }}>
-      <div className="flex items-center justify-between max-w-md mx-auto px-5 py-3.5">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-desbloqueio-metabolico_52602d94.png"
-            alt="Desbloqueio Metab\u00f3lico"
-            className="h-9 w-auto object-contain"
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="relative max-w-md mx-auto px-5 py-2 flex items-center justify-center">
+        {/* Logo centralizada */}
+        <img
+          src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-transparent-kyWgSpYUsgYseU7Z4wHEEo.png"
+          alt="Desbloqueio Metabólico"
+          className="h-12 w-auto object-contain"
+        />
+        {/* Timer e progresso — posicionados no canto direito sem deslocar a logo */}
+        <div className="absolute right-5 flex items-center gap-2">
           {showTimer && (
             <div className="flex items-center gap-1.5 bg-red-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-full">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
