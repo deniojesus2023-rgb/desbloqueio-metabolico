@@ -184,3 +184,8 @@
 - [x] Resumo da compra com itens adquiridos e valores
 - [x] Orientações sobre próximos passos pós-compra
 - [x] Redirecionar para página de confirmação após último passo do funil
+
+## Correção PIX — Stripe não ativado
+
+- [x] Remover PIX do payment_method_types (usar apenas card até ativação no Stripe dashboard)
+- [x] Adicionar lógica condicional para habilitar PIX quando disponível
