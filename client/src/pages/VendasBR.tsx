@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import StripeCheckout from "@/components/StripeCheckout";
+import UpsellModal from "@/components/UpsellModal";
 import { pixelViewContent, pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
 
 const DEPO_SLIDES = [
@@ -312,6 +313,8 @@ export default function VendasBR() {
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [exitDismissed, setExitDismissed] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const [upsellCustomerId, setUpsellCustomerId] = useState<string | undefined>();
   const ctaRef = useRef<HTMLDivElement>(null);
   const { minutes, seconds } = useCountdown();
   const fakeNotif = useFakeNotifications();
@@ -353,8 +356,9 @@ export default function VendasBR() {
     pixelPurchase({ value: totalPrice, currency: "BRL", order_id: data.paymentIntentId });
     trackConversion.mutate({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
     if (orderBump) trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
-    const custParam = data.customerId ? `&cid=${data.customerId}` : "";
-    navigate(`/upsell-br?s=${sessionId || ""}${custParam}`);
+    setUpsellCustomerId(data.customerId);
+    setShowUpsell(true);
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const scrollToCta = () => ctaRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -367,6 +371,11 @@ export default function VendasBR() {
 
   return (
     <div className="min-h-screen" style={{ background: "#FAFBFC", fontFamily: "'Montserrat', sans-serif" }}>
+
+      {/* ── UPSELL / DOWNSELL POPUP ───────────────────────────────────── */}
+      {showUpsell && (
+        <UpsellModal customerId={upsellCustomerId} sessionId={sessionId} />
+      )}
 
       {/* ── EXIT-INTENT POPUP ─────────────────────────────────────────── */}
       {showExitIntent && (
