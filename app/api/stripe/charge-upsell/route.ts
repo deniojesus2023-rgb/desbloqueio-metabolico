@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { PRODUCTS, type ProductKey } from "@/lib/stripe-products";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-03-31.basil",
+  apiVersion: "2025-02-24.acacia",
 });
 
 export async function POST(request: NextRequest) {
