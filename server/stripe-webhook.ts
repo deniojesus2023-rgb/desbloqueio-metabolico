@@ -50,6 +50,7 @@ export function registerStripeWebhook(app: Express) {
                     upsell_1: "upsell_1",
                     downsell_1: "downsell_1",
                     upsell_2: "upsell_2",
+                    downsell_2: "downsell_2",
                   };
                   const conversionType = typeMap[key];
                   if (conversionType) {
@@ -110,6 +111,23 @@ export function registerStripeWebhook(app: Express) {
               }
             }
 
+            break;
+          }
+
+          case "payment_intent.payment_failed": {
+            const paymentIntent = event.data.object as any;
+            const { customerEmail, customerName, sessionId } = paymentIntent.metadata || {};
+            const failureMessage = paymentIntent.last_payment_error?.message || "Pagamento recusado";
+            console.warn(`[Stripe Webhook] Payment failed for ${customerEmail || "unknown"}: ${failureMessage}`);
+            await notifyOwner({
+              title: `Pagamento falhou`,
+              content: [
+                `Cliente: ${customerName || "N/A"} (${customerEmail || "N/A"})`,
+                `Motivo: ${failureMessage}`,
+                `Session ID: ${sessionId || "N/A"}`,
+                `Payment Intent: ${paymentIntent.id}`,
+              ].join("\n"),
+            }).catch(() => {});
             break;
           }
 

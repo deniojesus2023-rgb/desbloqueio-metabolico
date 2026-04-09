@@ -34,6 +34,12 @@ export const PRODUCTS = {
     amount: 5700, // R$57,00
     currency: "brl",
   },
+  downsell_2: {
+    name: "Guia PDF Protocolo de 3 Minutos",
+    description: "Guia PDF essencial do Protocolo de 3 Minutos — acesso imediato",
+    amount: 1700, // R$17,00
+    currency: "brl",
+  },
 } as const;
 
 export type ProductKey = keyof typeof PRODUCTS;

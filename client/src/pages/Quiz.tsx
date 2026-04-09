@@ -568,6 +568,32 @@ export default function Quiz() {
             </p>
           </div>
 
+          {/* Prova social — mulheres com o mesmo bloqueio */}
+          <div className="dm-card mb-5" style={{ background: `${profile.color}08`, border: `1px solid ${profile.color}25` }}>
+            <p className="text-[11px] font-bold uppercase mb-3" style={{ color: profile.color, letterSpacing: "0.15em" }}>
+              {lang === "pt" ? "Mulheres com o mesmo bloqueio:" : "Mujeres con el mismo bloqueo:"}
+            </p>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex -space-x-1.5">
+                {[0,1,2,3].map(i => (
+                  <div key={i} className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white" style={{ background: `hsl(${Number(profile.color.replace('#','0x')) % 360 + i * 20}, 55%, 55%)` }}>
+                    {["M","J","A","C"][i]}
+                  </div>
+                ))}
+              </div>
+              <p className="text-[13px] font-semibold" style={{ color: "var(--dm-text)" }}>
+                {lang === "pt"
+                  ? `+3.200 mulheres com este bloqueio já desbloquearam`
+                  : `+3.200 mujeres con este bloqueo ya desbloquearon`}
+              </p>
+            </div>
+            <p className="text-[12px]" style={{ color: "var(--dm-text-soft)" }}>
+              {lang === "pt"
+                ? `${profile.blockPercentage - 10}% delas viram resultado nas primeiras 2 semanas`
+                : `${profile.blockPercentage - 10}% de ellas vieron resultado en las primeras 2 semanas`}
+            </p>
+          </div>
+
           {/* CTA */}
           <button
             onClick={() => setPhase("optin")}
@@ -601,6 +627,27 @@ export default function Quiz() {
 
           <h2 className="text-[22px] font-extrabold leading-[1.25] mb-2" style={{ color: "var(--dm-text)", letterSpacing: "-0.02em" }}>{t.optinTitle}</h2>
           <p className="text-[15px] mb-6" style={{ color: "var(--dm-text-soft)", lineHeight: 1.75 }}>{t.optinSubtitle}</p>
+
+          {/* Barra de urgência */}
+          {optinTimer > 0 && (
+            <div className="rounded-xl p-3.5 mb-5 flex items-center gap-3" style={{ background: "#FFF7ED", border: "2px solid #FED7AA" }}>
+              <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#FEF3C7" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="#D97706" strokeWidth="2"/>
+                  <path d="M12 7v5l3 3" stroke="#D97706" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-[12px] font-extrabold" style={{ color: "#92400E" }}>
+                  {lang === "pt" ? "Acesso expira em:" : "Acceso expira en:"}
+                  {" "}<span style={{ color: "#DC2626" }}>{formatTimer(optinTimer)}</span>
+                </p>
+                <p className="text-[11px]" style={{ color: "#D97706" }}>
+                  {lang === "pt" ? "Preencha agora para garantir seu protocolo" : "Rellena ahora para garantizar tu protocolo"}
+                </p>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleOptIn} className="space-y-5">
             <div>

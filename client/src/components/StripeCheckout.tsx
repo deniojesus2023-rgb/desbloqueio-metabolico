@@ -28,6 +28,14 @@ function CheckoutForm({
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [pixSelected, setPixSelected] = useState(false);
+  const [pixTimer, setPixTimer] = useState(600);
+
+  useEffect(() => {
+    if (!pixSelected) return;
+    const id = setInterval(() => setPixTimer(t => Math.max(0, t - 1)), 1000);
+    return () => clearInterval(id);
+  }, [pixSelected]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +62,7 @@ function CheckoutForm({
     } else if (paymentIntent && paymentIntent.status === "requires_action") {
       // PIX: Stripe handles the QR code display automatically
       // The PaymentElement will show the PIX QR code
+      setPixSelected(true);
       setProcessing(false);
     } else {
       setProcessing(false);
@@ -96,6 +105,21 @@ function CheckoutForm({
           Pagamento 100% seguro · Criptografia SSL · Stripe
         </span>
       </div>
+      {pixSelected && (
+        <div className="mt-4 p-3 rounded-xl text-center" style={{ background: "#FFF7ED", border: "1.5px solid #FED7AA" }}>
+          <p className="text-[13px] font-bold" style={{ color: "#92400E" }}>
+            ⏳ Escaneie o QR code acima — expira em{" "}
+            <span style={{ color: "#DC2626" }}>
+              {String(Math.floor(pixTimer / 60)).padStart(2, "0")}:{String(pixTimer % 60).padStart(2, "0")}
+            </span>
+          </p>
+          {pixTimer === 0 && (
+            <p className="text-[12px] mt-1" style={{ color: "#DC2626" }}>
+              QR expirado. Recarregue a página para gerar novo código.
+            </p>
+          )}
+        </div>
+      )}
     </form>
   );
 }

@@ -413,11 +413,78 @@ function DownsellContent({
 }
 
 /* ══════════════════════════════════════════════════════════════════════
+   3º DOWNSELL POPUP (R$17)
+══════════════════════════════════════════════════════════════════════ */
+function ThirdOfferContent({
+  onAccept,
+  onDecline,
+  processing,
+  error,
+}: {
+  onAccept: () => void;
+  onDecline: () => void;
+  processing: boolean;
+  error: string;
+}) {
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: "rgba(0,0,0,0.92)" }}>
+      <div className="overflow-y-auto flex-1 flex flex-col items-center py-6 px-4">
+        <div className="w-full max-w-lg rounded-2xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 25px 80px rgba(0,0,0,0.6)" }}>
+          <div className="w-full py-3 px-4 text-center text-white font-extrabold text-sm" style={{ background: "#7C3AED" }}>
+            ⚡ Última oportunidade antes de ir para o material ⚡
+          </div>
+          <div className="p-6">
+            <div className="text-center mb-6">
+              <p className="text-[11px] font-extrabold uppercase tracking-widest mb-3 px-3 py-1.5 rounded-full inline-block" style={{ background: "#F5F3FF", color: "#7C3AED", border: "1.5px solid #DDD6FE" }}>
+                📖 Apenas o guia essencial
+              </p>
+              <h2 className="text-[clamp(18px,4vw,22px)] font-extrabold leading-[1.2] mb-3" style={{ color: "#111827", letterSpacing: "-0.02em" }}>
+                Ok. Respeito sua decisão.
+                <br />
+                <span style={{ color: "#7C3AED" }}>Mas deixa eu te dar uma última chance por R$17.</span>
+              </h2>
+              <p className="text-[13px] leading-[1.7]" style={{ color: "#6B7280" }}>
+                Só o <strong style={{ color: "#111827" }}>Guia PDF do Protocolo de 3 Minutos</strong> — sem bônus, sem suporte, sem grupo. O essencial puro para você aplicar hoje mesmo. <strong style={{ color: "#7C3AED" }}>R$17. Menos que um almoço.</strong>
+              </p>
+            </div>
+            <div className="rounded-xl p-4 mb-5 text-center" style={{ background: "#F5F3FF", border: "2px solid #DDD6FE" }}>
+              <p className="text-base line-through mb-0.5" style={{ color: "#9CA3AF" }}>De R$37</p>
+              <p className="text-5xl font-extrabold" style={{ color: "#7C3AED" }}>R$17</p>
+              <p className="text-[11px] mt-1" style={{ color: "#6B7280" }}>⚡ Cobrança no mesmo cartão — acesso imediato</p>
+            </div>
+            {error && (
+              <div className="mb-4 p-3 rounded-lg text-[13px] font-medium" style={{ background: "#FEF2F2", color: "#B91C1C", border: "1px solid #FECACA" }}>{error}</div>
+            )}
+            <button
+              onClick={onAccept}
+              disabled={processing}
+              className="w-full rounded-xl font-extrabold text-white py-5 text-[17px] leading-tight transition-all active:scale-95"
+              style={{ background: processing ? "#9CA3AF" : "#7C3AED", boxShadow: processing ? "none" : "0 8px 32px rgba(124,58,237,0.4)" }}
+            >
+              {processing ? "Processando..." : "Sim, quero o guia por R$17 →"}
+            </button>
+            <button
+              onClick={onDecline}
+              disabled={processing}
+              className="w-full mt-3 py-3 text-[11px] text-center"
+              style={{ color: "#9CA3AF" }}
+            >
+              Não, vou sem nenhum acelerador.
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════
    COMPONENTE PRINCIPAL
 ══════════════════════════════════════════════════════════════════════ */
 export default function UpsellModal({ customerId, sessionId }: Props) {
   const [, navigate] = useLocation();
   const [declined, setDeclined] = useState(false);
+  const [secondDeclined, setSecondDeclined] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
 
@@ -434,7 +501,7 @@ export default function UpsellModal({ customerId, sessionId }: Props) {
     try {
       await chargeUpsell.mutateAsync({ customerId, productKey: "upsell_1", sessionId });
       await trackConversion.mutateAsync({ sessionId, type: "upsell_1", amount: 9700 });
-      pixelPurchase({ value: 97, currency: "BRL" });
+      pixelPurchase({ value: 97, currency: "BRL", content_type: "upsell_1" });
       navigate(`/obrigado-br?upsell=1&cid=${customerId}`);
     } catch (err: any) {
       setError(err.message || "Erro ao processar pagamento. Tente novamente.");
@@ -454,7 +521,7 @@ export default function UpsellModal({ customerId, sessionId }: Props) {
     try {
       await chargeUpsell.mutateAsync({ customerId, productKey: "downsell_1", sessionId });
       await trackConversion.mutateAsync({ sessionId, type: "downsell_1", amount: 3700 });
-      pixelPurchase({ value: 37, currency: "BRL" });
+      pixelPurchase({ value: 37, currency: "BRL", content_type: "downsell_1" });
       navigate(`/obrigado-br?downsell=1&cid=${customerId}`);
     } catch (err: any) {
       setError(err.message || "Erro ao processar pagamento. Tente novamente.");
@@ -462,7 +529,38 @@ export default function UpsellModal({ customerId, sessionId }: Props) {
     }
   };
 
-  const handleDownsellDecline = () => navigate("/obrigado-br");
+  const handleDownsellDecline = () => setSecondDeclined(true);
+
+  const handleThirdOfferAccept = async () => {
+    if (!customerId) {
+      setError("Erro: dados de pagamento não encontrados. Entre em contato com o suporte.");
+      return;
+    }
+    setProcessing(true);
+    setError("");
+    try {
+      await chargeUpsell.mutateAsync({ customerId, productKey: "downsell_2", sessionId });
+      await trackConversion.mutateAsync({ sessionId, type: "downsell_2", amount: 1700 });
+      pixelPurchase({ value: 17, currency: "BRL", content_type: "downsell_2" });
+      navigate(`/obrigado-br?downsell2=1`);
+    } catch (err: any) {
+      setError(err.message || "Erro ao processar pagamento. Tente novamente.");
+      setProcessing(false);
+    }
+  };
+
+  const handleThirdOfferDecline = () => navigate("/obrigado-br");
+
+  if (declined && secondDeclined) {
+    return (
+      <ThirdOfferContent
+        onAccept={handleThirdOfferAccept}
+        onDecline={handleThirdOfferDecline}
+        processing={processing}
+        error={error}
+      />
+    );
+  }
 
   if (declined) {
     return (
