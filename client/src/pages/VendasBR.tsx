@@ -4,6 +4,85 @@ import { trpc } from "@/lib/trpc";
 import StripeCheckout from "@/components/StripeCheckout";
 import { pixelViewContent, pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
 
+const DEPO_SLIDES = [
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo1_ddc1eae5.webp",
+    name: "Ana Paula M.",
+    loc: "Belo Horizonte, MG · Bloqueio Tipo 2",
+    result: "−18 kg em 11 semanas",
+    text: "Passei 6 anos tentando emagrecer. Fiz low carb, jejum intermitente, contagem de calorias. Perdia 3 kg e voltava 5. Quando descobri que tinha o Bloqueio de Resistência à Insulina, foi a primeira vez que alguém me explicou por que as dietas não funcionavam — não era fraqueza, era biologia. Em 11 semanas, sem cortar o arroz com feijão, perdi 18 kg.",
+  },
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo2_c6d61a9b.jpg",
+    name: "Cláudia R.",
+    loc: "São Paulo, SP · Bloqueio Tipo 1",
+    result: "−22 kg em 14 semanas",
+    text: "Sempre fui aquela pessoa que comia pouco e não emagrecia. Minha médica dizia que era 'genética'. Quando entendi que meu cortisol elevado estava travando meu metabolismo, tudo mudou. O protocolo de 3 minutos parece simples demais — mas foi exatamente isso que meu corpo precisava.",
+  },
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo3_d1a34b81.jpg",
+    name: "Patrícia L.",
+    loc: "Recife, PE · Bloqueio Tipo 3",
+    result: "−14 kg em 9 semanas",
+    text: "Tinha vergonha de contar que comia bem durante o dia e desmontava tudo à noite. Achava que era fraqueza de caráter. Quando li sobre a desregulação da leptina e grelina, chorei. Era química, não falta de vontade. Hoje durmo sem aquela fome ansiosa e já perdi 14 kg.",
+  },
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo4_c5c8abfc.jpg",
+    name: "Renata S.",
+    loc: "Porto Alegre, RS · Bloqueio Tipo 2",
+    result: "−11 kg em 7 semanas",
+    text: "Depois dos 40, parecia que meu corpo tinha travado. Cada quilo era uma batalha enorme. O quiz identificou meu bloqueio exato e o protocolo foi cirúrgico — atacou exatamente o ponto que nenhuma dieta tinha tocado antes. Em 7 semanas perdi 11 kg e minha energia voltou do zero.",
+  },
+];
+
+function DepoCarousel() {
+  const [idx, setIdx] = useState(0);
+  const prev = () => setIdx((i) => (i === 0 ? DEPO_SLIDES.length - 1 : i - 1));
+  const next = () => setIdx((i) => (i === DEPO_SLIDES.length - 1 ? 0 : i + 1));
+  const slide = DEPO_SLIDES[idx];
+  return (
+    <div className="dm-card mb-5 overflow-hidden" style={{ padding: 0 }}>
+      <div className="relative">
+        <img
+          src={slide.img}
+          alt="Transformação real — antes e depois"
+          className="w-full object-cover"
+          style={{ maxHeight: 320 }}
+        />
+        <div className="absolute bottom-0 left-0 right-0 flex justify-between px-3 pb-2">
+          <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>ANTES</span>
+          <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>DEPOIS</span>
+        </div>
+        <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+      </div>
+      <div style={{ padding: "20px" }}>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{slide.name}</span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{slide.result}</span>
+        </div>
+        <span className="text-[10px] block mb-3" style={{ color: "var(--dm-grey-300)" }}>{slide.loc}</span>
+        <div className="flex mb-3">
+          {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">★</span>)}
+        </div>
+        <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{slide.text}"</p>
+        <div className="flex justify-center gap-1.5 mt-4">
+          {DEPO_SLIDES.map((_, i) => (
+            <button key={i} onClick={() => setIdx(i)}
+              className="w-2 h-2 rounded-full transition-all"
+              style={{ background: i === idx ? "var(--teal-dark)" : "var(--teal-light)" }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── PREÇOS ──────────────────────────────────────────────────────────── */
 const PRODUCT_PRICE = 47;
 const ORDER_BUMP_PRICE = 19.9;
@@ -563,88 +642,7 @@ export default function VendasBR() {
         </div>
 
         {/* Carrossel de depoimentos antes/depois */}
-        {(() => {
-          const slides = [
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo1_ddc1eae5.webp",
-              name: "Ana Paula M.",
-              loc: "Belo Horizonte, MG · Bloqueio Tipo 2",
-              result: "−18 kg em 11 semanas",
-              text: "Passei 6 anos tentando emagrecer. Fiz low carb, jejum intermitente, contagem de calorias. Perdia 3 kg e voltava 5. Quando descobri que tinha o Bloqueio de Resistência à Insulina, foi a primeira vez que alguém me explicou por que as dietas não funcionavam — não era fraqueza, era biologia. Em 11 semanas, sem cortar o arroz com feijão, perdi 18 kg.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo2_c6d61a9b.jpg",
-              name: "Cláudia R.",
-              loc: "São Paulo, SP · Bloqueio Tipo 1",
-              result: "−22 kg em 14 semanas",
-              text: "Sempre fui aquela pessoa que comia pouco e não emagrecia. Minha médica dizia que era 'genética'. Quando entendi que meu cortisol elevado estava travando meu metabolismo, tudo mudou. O protocolo de 3 minutos parece simples demais — mas foi exatamente isso que meu corpo precisava.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo3_d1a34b81.jpg",
-              name: "Patrícia L.",
-              loc: "Recife, PE · Bloqueio Tipo 3",
-              result: "−14 kg em 9 semanas",
-              text: "Tinha vergonha de contar que comia bem durante o dia e desmontava tudo à noite. Achava que era fraqueza de caráter. Quando li sobre a desregulação da leptina e grelina, chorei. Era química, não falta de vontade. Hoje durmo sem aquela fome ansiosa e já perdi 14 kg.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo4_c5c8abfc.jpg",
-              name: "Renata S.",
-              loc: "Porto Alegre, RS · Bloqueio Tipo 2",
-              result: "−11 kg em 7 semanas",
-              text: "Depois dos 40, parecia que meu corpo tinha travado. Cada quilo era uma batalha enorme. O quiz identificou meu bloqueio exato e o protocolo foi cirúrgico — atacou exatamente o ponto que nenhuma dieta tinha tocado antes. Em 7 semanas perdi 11 kg e minha energia voltou do zero.",
-            },
-          ];
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [idx, setIdx] = useState(0);
-          const prev = () => setIdx((i) => (i === 0 ? slides.length - 1 : i - 1));
-          const next = () => setIdx((i) => (i === slides.length - 1 ? 0 : i + 1));
-          const slide = slides[idx];
-          return (
-            <div className="dm-card mb-5 overflow-hidden" style={{ padding: 0 }}>
-              {/* Foto */}
-              <div className="relative">
-                <img
-                  src={slide.img}
-                  alt="Transformação real — antes e depois"
-                  className="w-full object-cover"
-                  style={{ maxHeight: 320 }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-3 pb-2">
-                  <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>ANTES</span>
-                  <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>DEPOIS</span>
-                </div>
-                {/* Botões de navegação */}
-                <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-                <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              </div>
-              {/* Texto */}
-              <div style={{ padding: "20px" }}>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{slide.name}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{slide.result}</span>
-                </div>
-                <span className="text-[10px] block mb-3" style={{ color: "var(--dm-grey-300)" }}>{slide.loc}</span>
-                <div className="flex mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">★</span>)}
-                </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{ slide.text}"</p>
-                {/* Dots */}
-                <div className="flex justify-center gap-1.5 mt-4">
-                  {slides.map((_, i) => (
-                    <button key={i} onClick={() => setIdx(i)}
-                      className="w-2 h-2 rounded-full transition-all"
-                      style={{ background: i === idx ? "var(--teal-dark)" : "var(--teal-light)" }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+        <DepoCarousel />
 
         {/* Selo de avaliação */}
         <div className="flex justify-center mb-6">
