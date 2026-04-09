@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -6,13 +8,11 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { trpc } from "@/lib/trpc";
 
 const stripePromise = loadStripe(
-  (import.meta as any).env.VITE_STRIPE_PUBLISHABLE_KEY || ""
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
 );
 
-/* ─── Inner form that lives inside <Elements> ─── */
 function CheckoutForm({
   amount,
   onSuccess,
@@ -39,7 +39,7 @@ function CheckoutForm({
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: window.location.href, // fallback, we handle inline
+        return_url: window.location.href,
       },
       redirect: "if_required",
     });
@@ -48,12 +48,12 @@ function CheckoutForm({
       setErrorMsg(error.message || "Erro no pagamento. Tente novamente.");
       onError(error.message || "Erro no pagamento");
       setProcessing(false);
-    } else if (paymentIntent && (paymentIntent.status === "succeeded" || paymentIntent.status === "processing")) {
+    } else if (
+      paymentIntent &&
+      (paymentIntent.status === "succeeded" ||
+        paymentIntent.status === "processing")
+    ) {
       onSuccess(paymentIntent.id);
-      setProcessing(false);
-    } else if (paymentIntent && paymentIntent.status === "requires_action") {
-      // PIX: Stripe handles the QR code display automatically
-      // The PaymentElement will show the PIX QR code
       setProcessing(false);
     } else {
       setProcessing(false);
@@ -75,7 +75,11 @@ function CheckoutForm({
       {errorMsg && (
         <div
           className="mt-3 p-3 rounded-lg text-[13px] font-medium"
-          style={{ background: "#FEF2F2", color: "#B91C1C", border: "1px solid #FECACA" }}
+          style={{
+            background: "#FEF2F2",
+            color: "#B91C1C",
+            border: "1px solid #FECACA",
+          }}
         >
           {errorMsg}
         </div>
@@ -84,11 +88,16 @@ function CheckoutForm({
         type="submit"
         disabled={!stripe || processing}
         className="dm-btn-primary mt-5"
-        style={{ fontSize: "18px", padding: "20px 24px", opacity: processing ? 0.7 : 1 }}
+        style={{
+          fontSize: "18px",
+          padding: "20px 24px",
+          opacity: processing ? 0.7 : 1,
+        }}
       >
         {processing
           ? "Processando pagamento..."
-          : buttonText || `Pagar R$${(amount / 100).toFixed(2).replace(".", ",")} →`}
+          : buttonText ||
+            `Pagar R$${(amount / 100).toFixed(2).replace(".", ",")} →`}
       </button>
       <div className="flex items-center justify-center gap-3 mt-3">
         <LockIcon />
@@ -100,7 +109,6 @@ function CheckoutForm({
   );
 }
 
-/* ─── Main wrapper that creates PaymentIntent and mounts Elements ─── */
 export default function StripeCheckout({
   productKeys,
   customerEmail,
@@ -123,22 +131,29 @@ export default function StripeCheckout({
   const [customerId, setCustomerId] = useState<string | undefined>();
   const [initError, setInitError] = useState("");
 
-  const createIntent = trpc.payment.createIntent.useMutation();
-
   useEffect(() => {
     let cancelled = false;
-    createIntent
-      .mutateAsync({
-        productKeys: productKeys as any,
+
+    fetch("/api/stripe/create-intent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productKeys,
         customerEmail,
         customerName,
         sessionId,
-      })
+      }),
+    })
+      .then((res) => res.json())
       .then((result) => {
         if (!cancelled) {
-          setClientSecret(result.clientSecret);
-          setAmount(result.amount);
-          setCustomerId(result.customerId ?? undefined);
+          if (result.error) {
+            setInitError(result.error);
+          } else {
+            setClientSecret(result.clientSecret);
+            setAmount(result.amount);
+            setCustomerId(result.customerId ?? undefined);
+          }
         }
       })
       .catch((err) => {
@@ -146,19 +161,24 @@ export default function StripeCheckout({
           setInitError(err.message || "Erro ao iniciar pagamento");
         }
       });
+
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productKeys.join(",")]);
+  }, [productKeys.join(","), customerEmail, customerName, sessionId]);
 
   if (initError) {
     return (
-      <div className="p-5 rounded-2xl text-center" style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
+      <div
+        className="p-5 rounded-2xl text-center"
+        style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}
+      >
         <p className="text-[14px] font-semibold" style={{ color: "#B91C1C" }}>
           Erro ao carregar checkout
         </p>
-        <p className="text-[12px] mt-1" style={{ color: "#DC2626" }}>{initError}</p>
+        <p className="text-[12px] mt-1" style={{ color: "#DC2626" }}>
+          {initError}
+        </p>
       </div>
     );
   }
@@ -166,7 +186,13 @@ export default function StripeCheckout({
   if (!clientSecret) {
     return (
       <div className="py-10 text-center">
-        <div className="inline-block w-8 h-8 border-3 rounded-full animate-spin" style={{ borderColor: "var(--teal-light)", borderTopColor: "var(--teal)" }} />
+        <div
+          className="inline-block w-8 h-8 border-3 rounded-full animate-spin"
+          style={{
+            borderColor: "var(--teal-light)",
+            borderTopColor: "var(--teal)",
+          }}
+        />
         <p className="text-[13px] mt-3" style={{ color: "var(--dm-text-soft)" }}>
           Preparando checkout seguro...
         </p>
@@ -232,8 +258,21 @@ export default function StripeCheckout({
 function LockIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="11" width="18" height="11" rx="2" stroke="#999" strokeWidth="2" />
-      <path d="M7 11V7a5 5 0 0110 0v4" stroke="#999" strokeWidth="2" strokeLinecap="round" />
+      <rect
+        x="3"
+        y="11"
+        width="18"
+        height="11"
+        rx="2"
+        stroke="#999"
+        strokeWidth="2"
+      />
+      <path
+        d="M7 11V7a5 5 0 0110 0v4"
+        stroke="#999"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

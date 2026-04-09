@@ -1,14 +1,14 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "wouter";
-import { trpc } from "@/lib/trpc";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import StripeCheckout from "@/components/StripeCheckout";
 import { pixelViewContent, pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
 
-/* ── PREÇOS ──────────────────────────────────────────────────────────── */
 const PRODUCT_PRICE = 47;
 const ORDER_BUMP_PRICE = 19.9;
 
-/* ── CONTEÚDO POR TIPO DE BLOQUEIO ───────────────────────────────────── */
 const BLOCK_CONTENT = {
   1: {
     badge: "Bloqueio Tipo 1 — Cortisol Elevado",
@@ -39,37 +39,6 @@ const BLOCK_CONTENT = {
   },
 };
 
-/* ── COUNTDOWN ───────────────────────────────────────────────────────── */
-function useCountdown() {
-  const KEY = "dm_br_countdown_end";
-  const getEnd = () => {
-    if (typeof window === "undefined") return Date.now() + 15 * 60 * 1000;
-    const stored = localStorage.getItem(KEY);
-    if (stored) {
-      const end = parseInt(stored, 10);
-      if (end > Date.now()) return end;
-    }
-    const newEnd = Date.now() + 15 * 60 * 1000;
-    localStorage.setItem(KEY, String(newEnd));
-    return newEnd;
-  };
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const end = getEnd();
-    return Math.max(0, Math.floor((end - Date.now()) / 1000));
-  });
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const end = getEnd();
-      setTimeLeft(Math.max(0, Math.floor((end - Date.now()) / 1000)));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-  const seconds = String(timeLeft % 60).padStart(2, "0");
-  return { minutes, seconds, expired: timeLeft === 0 };
-}
-
-/* ── DEPOIMENTOS ─────────────────────────────────────────────────────── */
 const TESTIMONIALS = [
   {
     name: "Fernanda O.",
@@ -94,7 +63,6 @@ const TESTIMONIALS = [
   },
 ];
 
-/* ── FAQ ──────────────────────────────────────────────────────────────── */
 const FAQ = [
   {
     q: "Funciona se já tentei de tudo?",
@@ -118,7 +86,6 @@ const FAQ = [
   },
 ];
 
-/* ── NOMES FAKE PARA NOTIFICAÇÕES ─────────────────────────────────── */
 const FAKE_NAMES = [
   { name: "Maria S.", city: "São Paulo, SP" },
   { name: "Juliana R.", city: "Rio de Janeiro, RJ" },
@@ -130,25 +97,51 @@ const FAKE_NAMES = [
   { name: "Renata P.", city: "Recife, PE" },
   { name: "Tatiane B.", city: "Fortaleza, CE" },
   { name: "Adriana G.", city: "Goiânia, GO" },
-  { name: "Carla D.", city: "Florianópolis, SC" },
-  { name: "Simone V.", city: "Manaus, AM" },
-  { name: "Débora N.", city: "Campinas, SP" },
-  { name: "Priscila T.", city: "Vitória, ES" },
-  { name: "Elaine K.", city: "Belém, PA" },
 ];
 
-const FAKE_TIMES = ["agora", "há 1 min", "há 2 min", "há 3 min", "há 5 min", "há 8 min", "há 12 min"];
+const FAKE_TIMES = ["agora", "há 1 min", "há 2 min", "há 3 min", "há 5 min"];
 
-/* ── HOOK: NOTIFICAÇÕES FAKE ─────────────────────────────────────────── */
+function useCountdown() {
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  
+  useEffect(() => {
+    const KEY = "dm_br_countdown_end";
+    const stored = localStorage.getItem(KEY);
+    let end: number;
+    
+    if (stored) {
+      end = parseInt(stored, 10);
+      if (end <= Date.now()) {
+        end = Date.now() + 15 * 60 * 1000;
+        localStorage.setItem(KEY, String(end));
+      }
+    } else {
+      end = Date.now() + 15 * 60 * 1000;
+      localStorage.setItem(KEY, String(end));
+    }
+    
+    setTimeLeft(Math.max(0, Math.floor((end - Date.now()) / 1000)));
+    
+    const interval = setInterval(() => {
+      setTimeLeft(Math.max(0, Math.floor((end - Date.now()) / 1000)));
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const seconds = String(timeLeft % 60).padStart(2, "0");
+  return { minutes, seconds, expired: timeLeft === 0 };
+}
+
 function useFakeNotifications() {
   const [current, setCurrent] = useState<{ name: string; city: string; time: string } | null>(null);
   const [visible, setVisible] = useState(false);
   const indexRef = useRef(0);
 
   useEffect(() => {
-    // Shuffle order on mount
     const shuffled = [...FAKE_NAMES].sort(() => Math.random() - 0.5);
-    const firstDelay = 5000 + Math.random() * 5000; // 5-10s first notification
+    const firstDelay = 5000 + Math.random() * 5000;
 
     const showNext = () => {
       const person = shuffled[indexRef.current % shuffled.length];
@@ -156,14 +149,11 @@ function useFakeNotifications() {
       setCurrent({ name: person.name, city: person.city, time });
       setVisible(true);
       indexRef.current++;
-
-      // Hide after 4s
       setTimeout(() => setVisible(false), 4000);
     };
 
     const firstTimer = setTimeout(() => {
       showNext();
-      // Then repeat every 8-15s
       const interval = setInterval(showNext, 8000 + Math.random() * 7000);
       return () => clearInterval(interval);
     }, firstDelay);
@@ -174,60 +164,46 @@ function useFakeNotifications() {
   return { current, visible };
 }
 
-/* ── HOOK: VAGAS DINÂMICAS ───────────────────────────────────────────── */
 function useDynamicVagas(initial: number) {
-  const KEY = "dm_br_vagas";
-  const KEY_TS = "dm_br_vagas_ts";
-
-  const getStored = (): number => {
-    if (typeof window === "undefined") return initial;
-    const stored = localStorage.getItem(KEY);
-    const storedTs = localStorage.getItem(KEY_TS);
-    if (stored && storedTs) {
-      const elapsed = (Date.now() - parseInt(storedTs, 10)) / 1000;
-      // Reduce 1 vaga every 45-90 seconds of real elapsed time
-      const reduction = Math.floor(elapsed / 60);
-      const val = Math.max(3, parseInt(stored, 10) - reduction);
-      return val;
-    }
-    localStorage.setItem(KEY, String(initial));
-    localStorage.setItem(KEY_TS, String(Date.now()));
-    return initial;
-  };
-
-  const [vagas, setVagas] = useState(getStored);
+  const [vagas, setVagas] = useState(initial);
 
   useEffect(() => {
+    const KEY = "dm_br_vagas";
+    const stored = localStorage.getItem(KEY);
+    if (stored) {
+      setVagas(Math.max(3, parseInt(stored, 10)));
+    } else {
+      localStorage.setItem(KEY, String(initial));
+    }
+
     const interval = setInterval(() => {
       setVagas((prev) => {
         if (prev <= 3) return 3;
-        // Random chance to decrease
         if (Math.random() < 0.35) {
           const next = prev - 1;
           localStorage.setItem(KEY, String(next));
-          localStorage.setItem(KEY_TS, String(Date.now()));
           return next;
         }
         return prev;
       });
-    }, 25000 + Math.random() * 20000); // every 25-45s
+    }, 25000 + Math.random() * 20000);
+    
     return () => clearInterval(interval);
-  }, []);
+  }, [initial]);
 
   return vagas;
 }
 
-/* ── ÍCONES ──────────────────────────────────────────────────────────── */
 const Check = ({ s = 14, c = "white" }: { s?: number; c?: string }) => (
   <svg width={s} height={s} viewBox="0 0 24 24" fill="none">
     <path d="M5 12l5 5L19 7" stroke={c} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-/* ════════════════════════════════════════════════════════════════════════
-   COMPONENTE PRINCIPAL
-   ════════════════════════════════════════════════════════════════════════ */
-export default function VendasBR() {
+export default function VendasPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [orderBump, setOrderBump] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showExitIntent, setShowExitIntent] = useState(false);
@@ -237,15 +213,12 @@ export default function VendasBR() {
   const { minutes, seconds } = useCountdown();
   const fakeNotif = useFakeNotifications();
   const vagas = useDynamicVagas(37);
-  const [, navigate] = useLocation();
-  const trackConversion = trpc.quiz.trackConversion.useMutation();
 
-  const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
-  const sessionId = params.get("s") || undefined;
-  const rawName = params.get("n") || "";
-  const email = params.get("e") ? decodeURIComponent(params.get("e")!) : undefined;
+  const sessionId = searchParams.get("s") || undefined;
+  const rawName = searchParams.get("n") || "";
+  const email = searchParams.get("e") ? decodeURIComponent(searchParams.get("e")!) : undefined;
   const name = rawName ? decodeURIComponent(rawName) : "Amiga";
-  const blockType = (parseInt(params.get("block") || "2") || 2) as 1 | 2 | 3;
+  const blockType = (parseInt(searchParams.get("block") || "2") || 2) as 1 | 2 | 3;
   const block = BLOCK_CONTENT[blockType] || BLOCK_CONTENT[2];
   const totalPrice = PRODUCT_PRICE + (orderBump ? ORDER_BUMP_PRICE : 0);
 
@@ -257,42 +230,36 @@ export default function VendasBR() {
     return () => document.removeEventListener("mouseleave", handleMouseLeave);
   }, [exitDismissed]);
 
-  // Meta Pixel — ViewContent ao entrar na página de vendas
   useEffect(() => {
     pixelViewContent({ value: PRODUCT_PRICE, currency: "BRL" });
   }, []);
 
   const handleBuy = () => {
-    // Meta Pixel — InitiateCheckout ao abrir o checkout
     pixelInitiateCheckout({ value: totalPrice, currency: "BRL" });
     setShowCheckout(true);
     setTimeout(() => ctaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
   };
 
   const handlePaymentSuccess = (data: { paymentIntentId: string; customerId?: string }) => {
-    // Meta Pixel — Purchase após pagamento confirmado
     pixelPurchase({ value: totalPrice, currency: "BRL", order_id: data.paymentIntentId });
-    trackConversion.mutate({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
-    if (orderBump) trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
     const custParam = data.customerId ? `&cid=${data.customerId}` : "";
-    navigate(`/upsell-br?s=${sessionId || ""}${custParam}`);
+    const bumpParam = orderBump ? "&bump=1" : "";
+    router.push(`/obrigado?s=${sessionId || ""}${custParam}${bumpParam}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email || "")}`);
   };
 
   const scrollToCta = () => ctaRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  /* ── ESTILOS REUTILIZÁVEIS ──────────────────────────────────────────── */
   const sectionCls = "max-w-2xl mx-auto px-5";
   const headingCls = "text-center mb-10";
   const h2Cls = "text-[clamp(22px,4.5vw,32px)] font-extrabold leading-[1.25] tracking-tight";
   const subCls = "text-sm mt-2 leading-relaxed";
 
   return (
-    <div className="min-h-screen" style={{ background: "#FAFBFC", fontFamily: "'Montserrat', sans-serif" }}>
-
-      {/* ── EXIT-INTENT POPUP ─────────────────────────────────────────── */}
+    <div className="min-h-screen" style={{ background: "#FAFBFC" }}>
+      {/* Exit Intent Popup */}
       {showExitIntent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-5 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl max-w-sm w-full p-7 relative animate-in fade-in zoom-in duration-300" style={{ boxShadow: "var(--shadow-lg)" }}>
+          <div className="bg-white rounded-xl max-w-sm w-full p-7 relative animate-slideUp" style={{ boxShadow: "var(--shadow-lg)" }}>
             <button
               onClick={() => { setShowExitIntent(false); setExitDismissed(true); }}
               className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center text-base font-bold"
@@ -300,7 +267,7 @@ export default function VendasBR() {
             >&times;</button>
             <div className="text-center mb-5">
               <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: "var(--teal-pale)" }}>
-                <span className="text-2xl">⏳</span>
+                <span className="text-2xl">&#8987;</span>
               </div>
               <h2 className="text-xl font-extrabold leading-tight mb-1.5" style={{ color: "var(--dm-text)" }}>
                 {name}, vai deixar seu metabolismo travado?
@@ -320,7 +287,7 @@ export default function VendasBR() {
               ))}
             </div>
             <button onClick={() => { setShowExitIntent(false); setExitDismissed(true); handleBuy(); }} className="dm-btn-primary text-sm">
-              Sim, quero desbloquear →
+              Sim, quero desbloquear
             </button>
             <button onClick={() => { setShowExitIntent(false); setExitDismissed(true); }} className="w-full text-[10px] py-2 mt-1" style={{ color: "var(--dm-grey-300)" }}>
               Não, prefiro continuar sem resultado.
@@ -329,7 +296,7 @@ export default function VendasBR() {
         </div>
       )}
 
-      {/* ── NOTIFICAÇÃO DE VENDA FAKE ────────────────────────────────── */}
+      {/* Fake Notification */}
       {fakeNotif.current && (
         <div
           className="fixed bottom-4 left-4 z-40 max-w-[280px] transition-all duration-500 ease-out"
@@ -338,32 +305,19 @@ export default function VendasBR() {
             opacity: fakeNotif.visible ? 1 : 0,
           }}
         >
-          <div
-            className="rounded-lg p-3 flex items-center gap-3"
-            style={{
-              background: "white",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)",
-            }}
-          >
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: "var(--teal-pale)" }}
-            >
-              <span className="text-sm">✅</span>
+          <div className="rounded-lg p-3 flex items-center gap-3 bg-white" style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal-pale)" }}>
+              <span className="text-sm">&#10003;</span>
             </div>
             <div className="min-w-0">
-              <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--dm-text)" }}>
-                {fakeNotif.current.name}
-              </p>
-              <p className="text-[9px] leading-tight mt-0.5" style={{ color: "var(--dm-text-soft)" }}>
-                {fakeNotif.current.city} — comprou {fakeNotif.current.time}
-              </p>
+              <p className="text-[11px] font-bold leading-tight truncate" style={{ color: "var(--dm-text)" }}>{fakeNotif.current.name}</p>
+              <p className="text-[9px] leading-tight mt-0.5" style={{ color: "var(--dm-text-soft)" }}>{fakeNotif.current.city} — comprou {fakeNotif.current.time}</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── BARRA DE URGÊNCIA ─────────────────────────────────────────── */}
+      {/* Urgency Bar */}
       <div className="text-white text-center py-2.5 px-4" style={{ background: "#DC2626" }}>
         <p className="text-xs font-bold tracking-wide">
           Oferta expira em{" "}
@@ -374,21 +328,18 @@ export default function VendasBR() {
         </p>
       </div>
 
-      {/* ── HEADER ────────────────────────────────────────────────────── */}
+      {/* Header */}
       <header className="dm-header">
         <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-center">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/logo-dm-final_ded01597.png"
-            alt="Desbloqueio Metab\u00f3lico"
+            alt="Desbloqueio Metabólico"
             className="h-10 w-auto object-contain"
-            
           />
         </div>
       </header>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 1 — HERO
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Hero */}
       <section className={`${sectionCls} pt-10 pb-12`}>
         <div className="text-center">
           <span
@@ -400,7 +351,7 @@ export default function VendasBR() {
 
           <h1
             className="text-[clamp(24px,5.5vw,36px)] font-extrabold leading-[1.18] mb-4"
-            style={{ color: "var(--dm-text)", letterSpacing: "-0.03em", textWrap: "balance" }}
+            style={{ color: "var(--dm-text)", letterSpacing: "-0.03em" }}
           >
             {block.headline(name).split(name).map((part, i, arr) =>
               i < arr.length - 1
@@ -409,11 +360,10 @@ export default function VendasBR() {
             )}
           </h1>
 
-          <p className="text-sm max-w-lg mx-auto mb-8 leading-relaxed" style={{ color: "var(--dm-text-soft)", textWrap: "pretty" }}>
+          <p className="text-sm max-w-lg mx-auto mb-8 leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>
             {block.sub}
           </p>
 
-          {/* Mini produto */}
           <div className="inline-flex items-center gap-3 rounded-lg px-4 py-3 mb-8" style={{ background: "var(--teal-pale)", border: "1px solid var(--teal-light)" }}>
             <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--grad)" }}>
               <Check s={18} />
@@ -426,7 +376,7 @@ export default function VendasBR() {
 
           <div>
             <button onClick={scrollToCta} className="dm-btn-primary max-w-sm mx-auto text-[15px]">
-              Ver minha solução personalizada ↓
+              Ver minha solução personalizada
             </button>
             <p className="text-[10px] mt-3" style={{ color: "var(--dm-grey-300)" }}>
               Pagamento seguro · Acesso imediato · Garantia 30 dias
@@ -435,9 +385,7 @@ export default function VendasBR() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 2 — BENEFÍCIOS
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Benefits */}
       <section className={`${sectionCls} pb-14`}>
         <div className={headingCls}>
           <h2 className={h2Cls} style={{ color: "var(--dm-text)" }}>
@@ -448,12 +396,12 @@ export default function VendasBR() {
 
         <div className="grid grid-cols-1 gap-4">
           {[
-            { icon: "🔥", title: "Metabolismo ativo", desc: "Seu corpo volta a queimar gordura naturalmente — em repouso, depois do churrasco, depois do pão de queijo.", tag: "Sem dieta restritiva" },
-            { icon: "😴", title: "Compulsão eliminada", desc: "A vontade de doce à noite desaparece quando os hormônios da fome voltam ao equilíbrio.", tag: "Sem força de vontade extra" },
-            { icon: "⚡", title: "Energia restaurada", desc: "Com o cortisol regulado, você acorda disposta, dorme profundo e tem energia para a rotina.", tag: "Desde a primeira semana" },
+            { icon: "&#128293;", title: "Metabolismo ativo", desc: "Seu corpo volta a queimar gordura naturalmente — em repouso, depois do churrasco, depois do pão de queijo.", tag: "Sem dieta restritiva" },
+            { icon: "&#128564;", title: "Compulsão eliminada", desc: "A vontade de doce à noite desaparece quando os hormônios da fome voltam ao equilíbrio.", tag: "Sem força de vontade extra" },
+            { icon: "&#9889;", title: "Energia restaurada", desc: "Com o cortisol regulado, você acorda disposta, dorme profundo e tem energia para a rotina.", tag: "Desde a primeira semana" },
           ].map((b) => (
             <div key={b.title} className="dm-card flex items-start gap-4" style={{ padding: "20px" }}>
-              <span className="text-2xl flex-shrink-0 mt-0.5">{b.icon}</span>
+              <span className="text-2xl flex-shrink-0 mt-0.5" dangerouslySetInnerHTML={{ __html: b.icon }} />
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-sm mb-1" style={{ color: "var(--dm-text)" }}>{b.title}</h3>
                 <p className="text-xs leading-relaxed mb-2.5" style={{ color: "var(--dm-text-soft)" }}>{b.desc}</p>
@@ -467,9 +415,7 @@ export default function VendasBR() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 3 — COMO FUNCIONA
-         ════════════════════════════════════════════════════════════════ */}
+      {/* How it works */}
       <section className={`${sectionCls} pb-14`}>
         <div className="rounded-xl p-6 md:p-8" style={{ background: "var(--teal-bg)" }}>
           <div className={headingCls}>
@@ -505,55 +451,13 @@ export default function VendasBR() {
 
           <div className="mt-7 text-center">
             <button onClick={scrollToCta} className="dm-btn-primary max-w-sm mx-auto text-[15px]">
-              Quero começar hoje →
+              Quero começar hoje
             </button>
           </div>
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 4 — QUEM CRIOU
-         ════════════════════════════════════════════════════════════════ */}
-      <section className={`${sectionCls} pb-14`}>
-        <p className="text-[9px] font-bold mb-5 tracking-widest uppercase text-center" style={{ color: "var(--teal-dark)" }}>Quem criou este protocolo</p>
-        <div className="dm-card" style={{ padding: "24px" }}>
-          <div className="flex items-center gap-4 mb-5">
-            <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/ana_paula_ferreira-mjHRev2Yaie3xqQuHV2EXb.webp"
-              alt="Ana Paula Ferreira"
-              className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-              style={{ border: "2.5px solid var(--teal)" }}
-            />
-            <div>
-              <h3 className="font-extrabold text-base" style={{ color: "var(--dm-text)" }}>Ana Paula Ferreira</h3>
-              <p className="text-xs" style={{ color: "var(--dm-text-soft)" }}>Professora · 47 anos · Belo Horizonte, MG</p>
-            </div>
-          </div>
-          <div className="space-y-3 text-[13px] leading-[1.75]" style={{ color: "var(--dm-text-soft)" }}>
-            <p>
-              Em setembro de 2021, no aniversário de 15 anos da filha Laura, o marido tirou uma foto das duas abraçadas. Quando ele mostrou, Ana Paula não se reconheceu. Estava usando um vestido largo para esconder a barriga — e mesmo assim dava para ver.
-            </p>
-            <p>
-              <strong style={{ color: "var(--dm-text)" }}>"Eu achava que era fraqueza minha"</strong>, ela conta. <em>"Que eu não tinha disciplina suficiente. Chorei muito me culpando por isso."</em>
-            </p>
-            <p>
-              A virada aconteceu por acidente. Em uma noite de insônia em 2022, pesquisando sobre cortisol e sono, encontrou um estudo sobre como o estresse crônico literalmente bloqueia a queima de gordura — como um <strong style={{ color: "var(--dm-text)" }}>termostato travado</strong>.
-            </p>
-            <p>
-              O resultado: <strong style={{ color: "var(--teal-dark)" }}>14 kg em 5 meses</strong>, sem abrir mão do arroz com feijão, do churrasco de domingo ou do pão de queijo no café.
-            </p>
-          </div>
-          <div className="mt-5 rounded-lg p-3.5 text-center" style={{ background: "var(--teal-pale)", border: "1px solid var(--teal-light)" }}>
-            <p className="text-xs font-semibold" style={{ color: "var(--teal-dark)" }}>
-              "Se funcionou para mim depois de 11 anos tentando, vai funcionar para você."
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 5 — DEPOIMENTOS
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Testimonials */}
       <section className={`${sectionCls} pb-14`}>
         <div className={headingCls}>
           <h2 className={h2Cls} style={{ color: "var(--dm-text)" }}>
@@ -562,109 +466,31 @@ export default function VendasBR() {
           <p className={subCls} style={{ color: "var(--dm-text-soft)" }}>Mulheres com os 3 tipos de bloqueio metabólico</p>
         </div>
 
-        {/* Carrossel de depoimentos antes/depois */}
-        {(() => {
-          const slides = [
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo1_ddc1eae5.webp",
-              name: "Ana Paula M.",
-              loc: "Belo Horizonte, MG · Bloqueio Tipo 2",
-              result: "−18 kg em 11 semanas",
-              text: "Passei 6 anos tentando emagrecer. Fiz low carb, jejum intermitente, contagem de calorias. Perdia 3 kg e voltava 5. Quando descobri que tinha o Bloqueio de Resistência à Insulina, foi a primeira vez que alguém me explicou por que as dietas não funcionavam — não era fraqueza, era biologia. Em 11 semanas, sem cortar o arroz com feijão, perdi 18 kg.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo2_c6d61a9b.jpg",
-              name: "Cláudia R.",
-              loc: "São Paulo, SP · Bloqueio Tipo 1",
-              result: "−22 kg em 14 semanas",
-              text: "Sempre fui aquela pessoa que comia pouco e não emagrecia. Minha médica dizia que era 'genética'. Quando entendi que meu cortisol elevado estava travando meu metabolismo, tudo mudou. O protocolo de 3 minutos parece simples demais — mas foi exatamente isso que meu corpo precisava.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo3_d1a34b81.jpg",
-              name: "Patrícia L.",
-              loc: "Recife, PE · Bloqueio Tipo 3",
-              result: "−14 kg em 9 semanas",
-              text: "Tinha vergonha de contar que comia bem durante o dia e desmontava tudo à noite. Achava que era fraqueza de caráter. Quando li sobre a desregulação da leptina e grelina, chorei. Era química, não falta de vontade. Hoje durmo sem aquela fome ansiosa e já perdi 14 kg.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo4_c5c8abfc.jpg",
-              name: "Renata S.",
-              loc: "Porto Alegre, RS · Bloqueio Tipo 2",
-              result: "−11 kg em 7 semanas",
-              text: "Depois dos 40, parecia que meu corpo tinha travado. Cada quilo era uma batalha enorme. O quiz identificou meu bloqueio exato e o protocolo foi cirúrgico — atacou exatamente o ponto que nenhuma dieta tinha tocado antes. Em 7 semanas perdi 11 kg e minha energia voltou do zero.",
-            },
-          ];
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [idx, setIdx] = useState(0);
-          const prev = () => setIdx((i) => (i === 0 ? slides.length - 1 : i - 1));
-          const next = () => setIdx((i) => (i === slides.length - 1 ? 0 : i + 1));
-          const slide = slides[idx];
-          return (
-            <div className="dm-card mb-5 overflow-hidden" style={{ padding: 0 }}>
-              {/* Foto */}
-              <div className="relative">
-                <img
-                  src={slide.img}
-                  alt="Transformação real — antes e depois"
-                  className="w-full object-cover"
-                  style={{ maxHeight: 320 }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-3 pb-2">
-                  <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>ANTES</span>
-                  <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>DEPOIS</span>
+        <div className="space-y-4">
+          {TESTIMONIALS.map((t) => (
+            <div key={t.name} className="dm-card" style={{ padding: "20px" }}>
+              <div className="flex items-center gap-3 mb-3">
+                <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" />
+                <div>
+                  <p className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{t.name}</p>
+                  <p className="text-[10px]" style={{ color: "var(--dm-grey-300)" }}>{t.loc}</p>
                 </div>
-                {/* Botões de navegação */}
-                <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-                <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
+                <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{t.result}</span>
               </div>
-              {/* Texto */}
-              <div style={{ padding: "20px" }}>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{slide.name}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{slide.result}</span>
-                </div>
-                <span className="text-[10px] block mb-3" style={{ color: "var(--dm-grey-300)" }}>{slide.loc}</span>
-                <div className="flex mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">★</span>)}
-                </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{ slide.text}"</p>
-                {/* Dots */}
-                <div className="flex justify-center gap-1.5 mt-4">
-                  {slides.map((_, i) => (
-                    <button key={i} onClick={() => setIdx(i)}
-                      className="w-2 h-2 rounded-full transition-all"
-                      style={{ background: i === idx ? "var(--teal-dark)" : "var(--teal-light)" }}
-                    />
-                  ))}
-                </div>
+              <div className="flex mb-2">
+                {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">&#9733;</span>)}
               </div>
+              <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>&ldquo;{t.text}&rdquo;</p>
             </div>
-          );
-        })()}
-
-        {/* Selo de avaliação */}
-        <div className="flex justify-center mb-6">
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/4.8estrela_ade7735d.webp"
-            alt="4.8 estrelas — 50 milhões de downloads"
-            className="w-48 object-contain"
-          />
+          ))}
         </div>
-
-
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 6 — URGÊNCIA
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Urgency */}
       <section className={`${sectionCls} pb-10`}>
         <div className="rounded-xl p-5 flex items-start gap-3.5" style={{ background: "#FEF2F2", border: "1.5px solid #FECACA" }}>
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#FEE2E2" }}>
-            <span className="text-base">🔴</span>
+            <span className="text-base">&#128308;</span>
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-extrabold text-sm mb-1" style={{ color: "#B91C1C" }}>
@@ -683,9 +509,7 @@ export default function VendasBR() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 7 — OFERTA + CHECKOUT
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Offer + Checkout */}
       <section ref={ctaRef} className={`${sectionCls} pb-10`}>
         {/* Value Stack */}
         <div className="rounded-xl p-6 mb-5" style={{ background: "var(--dm-text)", color: "white" }}>
@@ -726,14 +550,12 @@ export default function VendasBR() {
           }}
           onClick={() => setOrderBump(!orderBump)}
         >
-          {/* Badge topo */}
           {!orderBump && (
             <div className="flex justify-center mb-3">
-              <span className="text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide" style={{ background: "#FEF3C7", color: "#92400E" }}>⚡ OFERTA ESPECIAL — ADICIONE AGORA</span>
+              <span className="text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide" style={{ background: "#FEF3C7", color: "#92400E" }}>OFERTA ESPECIAL — ADICIONE AGORA</span>
             </div>
           )}
           <div className="flex items-center gap-3">
-            {/* Checkbox grande e chamativo */}
             <div
               className="flex-shrink-0 flex items-center justify-center rounded-lg transition-all duration-200"
               style={{
@@ -741,7 +563,6 @@ export default function VendasBR() {
                 height: 40,
                 background: orderBump ? "var(--teal-dark)" : "#f0faf8",
                 border: orderBump ? "2.5px solid var(--teal-dark)" : "2.5px solid var(--teal-mid)",
-                boxShadow: orderBump ? "0 2px 8px rgba(0,121,107,0.25)" : "inset 0 0 0 1px rgba(0,121,107,0.15)",
               }}
             >
               {orderBump ? (
@@ -763,13 +584,13 @@ export default function VendasBR() {
                 5 infusões que aceleram o desbloqueio enquanto você dorme. Chás fáceis de encontrar em qualquer mercado.
               </p>
               {orderBump && (
-                <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--teal-dark)" }}>✓ Adicionado ao seu pedido</p>
+                <p className="text-[10px] font-bold mt-1.5" style={{ color: "var(--teal-dark)" }}>Adicionado ao seu pedido</p>
               )}
             </div>
           </div>
         </div>
 
-        {/* Âncora de preço */}
+        {/* Price anchor */}
         <div className="rounded-lg p-3.5 mb-5 text-center" style={{ background: "#FFFBEB", border: "1px solid #FDE68A" }}>
           <p className="text-xs" style={{ color: "#92400E" }}>
             Uma consulta com nutricionista custa entre R$150 e R$400.
@@ -781,7 +602,7 @@ export default function VendasBR() {
         {!showCheckout ? (
           <div className="text-center">
             <button onClick={handleBuy} className="dm-btn-primary text-base" style={{ padding: "18px 24px" }}>
-              Desbloquear meu Metabolismo por R${totalPrice.toFixed(2).replace(".", ",")} →
+              Desbloquear meu Metabolismo por R${totalPrice.toFixed(2).replace(".", ",")}
             </button>
             <p className="text-[10px] mt-2.5" style={{ color: "var(--dm-grey-300)" }}>
               Pagamento 100% seguro · Acesso imediato · Garantia 30 dias
@@ -803,23 +624,21 @@ export default function VendasBR() {
               sessionId={sessionId}
               onSuccess={handlePaymentSuccess}
               onError={(msg) => console.error("Payment error:", msg)}
-              buttonText={`Pagar R$${totalPrice.toFixed(2).replace(".", ",")} com segurança →`}
+              buttonText={`Pagar R$${totalPrice.toFixed(2).replace(".", ",")} com segurança`}
             />
             <div className="mt-3 flex items-center justify-center gap-1.5">
-              <span className="text-xl">🛡️</span>
+              <span className="text-xl">&#128737;</span>
               <span className="text-[10px]" style={{ color: "var(--dm-grey-300)" }}>Garantia incondicional de 30 dias</span>
             </div>
           </div>
         )}
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 8 — GARANTIA
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Guarantee */}
       <section className={`${sectionCls} pb-10`}>
         <div className="rounded-xl p-5 flex items-start gap-4" style={{ background: "var(--teal-bg)", border: "1.5px solid var(--teal-light)" }}>
           <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--teal-pale)" }}>
-            <span className="text-2xl">🛡️</span>
+            <span className="text-2xl">&#128737;</span>
           </div>
           <div className="min-w-0">
             <h3 className="font-extrabold text-sm mb-1" style={{ color: "var(--dm-text)" }}>Garantia Incondicional de 30 Dias</h3>
@@ -830,9 +649,7 @@ export default function VendasBR() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 9 — FAQ
-         ════════════════════════════════════════════════════════════════ */}
+      {/* FAQ */}
       <section className={`${sectionCls} pb-14`}>
         <h2 className={`${h2Cls} text-center mb-7`} style={{ color: "var(--dm-text)" }}>
           Perguntas frequentes
@@ -858,9 +675,7 @@ export default function VendasBR() {
         </div>
       </section>
 
-      {/* ════════════════════════════════════════════════════════════════
-         SEÇÃO 10 — CTA FINAL
-         ════════════════════════════════════════════════════════════════ */}
+      {/* Final CTA */}
       <section className={`${sectionCls} pb-16`}>
         <div className="text-center rounded-xl p-8" style={{ background: "var(--grad)" }}>
           <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(255,255,255,0.18)" }}>
@@ -877,19 +692,14 @@ export default function VendasBR() {
             <strong className="text-white/90">Opção 1:</strong> Fechar essa página e continuar tentando as mesmas dietas.<br />
             <strong className="text-white">Opção 2:</strong> Investir R$47, remover o bloqueio e ver resultados em 7 dias.
           </p>
-          <button
-            onClick={handleBuy}
-            disabled={trackConversion.isPending}
-            className="dm-btn-white max-w-sm mx-auto text-base"
-          >
-            Sim, quero desbloquear →
+          <button onClick={handleBuy} className="dm-btn-white max-w-sm mx-auto text-base">
+            Sim, quero desbloquear
           </button>
           <p className="text-[10px] mt-3 text-white/45">
             Garantia de 30 dias · Acesso imediato · Só R$47
           </p>
         </div>
       </section>
-
     </div>
   );
 }
