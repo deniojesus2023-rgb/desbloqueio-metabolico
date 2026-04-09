@@ -1,3 +1,4 @@
+// Next.js 15 App Router Layout
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Montserrat } from "next/font/google";
