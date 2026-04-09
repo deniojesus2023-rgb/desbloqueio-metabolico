@@ -3,10 +3,12 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { rateLimit } from "express-rate-limit";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { validateCriticalEnv } from "./env";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -28,15 +30,39 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  validateCriticalEnv();
+
   const app = express();
   const server = createServer(app);
   // Stripe webhook must use raw body BEFORE json parser
   const { registerStripeWebhook } = await import("../stripe-webhook");
   registerStripeWebhook(app);
 
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Configure body parser
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+  // Rate limiting — pagamentos: 20 req/15min por IP
+  const paymentLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 20,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { error: "Muitas tentativas. Tente novamente em alguns minutos." },
+  });
+
+  // Rate limiting — quiz/geral: 120 req/min por IP
+  const apiLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 120,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { error: "Muitas requisições. Tente novamente em instantes." },
+  });
+
+  app.use("/api/trpc/payment.", paymentLimiter);
+  app.use("/api/trpc", apiLimiter);
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API

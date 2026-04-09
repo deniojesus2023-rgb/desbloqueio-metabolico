@@ -41,11 +41,15 @@ export function pixelInitiateCheckout(params?: { value?: number; currency?: stri
 }
 
 /** Purchase — disparar após pagamento confirmado */
-export function pixelPurchase(params: { value: number; currency?: string; order_id?: string }) {
+export function pixelPurchase(params: { value: number; currency?: string; order_id?: string; content_type?: string }) {
   fbq("track", "Purchase", {
     value: params.value,
     currency: params.currency ?? "BRL",
-    content_name: "Protocolo Desbloqueio Metabólico",
+    content_name: params.content_type === "upsell_1" ? "Acelerador de Resultados"
+      : params.content_type === "downsell_1" ? "Acelerador Essencial"
+      : params.content_type === "downsell_2" ? "Guia PDF Protocolo"
+      : "Protocolo Desbloqueio Metabólico",
+    content_type: params.content_type ?? "main_offer",
     order_id: params.order_id ?? "",
   });
 }

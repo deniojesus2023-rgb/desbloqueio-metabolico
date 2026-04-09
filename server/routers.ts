@@ -94,7 +94,7 @@ export const appRouter = router({
         sessionId: z.string().optional(),
         email: z.string().email().optional(),
         name: z.string().optional(),
-        type: z.enum(["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2"]),
+        type: z.enum(["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2", "downsell_2"]),
         amount: z.number(),
       }))
       .mutation(async ({ input }) => {
@@ -119,7 +119,7 @@ export const appRouter = router({
   payment: router({
     createIntent: publicProcedure
       .input(z.object({
-        productKeys: z.array(z.enum(["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2"])),
+        productKeys: z.array(z.enum(["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2", "downsell_2"])),
         customerEmail: z.string().email().optional(),
         customerName: z.string().optional(),
         sessionId: z.string().optional(),
@@ -137,7 +137,7 @@ export const appRouter = router({
     chargeUpsell: publicProcedure
       .input(z.object({
         customerId: z.string(),
-        productKey: z.enum(["upsell_1", "downsell_1", "upsell_2"]),
+        productKey: z.enum(["upsell_1", "downsell_1", "upsell_2", "downsell_2"]),
         sessionId: z.string().optional(),
       }))
       .mutation(async ({ input }) => {

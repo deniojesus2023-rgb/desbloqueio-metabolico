@@ -64,7 +64,7 @@ export const conversions = mysqlTable("conversions", {
   sessionId: varchar("sessionId", { length: 64 }),
   email: varchar("email", { length: 320 }),
   name: varchar("name", { length: 255 }),
-  type: mysqlEnum("type", ["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2"]).notNull(),
+  type: mysqlEnum("type", ["main_offer", "order_bump", "upsell_1", "downsell_1", "upsell_2", "downsell_2"]).notNull(),
   amount: int("amount").notNull(), // in cents
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });

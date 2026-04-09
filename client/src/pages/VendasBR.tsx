@@ -2,7 +2,87 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import StripeCheckout from "@/components/StripeCheckout";
+import UpsellModal from "@/components/UpsellModal";
 import { pixelViewContent, pixelInitiateCheckout, pixelPurchase } from "@/lib/pixel";
+
+const DEPO_SLIDES = [
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo1_ddc1eae5.webp",
+    name: "Ana Paula M.",
+    loc: "Belo Horizonte, MG · Bloqueio Tipo 2",
+    result: "−18 kg em 11 semanas",
+    text: "Passei 6 anos tentando emagrecer. Fiz low carb, jejum intermitente, contagem de calorias. Perdia 3 kg e voltava 5. Quando descobri que tinha o Bloqueio de Resistência à Insulina, foi a primeira vez que alguém me explicou por que as dietas não funcionavam — não era fraqueza, era biologia. Em 11 semanas, sem cortar o arroz com feijão, perdi 18 kg.",
+  },
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo2_c6d61a9b.jpg",
+    name: "Cláudia R.",
+    loc: "São Paulo, SP · Bloqueio Tipo 1",
+    result: "−22 kg em 14 semanas",
+    text: "Sempre fui aquela pessoa que comia pouco e não emagrecia. Minha médica dizia que era 'genética'. Quando entendi que meu cortisol elevado estava travando meu metabolismo, tudo mudou. O protocolo de 3 minutos parece simples demais — mas foi exatamente isso que meu corpo precisava.",
+  },
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo3_d1a34b81.jpg",
+    name: "Patrícia L.",
+    loc: "Recife, PE · Bloqueio Tipo 3",
+    result: "−14 kg em 9 semanas",
+    text: "Tinha vergonha de contar que comia bem durante o dia e desmontava tudo à noite. Achava que era fraqueza de caráter. Quando li sobre a desregulação da leptina e grelina, chorei. Era química, não falta de vontade. Hoje durmo sem aquela fome ansiosa e já perdi 14 kg.",
+  },
+  {
+    img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo4_c5c8abfc.jpg",
+    name: "Renata S.",
+    loc: "Porto Alegre, RS · Bloqueio Tipo 2",
+    result: "−11 kg em 7 semanas",
+    text: "Depois dos 40, parecia que meu corpo tinha travado. Cada quilo era uma batalha enorme. O quiz identificou meu bloqueio exato e o protocolo foi cirúrgico — atacou exatamente o ponto que nenhuma dieta tinha tocado antes. Em 7 semanas perdi 11 kg e minha energia voltou do zero.",
+  },
+];
+
+function DepoCarousel() {
+  const [idx, setIdx] = useState(0);
+  const prev = () => setIdx((i) => (i === 0 ? DEPO_SLIDES.length - 1 : i - 1));
+  const next = () => setIdx((i) => (i === DEPO_SLIDES.length - 1 ? 0 : i + 1));
+  const slide = DEPO_SLIDES[idx];
+  return (
+    <div className="dm-card mb-5 overflow-hidden" style={{ padding: 0 }}>
+      <div className="relative">
+        <img
+          src={slide.img}
+          alt="Transformação real — antes e depois"
+          className="w-full object-cover"
+          style={{ maxHeight: 320 }}
+        />
+        <div className="absolute bottom-0 left-0 right-0 flex justify-between px-3 pb-2">
+          <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>ANTES</span>
+          <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>DEPOIS</span>
+        </div>
+        <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+      </div>
+      <div style={{ padding: "20px" }}>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{slide.name}</span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{slide.result}</span>
+        </div>
+        <span className="text-[10px] block mb-3" style={{ color: "var(--dm-grey-300)" }}>{slide.loc}</span>
+        <div className="flex mb-3">
+          {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">★</span>)}
+        </div>
+        <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{slide.text}"</p>
+        <div className="flex justify-center gap-1.5 mt-4">
+          {DEPO_SLIDES.map((_, i) => (
+            <button key={i} onClick={() => setIdx(i)}
+              className="w-2 h-2 rounded-full transition-all"
+              style={{ background: i === idx ? "var(--teal-dark)" : "var(--teal-light)" }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ── PREÇOS ──────────────────────────────────────────────────────────── */
 const PRODUCT_PRICE = 47;
@@ -41,15 +121,15 @@ const BLOCK_CONTENT = {
 
 /* ── COUNTDOWN ───────────────────────────────────────────────────────── */
 function useCountdown() {
-  const KEY = "dm_br_countdown_end";
+  const KEY = "dm_br_countdown_end_v2";
   const getEnd = () => {
-    if (typeof window === "undefined") return Date.now() + 15 * 60 * 1000;
+    if (typeof window === "undefined") return Date.now() + 45 * 60 * 1000;
     const stored = localStorage.getItem(KEY);
     if (stored) {
       const end = parseInt(stored, 10);
       if (end > Date.now()) return end;
     }
-    const newEnd = Date.now() + 15 * 60 * 1000;
+    const newEnd = Date.now() + 45 * 60 * 1000;
     localStorage.setItem(KEY, String(newEnd));
     return newEnd;
   };
@@ -92,6 +172,13 @@ const TESTIMONIALS = [
     text: "Continuo comendo meu churrasco de fim de semana, meu pão de queijo no café. Só adicionei o ritual de 3 minutos. Na terceira semana já senti a barriga mais chapada.",
     avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/avatar_daniela_2ce81877.png",
   },
+  {
+    name: "Daniela C.",
+    loc: "Florianópolis, SC",
+    result: "−6 kg em 4 semanas",
+    text: "Duvidei muito. Pensei que era mais uma enganação. Só comprei porque vi a garantia de 30 dias. Quando vi a barriga desinchando na primeira semana, fiquei sem palavras. Nunca tinha acontecido em anos tentando.",
+    avatar: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/avatar_daniela_2ce81877.png",
+  },
 ];
 
 /* ── FAQ ──────────────────────────────────────────────────────────────── */
@@ -115,6 +202,14 @@ const FAQ = [
   {
     q: "E se não funcionar?",
     a: "Você tem 30 dias de garantia incondicional. Devolvemos 100% do seu investimento — sem perguntas, sem formulários. O risco é completamente nosso.",
+  },
+  {
+    q: "Tem algum embasamento científico?",
+    a: "Sim. O protocolo se baseia em 3 mecanismos comprovados: redução de cortisol (estudos de intervenção de cortisol de 2021-2022), sensibilidade à insulina (revisões meta-analíticas de 2020-2022) e regulação de grelina-leptina. As técnicas foram selecionadas por sua eficácia comprovada e simplicidade de aplicação.",
+  },
+  {
+    q: "Consigo fazer no trabalho ou fora de casa?",
+    a: "Sim. O ritual de 3 minutos usa apenas elementos que você carrega no cotidiano — não precisa de equipamentos, suplementos ou preparo especial. Pode ser feito no banheiro do trabalho, no carro, em qualquer lugar.",
   },
 ];
 
@@ -233,10 +328,13 @@ export default function VendasBR() {
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [exitDismissed, setExitDismissed] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [showUpsell, setShowUpsell] = useState(false);
+  const [upsellCustomerId, setUpsellCustomerId] = useState<string | undefined>();
+  const [showSticky, setShowSticky] = useState(false);
   const ctaRef = useRef<HTMLDivElement>(null);
   const { minutes, seconds } = useCountdown();
   const fakeNotif = useFakeNotifications();
-  const vagas = useDynamicVagas(37);
+  const vagas = useDynamicVagas(23);
   const [, navigate] = useLocation();
   const trackConversion = trpc.quiz.trackConversion.useMutation();
 
@@ -257,6 +355,12 @@ export default function VendasBR() {
     return () => document.removeEventListener("mouseleave", handleMouseLeave);
   }, [exitDismissed]);
 
+  useEffect(() => {
+    const handleScroll = () => setShowSticky(window.scrollY > 600);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Meta Pixel — ViewContent ao entrar na página de vendas
   useEffect(() => {
     pixelViewContent({ value: PRODUCT_PRICE, currency: "BRL" });
@@ -274,8 +378,9 @@ export default function VendasBR() {
     pixelPurchase({ value: totalPrice, currency: "BRL", order_id: data.paymentIntentId });
     trackConversion.mutate({ sessionId, type: "main_offer", amount: Math.round(PRODUCT_PRICE * 100) });
     if (orderBump) trackConversion.mutate({ sessionId, type: "order_bump", amount: Math.round(ORDER_BUMP_PRICE * 100) });
-    const custParam = data.customerId ? `&cid=${data.customerId}` : "";
-    navigate(`/upsell-br?s=${sessionId || ""}${custParam}`);
+    setUpsellCustomerId(data.customerId);
+    setShowUpsell(true);
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const scrollToCta = () => ctaRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -288,6 +393,11 @@ export default function VendasBR() {
 
   return (
     <div className="min-h-screen" style={{ background: "#FAFBFC", fontFamily: "'Montserrat', sans-serif" }}>
+
+      {/* ── UPSELL / DOWNSELL POPUP ───────────────────────────────────── */}
+      {showUpsell && (
+        <UpsellModal customerId={upsellCustomerId} sessionId={sessionId} />
+      )}
 
       {/* ── EXIT-INTENT POPUP ─────────────────────────────────────────── */}
       {showExitIntent && (
@@ -563,96 +673,23 @@ export default function VendasBR() {
         </div>
 
         {/* Carrossel de depoimentos antes/depois */}
-        {(() => {
-          const slides = [
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo1_ddc1eae5.webp",
-              name: "Ana Paula M.",
-              loc: "Belo Horizonte, MG · Bloqueio Tipo 2",
-              result: "−18 kg em 11 semanas",
-              text: "Passei 6 anos tentando emagrecer. Fiz low carb, jejum intermitente, contagem de calorias. Perdia 3 kg e voltava 5. Quando descobri que tinha o Bloqueio de Resistência à Insulina, foi a primeira vez que alguém me explicou por que as dietas não funcionavam — não era fraqueza, era biologia. Em 11 semanas, sem cortar o arroz com feijão, perdi 18 kg.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo2_c6d61a9b.jpg",
-              name: "Cláudia R.",
-              loc: "São Paulo, SP · Bloqueio Tipo 1",
-              result: "−22 kg em 14 semanas",
-              text: "Sempre fui aquela pessoa que comia pouco e não emagrecia. Minha médica dizia que era 'genética'. Quando entendi que meu cortisol elevado estava travando meu metabolismo, tudo mudou. O protocolo de 3 minutos parece simples demais — mas foi exatamente isso que meu corpo precisava.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo3_d1a34b81.jpg",
-              name: "Patrícia L.",
-              loc: "Recife, PE · Bloqueio Tipo 3",
-              result: "−14 kg em 9 semanas",
-              text: "Tinha vergonha de contar que comia bem durante o dia e desmontava tudo à noite. Achava que era fraqueza de caráter. Quando li sobre a desregulação da leptina e grelina, chorei. Era química, não falta de vontade. Hoje durmo sem aquela fome ansiosa e já perdi 14 kg.",
-            },
-            {
-              img: "https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/depo4_c5c8abfc.jpg",
-              name: "Renata S.",
-              loc: "Porto Alegre, RS · Bloqueio Tipo 2",
-              result: "−11 kg em 7 semanas",
-              text: "Depois dos 40, parecia que meu corpo tinha travado. Cada quilo era uma batalha enorme. O quiz identificou meu bloqueio exato e o protocolo foi cirúrgico — atacou exatamente o ponto que nenhuma dieta tinha tocado antes. Em 7 semanas perdi 11 kg e minha energia voltou do zero.",
-            },
-          ];
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const [idx, setIdx] = useState(0);
-          const prev = () => setIdx((i) => (i === 0 ? slides.length - 1 : i - 1));
-          const next = () => setIdx((i) => (i === slides.length - 1 ? 0 : i + 1));
-          const slide = slides[idx];
-          return (
-            <div className="dm-card mb-5 overflow-hidden" style={{ padding: 0 }}>
-              {/* Foto */}
-              <div className="relative">
-                <img
-                  src={slide.img}
-                  alt="Transformação real — antes e depois"
-                  className="w-full object-cover"
-                  style={{ maxHeight: 320 }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-3 pb-2">
-                  <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>ANTES</span>
-                  <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.55)" }}>DEPOIS</span>
-                </div>
-                {/* Botões de navegação */}
-                <button onClick={prev} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-                <button onClick={next} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(0,0,0,0.45)" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              </div>
-              {/* Texto */}
-              <div style={{ padding: "20px" }}>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="font-bold text-[14px]" style={{ color: "var(--dm-text)" }}>{slide.name}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ background: "var(--teal-pale)", color: "var(--teal-dark)" }}>{slide.result}</span>
-                </div>
-                <span className="text-[10px] block mb-3" style={{ color: "var(--dm-grey-300)" }}>{slide.loc}</span>
-                <div className="flex mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => <span key={i} className="text-amber-400 text-sm">★</span>)}
-                </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "var(--dm-text-soft)" }}>"{ slide.text}"</p>
-                {/* Dots */}
-                <div className="flex justify-center gap-1.5 mt-4">
-                  {slides.map((_, i) => (
-                    <button key={i} onClick={() => setIdx(i)}
-                      className="w-2 h-2 rounded-full transition-all"
-                      style={{ background: i === idx ? "var(--teal-dark)" : "var(--teal-light)" }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+        <DepoCarousel />
 
-        {/* Selo de avaliação */}
+        {/* Prova social real */}
         <div className="flex justify-center mb-6">
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663097145516/g4z5oQrNVVJn7M3uTpF5hp/4.8estrela_ade7735d.webp"
-            alt="4.8 estrelas — 50 milhões de downloads"
-            className="w-48 object-contain"
-          />
+          <div className="flex items-center gap-3 px-5 py-3 rounded-full" style={{ background: "var(--teal-pale)", border: "1px solid var(--teal-light)" }}>
+            <div className="flex -space-x-1.5">
+              {["🟢","🟢","🟢","🟢","🟢"].map((_, i) => (
+                <div key={i} className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px]" style={{ background: `hsl(${160 + i * 15}, 50%, 60%)` }}>
+                  {["M","J","C","A","R"][i]}
+                </div>
+              ))}
+            </div>
+            <div>
+              <p className="text-[12px] font-extrabold" style={{ color: "var(--teal-dark)" }}>1.247 mulheres já desbloquearam</p>
+              <p className="text-[10px]" style={{ color: "var(--dm-text-soft)" }}>★★★★★ 4.9 de satisfação</p>
+            </div>
+          </div>
         </div>
 
 
@@ -889,6 +926,28 @@ export default function VendasBR() {
           </p>
         </div>
       </section>
+
+      {/* ── STICKY CTA BAR ──────────────────────────────────────────── */}
+      {showSticky && !showCheckout && !showUpsell && (
+        <div
+          className="fixed bottom-0 left-0 right-0 z-40 px-4 py-3 flex items-center gap-3"
+          style={{ background: "var(--teal-dark)", boxShadow: "0 -4px 20px rgba(0,0,0,0.2)" }}
+        >
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-extrabold text-[13px] leading-tight truncate">
+              Protocolo Desbloqueio — R$47
+            </p>
+            <p className="text-white/70 text-[10px]">Oferta expira em {minutes}:{seconds}</p>
+          </div>
+          <button
+            onClick={handleBuy}
+            className="flex-shrink-0 bg-white font-extrabold text-[13px] px-5 py-2.5 rounded-xl transition-all active:scale-95"
+            style={{ color: "var(--teal-dark)" }}
+          >
+            Garantir →
+          </button>
+        </div>
+      )}
 
     </div>
   );

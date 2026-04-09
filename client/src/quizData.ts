@@ -289,8 +289,8 @@ export const quizQuestionsES: QuizQuestion[] = [
 export const blockProfilesPT: Record<string, BlockProfile> = {
   cortisol: {
     type: 'cortisol',
-    name: 'Bloqueio de Cortisol',
-    badge: 'Tipo 1 — Trava do Estresse',
+    name: 'A Acumuladora de Estresse',
+    badge: 'Tipo 1 — A Acumuladora de Estresse',
     color: '#E53E3E',
     blockPercentage: 73,
     mechanism: 'Cortisol Elevado',
@@ -303,8 +303,8 @@ export const blockProfilesPT: Record<string, BlockProfile> = {
   },
   insulina: {
     type: 'insulina',
-    name: 'Bloqueio de Insulina',
-    badge: 'Tipo 2 — Trava Metabólica',
+    name: 'A Resistente Crônica',
+    badge: 'Tipo 2 — A Resistente Crônica',
     color: '#2B6CB0',
     blockPercentage: 68,
     mechanism: 'Resistência à Insulina',
@@ -317,8 +317,8 @@ export const blockProfilesPT: Record<string, BlockProfile> = {
   },
   hormonal: {
     type: 'hormonal',
-    name: 'Bloqueio Hormonal',
-    badge: 'Tipo 3 — Trava Hormonal',
+    name: 'A Sabotera Hormonal',
+    badge: 'Tipo 3 — A Sabotera Hormonal',
     color: '#6B46C1',
     blockPercentage: 71,
     mechanism: 'Desequilíbrio Hormonal',
@@ -411,11 +411,11 @@ export const uiTextsPT = {
   resultTitle: 'Seu Diagnóstico:',
   resultBlockLabel: 'Nível de Bloqueio Metabólico',
   resultInsightsTitle: 'O que isso significa para você:',
-  optinTitle: 'Receba seu protocolo personalizado de desbloqueio',
-  optinSubtitle: 'Baseado no seu diagnóstico, vamos enviar o protocolo exato para o seu tipo de bloqueio.',
+  optinTitle: 'Seu protocolo foi gerado — mas este acesso expira em breve',
+  optinSubtitle: 'Identificamos exatamente o que está bloqueando seu metabolismo. Seu protocolo personalizado está pronto. Mas este acesso tem validade — preencha agora enquanto está disponível.',
   optinNamePlaceholder: 'Seu nome',
   optinEmailPlaceholder: 'Seu melhor e-mail',
-  optinCta: 'Quero meu protocolo gratuito →',
+  optinCta: 'Acessar meu protocolo agora →',
   optinTrust: '🔒 Seus dados estão 100% seguros. Sem spam.',
 };
 
